@@ -2013,6 +2013,9 @@ async function loadDashboard(){
   if(error){console.error('Dashboard error:',error);return;}
 
   // ── BUILD TABLE ───────────────────────────────────────────────
+  // Ensure table wrap is visible
+  const tableWrap=document.getElementById('dash-table-wrap');
+  if(tableWrap) tableWrap.style.display='block';
   const tbody=document.getElementById('dash-tbody');
   if(!tbody) return;
   tbody.innerHTML='';
