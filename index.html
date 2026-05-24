@@ -819,13 +819,74 @@ async function doLogout(){
   document.getElementById('lodge-screen').style.display='none';
   document.getElementById('auth-screen').style.display='flex';
 }
-let sessionChecked=false;
 async function checkSession(){
   const {data}=await sb.auth.getSession();
-  if(data.session&&!sessionChecked){
-    sessionChecked=true;
-    currentUser=data.session.user;
-    await showLodgeSelector();
+  if(!data.session) return; // No session - stay on login screen
+  
+  currentUser=data.session.user;
+  const email=currentUser.email;
+  
+  const LODGE_MAP={
+    'serunkumaallan4@gmail.com':'Hoima Cultural Lodge',
+    'lakemulehe@ugandaculturallodges.com':'Lake Mulehe Gorilla Lodge',
+    'qualityassurance@ugandaculturallodges.com':'Kigarama Wilderness Lodge'
+  };
+  
+  const supervisorLodge=LODGE_MAP[email];
+  
+  if(supervisorLodge){
+    currentLodge=supervisorLodge;
+    await loadItemMaster();
+    document.getElementById('auth-screen').style.display='none';
+    document.getElementById('lodge-screen').style.display='none';
+    document.getElementById('app-screen').style.display='block';
+    document.getElementById('user-email').textContent=email;
+    document.getElementById('lodge-name-header').textContent=supervisorLodge;
+    const today=new Date();
+    const day=today.getDay();
+    const diff=today.getDate()-day+(day===0?-6:1);
+    const mon=new Date(today);mon.setDate(diff);
+    document.getElementById('week-of').value=mon.toISOString().split('T')[0];
+    updateWeekLabel();
+    const rowCounts={'bar-sales':10,'bar-stock':10,'restaurant':10,'room-sales':5,'stores':8,'kitchen':8,'rooms':5,'housekeeping':5,'security':3,'maintenance':3,'booked-guests':5,'staff-comp':5,'training':3,'incidents':3};
+    Object.entries(rowCounts).forEach(([t,count])=>{
+      document.getElementById('body-'+t).innerHTML='';
+      for(let i=0;i<count;i++) addRow(t);
+    });
+    switchTab(document.querySelector('.tab[data-tab="bar-sales"]'));
+    loadDashboard();
+  } else {
+    // Admin or Group GM
+    document.getElementById('auth-screen').style.display='none';
+    document.getElementById('app-screen').style.display='none';
+    document.getElementById('lodge-screen').style.display='flex';
+    document.getElementById('lodge-user-email').textContent=email;
+    const container=document.getElementById('lodge-buttons');
+    container.innerHTML='';
+    LODGES.forEach(lodge=>{
+      const btn=document.createElement('button');
+      btn.className='lodge-btn';
+      btn.innerHTML='<span class="lodge-icon">'+LODGE_ICONS[lodge]+'</span>'+lodge;
+      btn.onclick=()=>selectLodge(lodge);
+      container.appendChild(btn);
+    });
+    if(isAdmin()||isGroupGM()){
+      const dashBtn=document.createElement('button');
+      dashBtn.className='lodge-btn';
+      dashBtn.style.cssText='border-color:var(--forest);color:var(--forest);font-weight:600;margin-top:8px;';
+      dashBtn.innerHTML='<span class="lodge-icon">📊</span> View Dashboard (All Lodges)';
+      dashBtn.onclick=async()=>{
+        document.getElementById('lodge-screen').style.display='none';
+        document.getElementById('app-screen').style.display='block';
+        document.getElementById('user-email').textContent=email;
+        document.getElementById('lodge-name-header').textContent='All Lodges';
+        currentLodge=null;
+        await loadItemMaster();
+        switchTab(document.querySelector('.tab[data-tab="dashboard"]'));
+        loadDashboard();
+      };
+      container.appendChild(dashBtn);
+    }
   }
 }
 function isAdmin(){return currentUser&&currentUser.email===ADMIN_EMAIL;}
