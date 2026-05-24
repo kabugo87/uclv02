@@ -732,20 +732,82 @@ async function doLogin(){
   const errEl=document.getElementById('auth-error');
   const btn=document.querySelector('#auth-screen .btn-primary');
   errEl.style.display='none'; btn.disabled=true; btn.textContent='Signing in...';
+  
   const {data,error}=await sb.auth.signInWithPassword({email,password});
+  
   if(error){
-    errEl.textContent=error.message;errEl.style.display='block';
-    btn.disabled=false;btn.textContent='Sign In';
+    errEl.textContent=error.message;
+    errEl.style.display='block';
+    btn.disabled=false;
+    btn.textContent='Sign In';
+    return;
+  }
+  
+  currentUser=data.user;
+  const email2=currentUser.email;
+  
+  // Determine role and redirect
+  const LODGE_MAP={
+    'serunkumaallan4@gmail.com':'Hoima Cultural Lodge',
+    'lakemulehe@ugandaculturallodges.com':'Lake Mulehe Gorilla Lodge',
+    'qualityassurance@ugandaculturallodges.com':'Kigarama Wilderness Lodge'
+  };
+  
+  const supervisorLodge=LODGE_MAP[email2];
+  
+  if(supervisorLodge){
+    // Supervisor - go straight to their lodge
+    currentLodge=supervisorLodge;
+    await loadItemMaster();
+    document.getElementById('auth-screen').style.display='none';
+    document.getElementById('lodge-screen').style.display='none';
+    document.getElementById('app-screen').style.display='block';
+    document.getElementById('user-email').textContent=email2;
+    document.getElementById('lodge-name-header').textContent=supervisorLodge;
+    const today=new Date();
+    const day=today.getDay();
+    const diff=today.getDate()-day+(day===0?-6:1);
+    const mon=new Date(today);mon.setDate(diff);
+    document.getElementById('week-of').value=mon.toISOString().split('T')[0];
+    updateWeekLabel();
+    const rowCounts={'bar-sales':10,'bar-stock':10,'restaurant':10,'room-sales':5,'stores':8,'kitchen':8,'rooms':5,'housekeeping':5,'security':3,'maintenance':3,'booked-guests':5,'staff-comp':5,'training':3,'incidents':3};
+    Object.entries(rowCounts).forEach(([t,count])=>{
+      document.getElementById('body-'+t).innerHTML='';
+      for(let i=0;i<count;i++) addRow(t);
+    });
+    switchTab(document.querySelector('.tab[data-tab="bar-sales"]'));
+    loadDashboard();
   } else {
-    currentUser=data.user;
-    sessionChecked=true;
-    try{
-      await showLodgeSelector();
-    }catch(err){
-      console.error('showLodgeSelector failed:',err);
-      errEl.textContent='Login succeeded but app failed to load: '+err.message;
-      errEl.style.display='block';
-      btn.disabled=false;btn.textContent='Sign In';
+    // Admin or Group GM - show lodge selector
+    document.getElementById('auth-screen').style.display='none';
+    document.getElementById('app-screen').style.display='none';
+    document.getElementById('lodge-screen').style.display='flex';
+    document.getElementById('lodge-user-email').textContent=email2;
+    const container=document.getElementById('lodge-buttons');
+    container.innerHTML='';
+    LODGES.forEach(lodge=>{
+      const btn2=document.createElement('button');
+      btn2.className='lodge-btn';
+      btn2.innerHTML='<span class="lodge-icon">'+LODGE_ICONS[lodge]+'</span>'+lodge;
+      btn2.onclick=()=>selectLodge(lodge);
+      container.appendChild(btn2);
+    });
+    if(isAdmin()||isGroupGM()){
+      const dashBtn=document.createElement('button');
+      dashBtn.className='lodge-btn';
+      dashBtn.style.cssText='border-color:var(--forest);color:var(--forest);font-weight:600;margin-top:8px;';
+      dashBtn.innerHTML='<span class="lodge-icon">📊</span> View Dashboard (All Lodges)';
+      dashBtn.onclick=async()=>{
+        document.getElementById('lodge-screen').style.display='none';
+        document.getElementById('app-screen').style.display='block';
+        document.getElementById('user-email').textContent=email2;
+        document.getElementById('lodge-name-header').textContent='All Lodges';
+        currentLodge=null;
+        await loadItemMaster();
+        switchTab(document.querySelector('.tab[data-tab="dashboard"]'));
+        loadDashboard();
+      };
+      container.appendChild(dashBtn);
     }
   }
 }
