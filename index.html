@@ -1998,6 +1998,7 @@ async function loadDashboard(){
   }
 
   const {data:rows,error}=await q;
+  console.log('Dashboard query - role:',role,'myLodge:',myLodge,'sup:',sup,'rows:',rows?rows.length:0,'error:',error);
   if(error){console.error('Dashboard error:',error);return;}
 
   // ── BUILD TABLE ───────────────────────────────────────────────
