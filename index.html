@@ -1961,6 +1961,17 @@ async function loadDashboard(){
   const wkBar=document.querySelector('.week-bar');
   if(wkBar) wkBar.style.display=sup?'none':'';
 
+  // ── BUILD STAT CARDS HTML FIRST ─────────────────────────────
+  const statsEl=document.getElementById('dash-stats');
+  if(statsEl&&!document.getElementById('stat-active')){
+    statsEl.innerHTML=
+      '<div class="stat-card"><div class="stat-label">Active Reports</div><div class="stat-value" id="stat-active">—</div></div>'+
+      '<div class="stat-card"><div class="stat-label">Hoima</div><div class="stat-value" id="stat-hoima">—</div></div>'+
+      '<div class="stat-card"><div class="stat-label">Lake</div><div class="stat-value" id="stat-mulehe">—</div></div>'+
+      '<div class="stat-card"><div class="stat-label">Kigarama</div><div class="stat-value" id="stat-kigarama">—</div></div>'+
+      '<div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value" id="stat-revenue">—</div></div>';
+  }
+
   // ── STATS QUERY ──────────────────────────────────────────────
   let statsQ=sb.from('weekly_reports')
     .select('id,lodge,bar_sales,restaurant_sales,room_sales')
