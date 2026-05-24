@@ -1757,14 +1757,27 @@ async function archiveReport(id,val){
 }
 function promptDelete(id){
   currentReport={id};
-  document.getElementById('confirm-delete').style.display='block';
+  const box=document.getElementById('confirm-delete');
+  if(box){
+    box.style.display='block';
+    box.style.visibility='visible';
+    box.style.opacity='1';
+    box.scrollIntoView({behavior:'smooth'});
+  } else {
+    // Fallback - use browser confirm
+    if(confirm('Are you sure you want to permanently delete this report? This cannot be undone.')){
+      confirmDelete();
+    }
+  }
 }
 function cancelDelete(){currentReport=null;document.getElementById('confirm-delete').style.display='none';}
 async function confirmDelete(){
-  if(!currentReport)return;
-  const {error}=await sb.from('weekly_reports').delete().eq('id',currentReport.id);
+  if(!currentReport||!currentReport.id)return;
+  const id=currentReport.id;
+  const {error}=await sb.from('weekly_reports').delete().eq('id',id);
   if(error){alert('Delete failed: '+error.message);return;}
   closeModal();cancelDelete();loadDashboard();
+  alert('Report deleted successfully.');
 }
 
 // ── REPORT MODAL ──────────────────────────────────────────────────────────────
