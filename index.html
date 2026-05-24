@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Uganda Cultural Lodges — Weekly Reporting</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.min.css"/>
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 <style>
@@ -266,6 +267,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
         <div class="dash-tabs" style="margin-bottom:0;border-bottom:none;">
           <div class="dash-tab active" onclick="showDashTab(this,'all')">All Lodges</div>
+          <div class="dash-tab" onclick="showDashTab(this,'analytics')" id="analytics-tab">📊 Analytics</div>
           <div class="dash-tab" onclick="showDashTab(this,'Hoima Cultural Lodge')">Hoima</div>
           <div class="dash-tab" onclick="showDashTab(this,'Lake Mulehe Gorilla Lodge')">Lake Mulehe</div>
           <div class="dash-tab" onclick="showDashTab(this,'Kigarama Wilderness Lodge')">Kigarama</div>
@@ -523,6 +525,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
         <div class="dash-tabs" style="margin-bottom:0;border-bottom:none;">
           <div class="dash-tab active" onclick="showDashTab(this,'all')">All Lodges</div>
+          <div class="dash-tab" onclick="showDashTab(this,'analytics')" id="analytics-tab">📊 Analytics</div>
           <div class="dash-tab" onclick="showDashTab(this,'Hoima Cultural Lodge')">Hoima</div>
           <div class="dash-tab" onclick="showDashTab(this,'Lake Mulehe Gorilla Lodge')">Lake Mulehe</div>
           <div class="dash-tab" onclick="showDashTab(this,'Kigarama Wilderness Lodge')">Kigarama</div>
@@ -730,8 +733,20 @@ async function doLogin(){
   const btn=document.querySelector('#auth-screen .btn-primary');
   errEl.style.display='none'; btn.disabled=true; btn.textContent='Signing in...';
   const {data,error}=await sb.auth.signInWithPassword({email,password});
-  if(error){errEl.textContent=error.message;errEl.style.display='block';btn.disabled=false;btn.textContent='Sign In';}
-  else{currentUser=data.user;showLodgeSelector();}
+  if(error){
+    errEl.textContent=error.message;errEl.style.display='block';
+    btn.disabled=false;btn.textContent='Sign In';
+  } else {
+    currentUser=data.user;
+    try{
+      await showLodgeSelector();
+    }catch(err){
+      console.error('showLodgeSelector failed:',err);
+      errEl.textContent='Login succeeded but app failed to load: '+err.message;
+      errEl.style.display='block';
+      btn.disabled=false;btn.textContent='Sign In';
+    }
+  }
 }
 document.getElementById('auth-password').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 async function doLogout(){
@@ -879,11 +894,11 @@ function wireDropdowns(groupTd, itemTd, unitInp, parInp, category){
 }
 
 // ── LODGE SELECTOR ────────────────────────────────────────────────────────────
-function showLodgeSelector(){
+async function showLodgeSelector(){
   // Supervisors skip lodge selector - go straight to their lodge
   const myLodge=getUserLodge();
   if(myLodge){
-    selectLodge(myLodge);
+    await selectLodge(myLodge);
     return;
   }
   document.getElementById('auth-screen').style.display='none';
@@ -966,7 +981,17 @@ function switchTab(el){
 }
 function showDashTab(el,tab){
   document.querySelectorAll('.dash-tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');currentDashTab=tab;loadDashboard();
+  el.classList.add('active');
+  currentDashTab=tab;
+  if(tab==='analytics'){
+    document.getElementById('dash-analytics-wrap').style.display='block';
+    document.getElementById('dash-table-wrap').style.display='none';
+    loadAnalytics();
+  } else {
+    document.getElementById('dash-analytics-wrap').style.display='none';
+    document.getElementById('dash-table-wrap').style.display='block';
+    loadDashboard();
+  }
 }
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
@@ -2620,6 +2645,203 @@ document.getElementById('modal-title').textContent='Monthly Report — Uganda Cu
 
 }
 
+// ── ANALYTICS ────────────────────────────────────────────────────────────────
+let chartInstances={};
+function destroyChart(id){if(chartInstances[id]){chartInstances[id].destroy();delete chartInstances[id];}}
+
+async function loadAnalytics(){
+  // Fetch all non-draft, non-archived reports
+  const {data,error}=await sb.from('weekly_reports')
+    .select('*').eq('archived',false).eq('is_draft',false)
+    .order('week_of',{ascending:true});
+  if(error||!data||!data.length){
+    document.getElementById('analytics-cards').innerHTML='<div style="color:var(--muted);font-size:14px">No data available yet.</div>';
+    return;
+  }
+
+  // ── REVENUE CALCULATIONS ─────────────────────────────────────
+  const lodgeRevenue={};
+  const weekRevenue={};
+  const barTotal={},restTotal={},roomTotal={};
+  const itemSales={};
+
+  LODGES.forEach(l=>{lodgeRevenue[l]=0;barTotal[l]=0;restTotal[l]=0;roomTotal[l]=0;});
+
+  data.forEach(r=>{
+    let bar=0,rest=0,room=0;
+    (r.bar_sales||[]).forEach(s=>{bar+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;
+      if(s.item&&s.item!=='Other'){itemSales[s.item]=(itemSales[s.item]||0)+n(s.qty_sold||0);}
+    });
+    (r.restaurant_sales||[]).forEach(s=>{rest+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;
+      if(s.item&&s.item!=='Other'){itemSales[s.item]=(itemSales[s.item]||0)+n(s.qty_sold||0);}
+    });
+    (r.room_sales||[]).forEach(s=>{room+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
+    const total=bar+rest+room;
+    if(LODGES.includes(r.lodge)){
+      lodgeRevenue[r.lodge]=(lodgeRevenue[r.lodge]||0)+total;
+      barTotal[r.lodge]=(barTotal[r.lodge]||0)+bar;
+      restTotal[r.lodge]=(restTotal[r.lodge]||0)+rest;
+      roomTotal[r.lodge]=(roomTotal[r.lodge]||0)+room;
+    }
+    const wk=r.week_of;
+    weekRevenue[wk]=(weekRevenue[wk]||0)+total;
+  });
+
+  const grandTotal=Object.values(lodgeRevenue).reduce((s,v)=>s+v,0);
+  const weeks=Object.keys(weekRevenue).sort();
+
+  // ── WEEK ON WEEK ──────────────────────────────────────────────
+  const lastWeek=weeks[weeks.length-1];
+  const prevWeek=weeks[weeks.length-2];
+  const lastWkRev=weekRevenue[lastWeek]||0;
+  const prevWkRev=weekRevenue[prevWeek]||0;
+  const wkChange=prevWkRev>0?((lastWkRev-prevWkRev)/prevWkRev*100).toFixed(1):0;
+  const wkUp=lastWkRev>=prevWkRev;
+
+  // ── TOP SELLING LODGE ─────────────────────────────────────────
+  const topLodge=LODGES.reduce((a,b)=>lodgeRevenue[a]>lodgeRevenue[b]?a:b);
+  const topLodgePct=grandTotal>0?(lodgeRevenue[topLodge]/grandTotal*100).toFixed(1):0;
+
+  // ── TOP ITEMS ─────────────────────────────────────────────────
+  const topItems=Object.entries(itemSales).sort((a,b)=>b[1]-a[1]).slice(0,8);
+
+  // ── SUMMARY CARDS ─────────────────────────────────────────────
+  const cards=document.getElementById('analytics-cards');
+  cards.innerHTML=`
+    <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;border-top:4px solid var(--forest)">
+      <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Total Revenue (All Time)</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--forest)">${fmtUGX(grandTotal)}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">${data.length} reports across ${weeks.length} weeks</div>
+    </div>
+    <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;border-top:4px solid ${wkUp?'#2e7d52':'#c0392b'}">
+      <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Week on Week</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:${wkUp?'#2e7d52':'#c0392b'}">${wkUp?'▲':'▼'} ${Math.abs(wkChange)}%</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">${fmtUGX(lastWkRev)} vs ${fmtUGX(prevWkRev)} prev week</div>
+    </div>
+    <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;border-top:4px solid var(--gold)">
+      <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Top Performing Lodge</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--forest)">${topLodge.split(' ')[0]}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">${fmtUGX(lodgeRevenue[topLodge])} — ${topLodgePct}% of group revenue</div>
+    </div>
+    <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;border-top:4px solid #8e44ad">
+      <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Top Selling Item</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--forest)">${topItems[0]?topItems[0][0]:'—'}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">${topItems[0]?topItems[0][1]+' units sold':''}</div>
+    </div>`;
+
+  // ── LODGE REVENUE BAR CHART ───────────────────────────────────
+  destroyChart('lodge-revenue');
+  const ctx1=document.getElementById('chart-lodge-revenue').getContext('2d');
+  chartInstances['lodge-revenue']=new Chart(ctx1,{
+    type:'bar',
+    data:{
+      labels:LODGES.map(l=>l.split(' ')[0]),
+      datasets:[
+        {label:'Bar',data:LODGES.map(l=>barTotal[l]),backgroundColor:'#2d6a4f',borderRadius:4},
+        {label:'Restaurant',data:LODGES.map(l=>restTotal[l]),backgroundColor:'#e9b44c',borderRadius:4},
+        {label:'Rooms',data:LODGES.map(l=>roomTotal[l]),backgroundColor:'#3a86ff',borderRadius:4}
+      ]
+    },
+    options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:v=>v>=1000000?(v/1000000).toFixed(1)+'M':v>=1000?(v/1000).toFixed(0)+'K':v}}}}
+  });
+
+  // ── WEEKLY TREND LINE CHART ───────────────────────────────────
+  destroyChart('weekly-trend');
+  const ctx2=document.getElementById('chart-weekly-trend').getContext('2d');
+  chartInstances['weekly-trend']=new Chart(ctx2,{
+    type:'line',
+    data:{
+      labels:weeks.map(w=>fmtDate(w)),
+      datasets:[{
+        label:'Total Revenue',
+        data:weeks.map(w=>weekRevenue[w]),
+        borderColor:'#2d6a4f',backgroundColor:'rgba(45,106,79,0.1)',
+        fill:true,tension:0.4,pointBackgroundColor:'#2d6a4f',pointRadius:5
+      }]
+    },
+    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v>=1000000?(v/1000000).toFixed(1)+'M':v>=1000?(v/1000).toFixed(0)+'K':v}}}}
+  });
+
+  // ── REVENUE MIX DONUT ─────────────────────────────────────────
+  destroyChart('revenue-mix');
+  const totalBar=LODGES.reduce((s,l)=>s+barTotal[l],0);
+  const totalRest=LODGES.reduce((s,l)=>s+restTotal[l],0);
+  const totalRoom=LODGES.reduce((s,l)=>s+roomTotal[l],0);
+  const ctx3=document.getElementById('chart-revenue-mix').getContext('2d');
+  chartInstances['revenue-mix']=new Chart(ctx3,{
+    type:'doughnut',
+    data:{
+      labels:['Bar','Restaurant','Rooms'],
+      datasets:[{data:[totalBar,totalRest,totalRoom],backgroundColor:['#2d6a4f','#e9b44c','#3a86ff'],borderWidth:2,borderColor:'#fff'}]
+    },
+    options:{responsive:true,plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:function(ctx){var pct=(ctx.parsed/grandTotal*100).toFixed(1);return ctx.label+': '+fmtUGX(ctx.parsed)+' ('+pct+'%)';}}}}}
+  });
+
+  // ── TOP ITEMS BAR CHART ───────────────────────────────────────
+  destroyChart('top-items');
+  const ctx4=document.getElementById('chart-top-items').getContext('2d');
+  chartInstances['top-items']=new Chart(ctx4,{
+    type:'bar',
+    data:{
+      labels:topItems.map(([item])=>item.length>20?item.substr(0,18)+'...':item),
+      datasets:[{
+        label:'Units Sold',
+        data:topItems.map(([,qty])=>qty),
+        backgroundColor:['#2d6a4f','#e9b44c','#3a86ff','#e74c3c','#8e44ad','#1abc9c','#e67e22','#2980b9'],
+        borderRadius:4
+      }]
+    },
+    options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{callback:v=>Math.round(v)}}}}
+  });
+
+  // ── LODGE COMPARISON TABLE ────────────────────────────────────
+  const insights=document.getElementById('analytics-insights');
+  // Build lodge comparison table
+  let insHtml='<div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:20px">';
+  insHtml+='<div style="font-family:\'Cormorant Garamond\',serif;font-size:18px;font-weight:700;color:var(--forest);margin-bottom:16px">Lodge Performance Comparison</div>';
+  insHtml+='<table style="width:100%;border-collapse:collapse;font-size:13px">';
+  insHtml+='<thead><tr style="background:#f0ede6">';
+  insHtml+='<th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Lodge</th>';
+  insHtml+='<th style="padding:10px 14px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Bar</th>';
+  insHtml+='<th style="padding:10px 14px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Restaurant</th>';
+  insHtml+='<th style="padding:10px 14px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Rooms</th>';
+  insHtml+='<th style="padding:10px 14px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Total</th>';
+  insHtml+='<th style="padding:10px 14px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">% Share</th>';
+  insHtml+='<th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Mix</th>';
+  insHtml+='</tr></thead><tbody>';
+  LODGES.forEach(function(l){
+    var pct=grandTotal>0?(lodgeRevenue[l]/grandTotal*100).toFixed(1):0;
+    var bW=grandTotal>0?(barTotal[l]/grandTotal*100).toFixed(1):0;
+    var rW=grandTotal>0?(restTotal[l]/grandTotal*100).toFixed(1):0;
+    var roW=grandTotal>0?(roomTotal[l]/grandTotal*100).toFixed(1):0;
+    insHtml+='<tr>';
+    insHtml+='<td style="padding:10px 14px;border-bottom:1px solid #ede9e0;font-weight:600">'+l+'</td>';
+    insHtml+='<td style="padding:10px 14px;border-bottom:1px solid #ede9e0;text-align:right">'+fmtUGX(barTotal[l])+'</td>';
+    insHtml+='<td style="padding:10px 14px;border-bottom:1px solid #ede9e0;text-align:right">'+fmtUGX(restTotal[l])+'</td>';
+    insHtml+='<td style="padding:10px 14px;border-bottom:1px solid #ede9e0;text-align:right">'+fmtUGX(roomTotal[l])+'</td>';
+    insHtml+='<td style="padding:10px 14px;border-bottom:1px solid #ede9e0;text-align:right;font-weight:700">'+fmtUGX(lodgeRevenue[l])+'</td>';
+    insHtml+='<td style="padding:10px 14px;border-bottom:1px solid #ede9e0;text-align:right">'+pct+'%</td>';
+    insHtml+='<td style="padding:10px 14px;border-bottom:1px solid #ede9e0;min-width:120px">';
+    insHtml+='<div style="display:flex;height:12px;border-radius:6px;overflow:hidden;gap:1px">';
+    insHtml+='<div style="width:'+bW+'%;background:#2d6a4f" title="Bar"></div>';
+    insHtml+='<div style="width:'+rW+'%;background:#e9b44c" title="Restaurant"></div>';
+    insHtml+='<div style="width:'+roW+'%;background:#3a86ff" title="Rooms"></div>';
+    insHtml+='</div></td></tr>';
+  });
+  insHtml+='<tr style="background:#f0ede6;font-weight:700">';
+  insHtml+='<td style="padding:10px 14px">TOTAL</td>';
+  insHtml+='<td style="padding:10px 14px;text-align:right">'+fmtUGX(totalBar)+'</td>';
+  insHtml+='<td style="padding:10px 14px;text-align:right">'+fmtUGX(totalRest)+'</td>';
+  insHtml+='<td style="padding:10px 14px;text-align:right">'+fmtUGX(totalRoom)+'</td>';
+  insHtml+='<td style="padding:10px 14px;text-align:right;font-size:16px">'+fmtUGX(grandTotal)+'</td>';
+  insHtml+='<td style="padding:10px 14px;text-align:right">100%</td>';
+  insHtml+='<td style="padding:10px 14px"></td></tr>';
+  insHtml+='</tbody></table></div>';
+  insights.innerHTML=insHtml;
+          
+
+
+}
 // ── AUTO ARCHIVE ──────────────────────────────────────────────────────────────
 async function autoArchiveOldReports(){
   // Archive reports older than 2 months
