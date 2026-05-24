@@ -1828,85 +1828,125 @@ function setStatus(msg,type){const el=document.getElementById('submit-status');e
 
 // ── DASHBOARD ─────────────────────────────────────────────────────────────────
 async function loadDashboard(){
-  // Auto-archive reports older than 2 months (admin only)
-  if(isAdmin()) autoArchiveOldReports();
-  // Show admin-only features
-  if(isAdmin()){
-    document.getElementById('drafts-tab').style.display='block';
-    document.getElementById('monthly-btn-wrap').style.display='inline';
+  if(!currentUser){console.log('loadDashboard: no currentUser');return;}
+
+  // ── DETERMINE ROLE ──────────────────────────────────────────
+  const role=getUserRole();
+  const myLodge=getUserLodge();
+  const sup=role==='supervisor';
+  const admin=role==='admin';
+  const gm=role==='gm';
+
+  // ── AUTO ARCHIVE (admin only) ────────────────────────────────
+  if(admin) autoArchiveOldReports();
+
+  // ── SHOW/HIDE UI ELEMENTS ────────────────────────────────────
+  // Tabs
+  document.querySelectorAll('.dash-tab').forEach(t=>t.style.display='none');
+  if(!sup){
+    // Admin and GM see all lodge tabs
+    document.querySelectorAll('.dash-tab').forEach(t=>t.style.display='block');
   }
+  // Admin-only tabs
+  document.getElementById('drafts-tab').style.display=admin?'block':'none';
+  document.getElementById('admin-tab').style.display=admin?'block':'none';
+  // Analytics for admin and GM only
+  document.getElementById('analytics-tab').style.display=(admin||gm)?'block':'none';
+  // Monthly report admin only
+  document.getElementById('monthly-btn-wrap').style.display=admin?'inline':'none';
+  // Consolidated report - admin and GM only
+  const cBtn=document.getElementById('consolidated-btn');
+  if(cBtn) cBtn.style.display=(admin||gm)?'':'none';
+  // Week selector - hide for supervisors
+  const wkBar=document.querySelector('.week-bar');
+  if(wkBar) wkBar.style.display=sup?'none':'';
 
-  let query=sb.from('weekly_reports')
-    .select('id,week_of,lodge,submitted_at,user_email,archived,is_draft,bar_sales,restaurant_sales,room_sales,bar_stock,stores_stock,kitchen,room_inspections,security_log,incidents,kitchen_sales_revenue,room_revenue')
-    .order('submitted_at',{ascending:false}).limit(100);
-  if(currentDashTab==='archived')query=query.eq('archived',true).eq('is_draft',false);
-  else if(currentDashTab==='drafts')query=query.eq('is_draft',true);
-  else if(currentDashTab==='all')query=query.eq('archived',false).eq('is_draft',false);
-  else query=query.eq('archived',false).eq('is_draft',false).eq('lodge',currentDashTab);
-  const {data}=await query;const rows=data||[];
-
-  const aRes=await sb.from('weekly_reports').select('id,lodge,bar_sales,restaurant_sales,room_sales',{count:'exact'}).eq('archived',false).eq('is_draft',false);
+  // ── STATS QUERY ──────────────────────────────────────────────
+  let statsQ=sb.from('weekly_reports')
+    .select('id,lodge,bar_sales,restaurant_sales,room_sales')
+    .eq('archived',false).eq('is_draft',false);
+  if(sup&&myLodge) statsQ=statsQ.eq('lodge',myLodge);
+  const aRes=await statsQ;
   const allActive=aRes.data||[];
   let totalRev=0;
   allActive.forEach(r=>{
-    (r.bar_sales||[]).forEach(s=>{totalRev+=parseFloat((s.total_value||'').replace('UGX','').replace(/,/g,''))||0;});
-    (r.restaurant_sales||[]).forEach(s=>{totalRev+=parseFloat((s.total_value||'').replace('UGX','').replace(/,/g,''))||0;});
-    (r.room_sales||[]).forEach(s=>{totalRev+=parseFloat((s.total_value||'').replace('UGX','').replace(/,/g,''))||0;});
+    (r.bar_sales||[]).forEach(s=>{totalRev+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
+    (r.restaurant_sales||[]).forEach(s=>{totalRev+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
+    (r.room_sales||[]).forEach(s=>{totalRev+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
   });
+  document.getElementById('stat-active').textContent=allActive.length;
+  document.getElementById('stat-hoima').textContent=sup&&myLodge!=='Hoima Cultural Lodge'?'—':allActive.filter(r=>r.lodge==='Hoima Cultural Lodge').length;
+  document.getElementById('stat-mulehe').textContent=sup&&myLodge!=='Lake Mulehe Gorilla Lodge'?'—':allActive.filter(r=>r.lodge==='Lake Mulehe Gorilla Lodge').length;
+  document.getElementById('stat-kigarama').textContent=sup&&myLodge!=='Kigarama Wilderness Lodge'?'—':allActive.filter(r=>r.lodge==='Kigarama Wilderness Lodge').length;
+  document.getElementById('stat-revenue').textContent=fmtUGX(totalRev);
 
-  document.getElementById('dash-stats').innerHTML=
-    '<div class="dash-card"><div class="label">Active Reports</div><div class="number">'+allActive.length+'</div></div>'+
-    LODGES.map(l=>{
-      const cnt=allActive.filter(r=>r.lodge===l).length;
-      return'<div class="dash-card"><div class="label">'+l.split(' ')[0]+'</div><div class="number">'+cnt+'</div></div>';
-    }).join('')+
-    '<div class="dash-card"><div class="label">Total Revenue</div><div class="number" style="font-size:16px">'+fmtUGX(totalRev)+'</div></div>';
+  // ── REPORTS QUERY ─────────────────────────────────────────────
+  let q=sb.from('weekly_reports')
+    .select('id,week_of,lodge,submitted_at,user_email,archived,is_draft,bar_sales,restaurant_sales,room_sales,bar_stock,stores_stock,kitchen,room_inspections,security_log,incidents,kitchen_sales_revenue,room_revenue')
+    .order('submitted_at',{ascending:false}).limit(100);
 
-  if(!rows.length){document.getElementById('submissions-list').innerHTML='<p style="color:var(--muted);font-size:13px;padding:16px 0">No reports found.</p>';return;}
+  if(sup&&myLodge){
+    q=q.eq('lodge',myLodge).eq('archived',false).eq('is_draft',false);
+  } else if(currentDashTab==='archived'){
+    q=q.eq('archived',true).eq('is_draft',false);
+  } else if(currentDashTab==='drafts'){
+    q=q.eq('is_draft',true);
+  } else if(currentDashTab==='all'){
+    q=q.eq('archived',false).eq('is_draft',false);
+  } else {
+    q=q.eq('archived',false).eq('is_draft',false).eq('lodge',currentDashTab);
+  }
 
-  const table=document.createElement('table');
-  table.className='submissions-table';
-  table.innerHTML='<thead><tr><th>Lodge</th><th>Week Of</th><th>Submitted</th><th>Revenue</th><th>Status</th><th>View</th>'+(isAdmin()?'<th>Actions</th>':'')+'</tr></thead>';
-  const tbody=document.createElement('tbody');
+  const {data:rows,error}=await q;
+  if(error){console.error('Dashboard error:',error);return;}
 
+  // ── BUILD TABLE ───────────────────────────────────────────────
+  const tbody=document.getElementById('dash-tbody');
+  if(!tbody) return;
+  tbody.innerHTML='';
+  if(!rows||!rows.length){
+    tbody.innerHTML='<tr><td colspan="7" style="padding:24px;text-align:center;color:var(--muted)">No reports found.</td></tr>';
+    return;
+  }
   rows.forEach(r=>{
     let rev=0;
-    (r.bar_sales||[]).forEach(s=>{rev+=parseFloat((s.total_value||'').replace('UGX','').replace(/,/g,''))||0;});
-    (r.restaurant_sales||[]).forEach(s=>{rev+=parseFloat((s.total_value||'').replace('UGX','').replace(/,/g,''))||0;});
-    (r.room_sales||[]).forEach(s=>{rev+=parseFloat((s.total_value||'').replace('UGX','').replace(/,/g,''))||0;});
+    (r.bar_sales||[]).forEach(s=>{rev+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
+    (r.restaurant_sales||[]).forEach(s=>{rev+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
+    (r.room_sales||[]).forEach(s=>{rev+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
     const tr=document.createElement('tr');
-    const openBtn=document.createElement('button');
-    openBtn.textContent=r.is_draft?'Edit Draft':'Open';
-    openBtn.style.cssText='padding:6px 14px;background:'+(r.is_draft?'var(--amber)':'var(--forest)')+';color:#fff;border:none;border-radius:4px;font-size:12px;cursor:pointer;font-family:Jost,sans-serif';
-    tr.innerHTML='<td><span class="badge badge-blue">'+(r.lodge||'Unknown')+'</span></td>'+
+    tr.innerHTML=
+      '<td><span class="badge badge-blue">'+(r.lodge||'Unknown')+'</span></td>'+
       '<td><strong>'+fmtDate(r.week_of)+'</strong></td>'+
       '<td>'+fmtDT(r.submitted_at)+'</td>'+
       '<td><strong>'+fmtUGX(rev)+'</strong></td>'+
-      '<td>'+
-        (r.is_draft?'<span class="badge badge-amber">Draft</span>':
-        r.archived?'<span class="badge badge-grey">Archived</span>':
-        '<span class="badge badge-green">Active</span>')+
-        (checkDuplicate(rows,r)?'<span class="badge badge-red" style="margin-left:4px">Duplicate</span>':'')+
-      '</td>';
+      '<td>'+(r.is_draft?'<span class="badge badge-amber">Draft</span>':r.archived?'<span class="badge badge-grey">Archived</span>':'<span class="badge badge-green">Active</span>')+'</td>';
+    // View button
+    const viewTd=document.createElement('td');
+    const openBtn=document.createElement('button');
+    openBtn.textContent=r.is_draft?'Edit Draft':'Open';
+    openBtn.style.cssText='padding:6px 14px;background:'+(r.is_draft?'var(--amber)':'var(--forest)')+';color:#fff;border:none;border-radius:4px;font-size:12px;cursor:pointer;font-family:Jost,sans-serif';
     openBtn.onclick=()=>r.is_draft?openDraft(r):openReport(r);
-    openBtn.onclick=()=>r.is_draft?openDraft(r):openReport(r);
-    const viewTd=document.createElement('td');viewTd.appendChild(openBtn);tr.appendChild(viewTd);
-    if(isAdmin()){
+    viewTd.appendChild(openBtn);
+    tr.appendChild(viewTd);
+    // Actions (admin only)
+    const actTd=document.createElement('td');
+    if(admin){
       const archBtn=document.createElement('button');
-      archBtn.textContent=r.archived?'Unarchive':'Archive';
-      archBtn.style.cssText='padding:5px 10px;background:'+(r.archived?'var(--success)':'var(--amber)')+';color:#fff;border:none;border-radius:4px;font-size:11px;cursor:pointer;margin-right:4px;font-family:Jost,sans-serif';
-      archBtn.onclick=()=>archiveReport(r.id,!r.archived);
-      const delBtn=document.createElement('button');
-      delBtn.textContent='Delete';
-      delBtn.style.cssText='padding:5px 10px;background:var(--error);color:#fff;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-family:Jost,sans-serif';
-      delBtn.onclick=()=>promptDelete(r.id);
-      const actTd=document.createElement('td');actTd.appendChild(archBtn);actTd.appendChild(delBtn);tr.appendChild(actTd);
+      archBtn.textContent='Archive';
+      archBtn.className='btn-action';
+      archBtn.style.cssText='padding:5px 12px;background:var(--gold);color:#fff;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-family:Jost,sans-serif;margin-right:4px';
+      archBtn.onclick=()=>archiveReport(r.id);
+      const dBtn=document.createElement('button');
+      dBtn.textContent='Delete';
+      dBtn.className='btn-action btn-danger';
+      dBtn.style.cssText='padding:5px 12px;background:var(--error);color:#fff;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-family:Jost,sans-serif';
+      dBtn.onclick=()=>promptDelete(r.id);
+      actTd.appendChild(archBtn);
+      actTd.appendChild(dBtn);
     }
+    tr.appendChild(actTd);
     tbody.appendChild(tr);
   });
-  table.appendChild(tbody);
-  const listEl=document.getElementById('submissions-list');
-  listEl.innerHTML='';listEl.appendChild(table);
 }
 
 // ── ARCHIVE & DELETE ──────────────────────────────────────────────────────────
