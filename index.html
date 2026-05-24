@@ -268,6 +268,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
         <div class="dash-tabs" style="margin-bottom:0;border-bottom:none;">
           <div class="dash-tab active" onclick="showDashTab(this,'all')">All Lodges</div>
           <div class="dash-tab" onclick="showDashTab(this,'analytics')" id="analytics-tab">📊 Analytics</div>
+          <div class="dash-tab" onclick="showDashTab(this,'admin')" id="admin-tab" style="display:none">⚙ Users</div>
           <div class="dash-tab" onclick="showDashTab(this,'Hoima Cultural Lodge')">Hoima</div>
           <div class="dash-tab" onclick="showDashTab(this,'Lake Mulehe Gorilla Lodge')">Lake Mulehe</div>
           <div class="dash-tab" onclick="showDashTab(this,'Kigarama Wilderness Lodge')">Kigarama</div>
@@ -526,6 +527,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
         <div class="dash-tabs" style="margin-bottom:0;border-bottom:none;">
           <div class="dash-tab active" onclick="showDashTab(this,'all')">All Lodges</div>
           <div class="dash-tab" onclick="showDashTab(this,'analytics')" id="analytics-tab">📊 Analytics</div>
+          <div class="dash-tab" onclick="showDashTab(this,'admin')" id="admin-tab" style="display:none">⚙ Users</div>
           <div class="dash-tab" onclick="showDashTab(this,'Hoima Cultural Lodge')">Hoima</div>
           <div class="dash-tab" onclick="showDashTab(this,'Lake Mulehe Gorilla Lodge')">Lake Mulehe</div>
           <div class="dash-tab" onclick="showDashTab(this,'Kigarama Wilderness Lodge')">Kigarama</div>
@@ -718,6 +720,24 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
 const SUPA_URL='https://ehcwjajkszanptkoyrne.supabase.co';
 const SUPA_KEY='sb_publishable_D5OI_3Kf3Z7LYbHZ8jy76g_vNavtwpY';
 const ADMIN_EMAIL='kshidy@gmail.com';
+
+// ── PERMISSIONS ───────────────────────────────────────────────────────────────
+// Edit this object to manage all user access in one place
+const PERMISSIONS={
+  'kshidy@gmail.com':             {role:'admin',      lodge:null},
+  'lodgemanager@ugandaculturallodges.com': {role:'gm', lodge:null},
+  'serunkumaallan4@gmail.com':    {role:'supervisor', lodge:'Hoima Cultural Lodge'},
+  'lakemulehe@ugandaculturallodges.com':  {role:'supervisor', lodge:'Lake Mulehe Gorilla Lodge'},
+  'qualityassurance@ugandaculturallodges.com': {role:'supervisor', lodge:'Kigarama Wilderness Lodge'}
+};
+function getPermissions(){return currentUser?PERMISSIONS[currentUser.email]||{role:'supervisor',lodge:null}:{};}
+function getUserRole(){return getPermissions().role;}
+function getUserLodge(){return getPermissions().lodge;}
+function isAdmin(){return getUserRole()==='admin';}
+function isGroupGM(){return getUserRole()==='gm';}
+function isSupervisor(){return getUserRole()==='supervisor';}
+function canSeeAllLodges(){return isAdmin()||isGroupGM();}
+function canAdminActions(){return isAdmin();}
 const {createClient}=supabase;
 const sb=createClient(SUPA_URL,SUPA_KEY);
 const LODGES=['Hoima Cultural Lodge','Lake Mulehe Gorilla Lodge','Kigarama Wilderness Lodge'];
@@ -747,13 +767,7 @@ async function doLogin(){
   const email2=currentUser.email;
   
   // Determine role and redirect
-  const LODGE_MAP={
-    'serunkumaallan4@gmail.com':'Hoima Cultural Lodge',
-    'lakemulehe@ugandaculturallodges.com':'Lake Mulehe Gorilla Lodge',
-    'qualityassurance@ugandaculturallodges.com':'Kigarama Wilderness Lodge'
-  };
-  
-  const supervisorLodge=LODGE_MAP[email2];
+  const supervisorLodge=getUserLodge();
   
   if(supervisorLodge){
     // Supervisor - go straight to their lodge
@@ -826,13 +840,7 @@ async function checkSession(){
   currentUser=data.session.user;
   const email=currentUser.email;
   
-  const LODGE_MAP={
-    'serunkumaallan4@gmail.com':'Hoima Cultural Lodge',
-    'lakemulehe@ugandaculturallodges.com':'Lake Mulehe Gorilla Lodge',
-    'qualityassurance@ugandaculturallodges.com':'Kigarama Wilderness Lodge'
-  };
-  
-  const supervisorLodge=LODGE_MAP[email];
+  const supervisorLodge=getUserLodge();
   
   if(supervisorLodge){
     currentLodge=supervisorLodge;
@@ -889,19 +897,7 @@ async function checkSession(){
     }
   }
 }
-function isAdmin(){return currentUser&&currentUser.email===ADMIN_EMAIL;}
-function isGroupGM(){return currentUser&&currentUser.email==='lodgemanager@ugandaculturallodges.com';}
-function isSupervisor(){
-  const map={
-    'serunkumaallan4@gmail.com':'Hoima Cultural Lodge',
-    'lakemulehe@ugandaculturallodges.com':'Lake Mulehe Gorilla Lodge',
-    'qualityassurance@ugandaculturallodges.com':'Kigarama Wilderness Lodge'
-  };
-  return currentUser&&map[currentUser.email]?map[currentUser.email]:null;
-}
-function getUserLodge(){return isSupervisor();}
-function canSeeAllLodges(){return isAdmin()||isGroupGM();}
-function canAdminActions(){return isAdmin();}
+// Roles defined in PERMISSIONS object above
 
 // ── ITEM MASTER ───────────────────────────────────────────────────────────────
 async function loadItemMaster(){
@@ -1118,12 +1114,16 @@ function showDashTab(el,tab){
   document.querySelectorAll('.dash-tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
   currentDashTab=tab;
+  document.getElementById('dash-analytics-wrap').style.display='none';
+  document.getElementById('dash-table-wrap').style.display='none';
+  document.getElementById('dash-admin-wrap').style.display='none';
   if(tab==='analytics'){
     document.getElementById('dash-analytics-wrap').style.display='block';
-    document.getElementById('dash-table-wrap').style.display='none';
     loadAnalytics();
+  } else if(tab==='admin'){
+    document.getElementById('dash-admin-wrap').style.display='block';
+    loadAdminPanel();
   } else {
-    document.getElementById('dash-analytics-wrap').style.display='none';
     document.getElementById('dash-table-wrap').style.display='block';
     loadDashboard();
   }
@@ -2977,6 +2977,60 @@ async function loadAnalytics(){
 
 
 }
+// ── ADMIN PANEL ──────────────────────────────────────────────────────────────
+function loadAdminPanel(){
+  if(!isAdmin()) return;
+  const tbody=document.getElementById('admin-users-table');
+  if(!tbody) return;
+  const roleLabels={admin:'Administrator',gm:'Group GM',supervisor:'Lodge Supervisor'};
+  const roleColors={admin:'var(--forest)',gm:'var(--gold)',supervisor:'var(--amber)'};
+  const accessDesc={
+    admin:'All lodges, all reports, monthly, analytics, archive, delete',
+    gm:'All lodges, consolidated report, analytics — read only',
+    supervisor:'Own lodge only, submit and save drafts'
+  };
+  tbody.innerHTML=Object.entries(PERMISSIONS).map(([email,p])=>{
+    const role=p.role;
+    const lodge=p.lodge||'All Lodges';
+    return '<tr>'+
+      '<td style="padding:10px 14px;border-bottom:1px solid #ede9e0">'+
+        '<div style="font-weight:600;color:var(--dark)">'+email+'</div>'+
+      '</td>'+
+      '<td style="padding:10px 14px;border-bottom:1px solid #ede9e0">'+
+        '<span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:'+roleColors[role]+';color:#fff">'+roleLabels[role]+'</span>'+
+      '</td>'+
+      '<td style="padding:10px 14px;border-bottom:1px solid #ede9e0;color:var(--muted)">'+lodge+'</td>'+
+      '<td style="padding:10px 14px;border-bottom:1px solid #ede9e0;font-size:12px;color:var(--muted)">'+accessDesc[role]+'</td>'+
+    '</tr>';
+  }).join('');
+}
+
+// ── CARRY FORWARD STOCK ──────────────────────────────────────────────────────
+async function carryForwardStock(){
+  if(!currentLodge)return;
+  // Get current week
+  const weekOfEl=document.getElementById('week-of');
+  if(!weekOfEl||!weekOfEl.value)return;
+  const currentWeek=new Date(weekOfEl.value);
+  // Previous week = 7 days before
+  const prevWeek=new Date(currentWeek);
+  prevWeek.setDate(prevWeek.getDate()-7);
+  const prevWeekStr=prevWeek.toISOString().split('T')[0];
+  // Fetch previous week's report
+  const {data}=await sb.from('weekly_reports')
+    .select('bar_stock,stores_stock')
+    .eq('lodge',currentLodge)
+    .eq('week_of',prevWeekStr)
+    .eq('is_draft',false)
+    .limit(1);
+  if(!data||!data.length)return;
+  const prev=data[0];
+  // Store for use when rows are built
+  window._prevBarStock=prev.bar_stock||[];
+  window._prevStoreStock=prev.stores_stock||[];
+  console.log('Previous stock loaded:',window._prevBarStock.length,'bar items,',window._prevStoreStock.length,'store items');
+}
+
 // ── AUTO ARCHIVE ──────────────────────────────────────────────────────────────
 async function autoArchiveOldReports(){
   // Archive reports older than 2 months
