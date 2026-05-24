@@ -248,6 +248,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
     <div class="tab" data-tab="security" onclick="switchTab(this)">Security Log</div>
     <div class="tab" data-tab="maintenance" onclick="switchTab(this)">Maintenance</div>
     <div class="tab" data-tab="staff-comp" onclick="switchTab(this)">Staff &amp; Complimentary</div>
+    <div class="tab" data-tab="booked-guests" onclick="switchTab(this)">Booked Guests</div>
     <div class="tab" data-tab="training" onclick="switchTab(this)">Training Log</div>
     <div class="tab" data-tab="incidents" onclick="switchTab(this)">Incidents</div>
   </div>
@@ -274,8 +275,14 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
         <div style="display:flex;align-items:center;gap:10px;">
           <label style="font-size:12px;font-weight:600;color:var(--muted)">Week of:</label>
           <input type="date" id="consolidated-week" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;"/>
-          <button onclick="generateConsolidated()" style="padding:8px 18px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">📊 Consolidated Report</button>
+          <button onclick="generateConsolidated()" id="consolidated-btn" style="padding:8px 18px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">📊 Consolidated Report</button>
           <span id="monthly-btn-wrap" style="display:none">
+            <select id="monthly-lodge" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;margin-left:8px;">
+              <option value="all">All Lodges</option>
+              <option value="Hoima Cultural Lodge">Hoima</option>
+              <option value="Lake Mulehe Gorilla Lodge">Lake Mulehe</option>
+              <option value="Kigarama Wilderness Lodge">Kigarama</option>
+            </select>
             <select id="monthly-month" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;margin-left:8px;">
               <option value="2026-04">April 2026</option>
               <option value="2026-05">May 2026</option>
@@ -377,6 +384,16 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
         <thead><tr><th>Date</th><th>Category</th><th>Item / Area Affected</th><th>Issue Description</th><th>Reported By</th><th>Action Taken</th><th>Status</th><th>Remarks</th><th></th></tr></thead>
         <tbody id="body-maintenance"></tbody></table></div>
       <button class="btn-add-row" onclick="addRow('maintenance')">+ Add Row</button>
+    </div>
+
+    <div class="pane" id="pane-booked-guests">
+      <div class="section-header"><h2>Booked Guests</h2>
+        <p>Record all guests who booked and paid through Head Office. Track their bar, food and store consumption to offset food cost and stock variance.</p></div>
+      <div class="notice" style="background:#e8f4ff;border-color:#90c8f0;color:#1a5276">&#9432; These guests have paid at HQ. Record their consumption here so kitchen food cost, bar stock and stores stock are accurately explained.</div>
+      <div class="form-table-wrap"><table class="form-table">
+        <thead><tr><th>Date</th><th>Guest Name / Ref</th><th>No. Guests</th><th>Payment Status</th><th>HQ Booking Ref</th><th>Bar Value (UGX)</th><th>Food Value (UGX)</th><th>Store Value (UGX)</th><th>Total Value</th><th>Remarks</th><th></th></tr></thead>
+        <tbody id="body-booked-guests"></tbody></table></div>
+      <button class="btn-add-row" onclick="addRow('booked-guests')">+ Add Row</button>
     </div>
 
     <div class="pane" id="pane-staff-comp">
@@ -488,6 +505,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
     <div class="tab" data-tab="security" onclick="switchTab(this)">Security Log</div>
     <div class="tab" data-tab="maintenance" onclick="switchTab(this)">Maintenance</div>
     <div class="tab" data-tab="staff-comp" onclick="switchTab(this)">Staff &amp; Complimentary</div>
+    <div class="tab" data-tab="booked-guests" onclick="switchTab(this)">Booked Guests</div>
     <div class="tab" data-tab="training" onclick="switchTab(this)">Training Log</div>
     <div class="tab" data-tab="incidents" onclick="switchTab(this)">Incidents</div>
   </div>
@@ -514,8 +532,14 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
         <div style="display:flex;align-items:center;gap:10px;">
           <label style="font-size:12px;font-weight:600;color:var(--muted)">Week of:</label>
           <input type="date" id="consolidated-week" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;"/>
-          <button onclick="generateConsolidated()" style="padding:8px 18px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">📊 Consolidated Report</button>
+          <button onclick="generateConsolidated()" id="consolidated-btn" style="padding:8px 18px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">📊 Consolidated Report</button>
           <span id="monthly-btn-wrap" style="display:none">
+            <select id="monthly-lodge" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;margin-left:8px;">
+              <option value="all">All Lodges</option>
+              <option value="Hoima Cultural Lodge">Hoima</option>
+              <option value="Lake Mulehe Gorilla Lodge">Lake Mulehe</option>
+              <option value="Kigarama Wilderness Lodge">Kigarama</option>
+            </select>
             <select id="monthly-month" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;margin-left:8px;">
               <option value="2026-04">April 2026</option>
               <option value="2026-05">May 2026</option>
@@ -619,6 +643,16 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
       <button class="btn-add-row" onclick="addRow('maintenance')">+ Add Row</button>
     </div>
 
+    <div class="pane" id="pane-booked-guests">
+      <div class="section-header"><h2>Booked Guests</h2>
+        <p>Record all guests who booked and paid through Head Office. Track their bar, food and store consumption to offset food cost and stock variance.</p></div>
+      <div class="notice" style="background:#e8f4ff;border-color:#90c8f0;color:#1a5276">&#9432; These guests have paid at HQ. Record their consumption here so kitchen food cost, bar stock and stores stock are accurately explained.</div>
+      <div class="form-table-wrap"><table class="form-table">
+        <thead><tr><th>Date</th><th>Guest Name / Ref</th><th>No. Guests</th><th>Payment Status</th><th>HQ Booking Ref</th><th>Bar Value (UGX)</th><th>Food Value (UGX)</th><th>Store Value (UGX)</th><th>Total Value</th><th>Remarks</th><th></th></tr></thead>
+        <tbody id="body-booked-guests"></tbody></table></div>
+      <button class="btn-add-row" onclick="addRow('booked-guests')">+ Add Row</button>
+    </div>
+
     <div class="pane" id="pane-staff-comp">
       <div class="section-header"><h2>Staff &amp; Complimentary</h2>
         <p>Record all discounted and complimentary consumption here. Keep commercial sales clean.</p></div>
@@ -712,6 +746,18 @@ async function checkSession(){
   if(data.session){currentUser=data.session.user;showLodgeSelector();}
 }
 function isAdmin(){return currentUser&&currentUser.email===ADMIN_EMAIL;}
+function isGroupGM(){return currentUser&&currentUser.email==='lodgemanager@ugandaculturallodges.com';}
+function isSupervisor(){
+  const map={
+    'serunkumaallan4@gmail.com':'Hoima Cultural Lodge',
+    'lakemulehe@ugandaculturallodges.com':'Lake Mulehe Gorilla Lodge',
+    'qualityassurance@ugandaculturallodges.com':'Kigarama Wilderness Lodge'
+  };
+  return currentUser&&map[currentUser.email]?map[currentUser.email]:null;
+}
+function getUserLodge(){return isSupervisor();}
+function canSeeAllLodges(){return isAdmin()||isGroupGM();}
+function canAdminActions(){return isAdmin();}
 
 // ── ITEM MASTER ───────────────────────────────────────────────────────────────
 async function loadItemMaster(){
@@ -834,6 +880,12 @@ function wireDropdowns(groupTd, itemTd, unitInp, parInp, category){
 
 // ── LODGE SELECTOR ────────────────────────────────────────────────────────────
 function showLodgeSelector(){
+  // Supervisors skip lodge selector - go straight to their lodge
+  const myLodge=getUserLodge();
+  if(myLodge){
+    selectLodge(myLodge);
+    return;
+  }
   document.getElementById('auth-screen').style.display='none';
   document.getElementById('app-screen').style.display='none';
   document.getElementById('lodge-screen').style.display='flex';
@@ -867,6 +919,12 @@ function showLodgeSelector(){
 }
 
 async function selectLodge(lodge){
+  // If supervisor, force their lodge
+  const myLodge=getUserLodge();
+  if(myLodge&&lodge!==myLodge){
+    alert('You are only authorised to submit reports for '+myLodge);
+    return;
+  }
   currentLodge=lodge;
   document.getElementById('lodge-screen').style.display='none';
   document.getElementById('app-screen').style.display='block';
@@ -882,7 +940,7 @@ async function selectLodge(lodge){
   const rowCounts={
     'bar-sales':10,'bar-stock':10,'restaurant':10,'room-sales':5,
     'stores':8,'kitchen':8,'rooms':5,'housekeeping':5,
-    'security':3,'maintenance':3,'staff-comp':5,'training':3,'incidents':3
+    'security':3,'maintenance':3,'booked-guests':5,'staff-comp':5,'training':3,'incidents':3
   };
   Object.entries(rowCounts).forEach(([t,count])=>{
     document.getElementById('body-'+t).innerHTML='';
@@ -1124,6 +1182,31 @@ function buildRow(tr,name){
       tdEl(makeInp('text','Reported by'),'med'),
       tdEl(makeInp('text','Action taken'),'wide'),
       tdEl(makeSel(['Open','In Progress','Closed'])),
+      tdEl(makeInp('text','Remarks'),'wide'),
+      delTd
+    );
+  } else if(name==='booked-guests'){
+    const PSTATUS=['Paid at HQ','Complimentary','Partial Payment'];
+    const bgQtyInp=makeInp('number','1','bg-qty');
+    const bgBarInp=makeInp('number','0','bg-bar-val');
+    const bgFoodInp=makeInp('number','0','bg-food-val');
+    const bgStoreInp=makeInp('number','0','bg-store-val');
+    const bgCalc=()=>{
+      const total=n(bgBarInp.value)+n(bgFoodInp.value)+n(bgStoreInp.value);
+      const totTd=tr.querySelector('.bg-total');
+      if(totTd)totTd.textContent=fmtUGX(total);
+    };
+    [bgBarInp,bgFoodInp,bgStoreInp].forEach(i=>i.oninput=bgCalc);
+    tr.append(
+      tdEl(makeInp('date',''),'sm'),
+      tdEl(makeInp('text','Guest name / booking ref'),'wide'),
+      tdEl(bgQtyInp,'sm'),
+      tdEl(makeSel(PSTATUS)),
+      tdEl(makeInp('text','HQ booking ref'),'med'),
+      tdEl(bgBarInp,'med'),
+      tdEl(bgFoodInp,'med'),
+      tdEl(bgStoreInp,'med'),
+      calcTd('bg-total'),
       tdEl(makeInp('text','Remarks'),'wide'),
       delTd
     );
@@ -1423,7 +1506,32 @@ function extractTable(name){
       row.action=allInps[4]?allInps[4].value:'';
       row.status=allSels[1]?allSels[1].value:'';
       row.remarks=allInps[5]?allInps[5].value:'';
-    } else if(name==='staff-comp'){
+    } else if(name==='booked-guests'){
+    const PSTATUS=['Paid at HQ','Complimentary','Partial Payment'];
+    const bgQtyInp=makeInp('number','1','bg-qty');
+    const bgBarInp=makeInp('number','0','bg-bar-val');
+    const bgFoodInp=makeInp('number','0','bg-food-val');
+    const bgStoreInp=makeInp('number','0','bg-store-val');
+    const bgCalc=()=>{
+      const total=n(bgBarInp.value)+n(bgFoodInp.value)+n(bgStoreInp.value);
+      const totTd=tr.querySelector('.bg-total');
+      if(totTd)totTd.textContent=fmtUGX(total);
+    };
+    [bgBarInp,bgFoodInp,bgStoreInp].forEach(i=>i.oninput=bgCalc);
+    tr.append(
+      tdEl(makeInp('date',''),'sm'),
+      tdEl(makeInp('text','Guest name / booking ref'),'wide'),
+      tdEl(bgQtyInp,'sm'),
+      tdEl(makeSel(PSTATUS)),
+      tdEl(makeInp('text','HQ booking ref'),'med'),
+      tdEl(bgBarInp,'med'),
+      tdEl(bgFoodInp,'med'),
+      tdEl(bgStoreInp,'med'),
+      calcTd('bg-total'),
+      tdEl(makeInp('text','Remarks'),'wide'),
+      delTd
+    );
+  } else if(name==='staff-comp'){
       row.date=allInps[0]?allInps[0].value:'';
       row.person_name=allInps[1]?allInps[1].value:'';
       row.category=allSels[0]?allSels[0].value:'';
@@ -1538,6 +1646,7 @@ async function doSubmit(){
       housekeeping_log:extractTable('housekeeping'),
       security_log:extractTable('security'),
       maintenance_log:extractTable('maintenance'),
+      booked_guests:extractTable('booked-guests'),
       staff_complimentary:extractTable('staff-comp'),
       training_log:extractTable('training'),
       incidents:extractTable('incidents'),
@@ -1559,6 +1668,8 @@ function setStatus(msg,type){const el=document.getElementById('submit-status');e
 
 // ── DASHBOARD ─────────────────────────────────────────────────────────────────
 async function loadDashboard(){
+  // Auto-archive reports older than 2 months (admin only)
+  if(isAdmin()) autoArchiveOldReports();
   // Show admin-only features
   if(isAdmin()){
     document.getElementById('drafts-tab').style.display='block';
@@ -2297,6 +2408,7 @@ async function saveDraft(){
       stores_stock:extractTable('stores'),kitchen:extractTable('kitchen'),
       room_inspections:extractTable('rooms'),housekeeping_log:extractTable('housekeeping'),
       security_log:extractTable('security'),maintenance_log:extractTable('maintenance'),
+      booked_guests:extractTable('booked-guests'),
       staff_complimentary:extractTable('staff-comp'),
       training_log:extractTable('training'),
       incidents:extractTable('incidents'),
@@ -2326,17 +2438,20 @@ async function saveDraft(){
 async function generateMonthly(){
   if(!isAdmin()){alert('Monthly reports are for administrators only.');return;}
   const monthVal=document.getElementById('monthly-month').value;
+  const lodgeFilter=document.getElementById('monthly-lodge').value;
   const [year,month]=monthVal.split('-').map(Number);
   const startDate=monthVal+'-01';
   const endDate=new Date(year,month,0).toISOString().split('T')[0]; // last day of month
 
-  const {data,error}=await sb.from('weekly_reports')
+  let mQuery=sb.from('weekly_reports')
     .select('*')
     .gte('week_of',startDate)
     .lte('week_of',endDate)
     .eq('is_draft',false)
     .eq('archived',false)
     .order('lodge').order('week_of');
+  if(lodgeFilter&&lodgeFilter!=='all') mQuery=mQuery.eq('lodge',lodgeFilter);
+  const {data,error}=await mQuery;
 
   if(error||!data||!data.length){
     alert('No submitted reports found for '+new Date(year,month-1,1).toLocaleDateString('en-GB',{month:'long',year:'numeric'}));
@@ -2490,6 +2605,20 @@ document.getElementById('modal-title').textContent='Monthly Report — Uganda Cu
   document.getElementById('modal-body').innerHTML=html;
   document.getElementById('report-modal').classList.add('open');
 
+}
+
+// ── AUTO ARCHIVE ──────────────────────────────────────────────────────────────
+async function autoArchiveOldReports(){
+  // Archive reports older than 2 months
+  const cutoff=new Date();
+  cutoff.setMonth(cutoff.getMonth()-2);
+  const cutoffStr=cutoff.toISOString().split('T')[0];
+  const {error}=await sb.from('weekly_reports')
+    .update({archived:true})
+    .lt('week_of',cutoffStr)
+    .eq('archived',false)
+    .eq('is_draft',false);
+  if(!error)console.log('Auto-archive complete. Cutoff:',cutoffStr);
 }
 
 checkSession();
