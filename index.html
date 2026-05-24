@@ -738,6 +738,7 @@ async function doLogin(){
     btn.disabled=false;btn.textContent='Sign In';
   } else {
     currentUser=data.user;
+    sessionChecked=true;
     try{
       await showLodgeSelector();
     }catch(err){
@@ -756,9 +757,14 @@ async function doLogout(){
   document.getElementById('lodge-screen').style.display='none';
   document.getElementById('auth-screen').style.display='flex';
 }
+let sessionChecked=false;
 async function checkSession(){
   const {data}=await sb.auth.getSession();
-  if(data.session){currentUser=data.session.user;showLodgeSelector();}
+  if(data.session&&!sessionChecked){
+    sessionChecked=true;
+    currentUser=data.session.user;
+    await showLodgeSelector();
+  }
 }
 function isAdmin(){return currentUser&&currentUser.email===ADMIN_EMAIL;}
 function isGroupGM(){return currentUser&&currentUser.email==='lodgemanager@ugandaculturallodges.com';}
@@ -895,10 +901,14 @@ function wireDropdowns(groupTd, itemTd, unitInp, parInp, category){
 
 // ── LODGE SELECTOR ────────────────────────────────────────────────────────────
 async function showLodgeSelector(){
+  console.log('showLodgeSelector called, currentUser:', currentUser?currentUser.email:'null');
   // Supervisors skip lodge selector - go straight to their lodge
   const myLodge=getUserLodge();
+  console.log('myLodge:', myLodge);
   if(myLodge){
+    console.log('Calling selectLodge for:', myLodge);
     await selectLodge(myLodge);
+    console.log('selectLodge complete');
     return;
   }
   document.getElementById('auth-screen').style.display='none';
@@ -934,8 +944,10 @@ async function showLodgeSelector(){
 }
 
 async function selectLodge(lodge){
+  console.log('selectLodge called with:', lodge);
   // If supervisor, force their lodge
   const myLodge=getUserLodge();
+  console.log('getUserLodge in selectLodge:', myLodge);
   if(myLodge&&lodge!==myLodge){
     alert('You are only authorised to submit reports for '+myLodge);
     return;
