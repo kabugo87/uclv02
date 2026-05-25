@@ -2933,50 +2933,6 @@ async function generateMonthly(){
   ${allCompM.length>0?`<div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--forest);margin:16px 0 8px;border-bottom:1px solid var(--border);padding-bottom:4px">Staff &amp; Complimentary This Month</div><table style="width:100%;border-collapse:collapse;font-size:13px;background:var(--white);border:1.5px solid var(--border);border-radius:6px;margin-bottom:16px;"><thead><tr style="background:#f0ede6"><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Lodge</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Name</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Category</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Item</th><th style="padding:8px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Std Value</th><th style="padding:8px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Paid</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Authorised</th></tr></thead><tbody>${allCompM.map(s=>'<tr><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;font-weight:600">'+s.lodge+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+(s.person_name||'')+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+(s.category||'')+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+(s.item||'')+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;text-align:right">'+(s.standard_total||'—')+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;text-align:right">'+fmtUGX(n(s.amount_paid||0))+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+(s.authorised_by||'—')+'</td></tr>').join('')}</tbody><tfoot><tr style="background:#f0ede6;font-weight:700"><td colspan="4" style="padding:8px 12px">TOTAL</td><td style="padding:8px 12px;text-align:right">${fmtUGX(totCompVal)}</td><td style="padding:8px 12px;text-align:right">${fmtUGX(totCompColl)}</td><td></td></tr></tfoot></table>`:''}
   <div style="margin-top:8px;display:flex;gap:12px;"><button onclick="window.print()" style="padding:9px 20px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">⬇ Print / Download</button></div>`;
 
-  // ── BEST SELLERS ─────────────────────────────────────────────
-  const itemSalesM={};
-  data.forEach(function(r){
-    (r.bar_sales||[]).forEach(function(s){if(s.item&&s.item!=='Other'&&n(s.qty_sold)>0)itemSalesM[s.item]=(itemSalesM[s.item]||0)+n(s.qty_sold);});
-    (r.restaurant_sales||[]).forEach(function(s){if(s.item&&s.item!=='Other'&&n(s.qty_sold)>0)itemSalesM[s.item]=(itemSalesM[s.item]||0)+n(s.qty_sold);});
-  });
-  const topItemsM=Object.entries(itemSalesM).sort(function(a,b){return b[1]-a[1];}).slice(0,8);
-  if(topItemsM.length>0){
-    const maxQ=topItemsM[0][1];
-    const colors=['#2d6a4f','#3a86ff','#e9b44c','#e74c3c','#8e44ad','#1abc9c','#e67e22','#2980b9'];
-    let bsH='<div style="font-family:\'Cormorant Garamond\',serif;font-size:18px;font-weight:700;color:var(--forest);margin:20px 0 12px;padding-bottom:6px;border-bottom:2px solid var(--border)">Top Selling Items — '+monthName+'</div>';
-    bsH+='<div style="background:var(--white);border:1.5px solid var(--border);border-radius:6px;padding:20px;margin-bottom:20px">';
-    topItemsM.forEach(function(entry,i){
-      const item=entry[0],qty=entry[1];
-      const pct=Math.round(qty/maxQ*100);
-      bsH+='<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="font-weight:600">'+item+'</span><span style="color:var(--muted)">'+qty+' units</span></div><div style="height:10px;background:#f0ede6;border-radius:4px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+colors[i%colors.length]+';border-radius:4px"></div></div></div>';
-    });
-    bsH+='</div>';
-    html+=bsH;
-  }
-
-  // ── FOOD COST TREND ───────────────────────────────────────────
-  const fcByWk={};
-  data.forEach(function(r){
-    var wk=r.week_of;
-    if(!fcByWk[wk])fcByWk[wk]={cost:0,revenue:0};
-    (r.kitchen||[]).forEach(function(k){fcByWk[wk].cost+=parseFloat((k.cost_used||'0').replace('UGX','').replace(/,/g,''))||0;});
-    (r.restaurant_sales||[]).forEach(function(s){fcByWk[wk].revenue+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
-    fcByWk[wk].revenue+=(r.kitchen_sales_revenue||0);
-  });
-  var fcWks=Object.keys(fcByWk).sort();
-  if(fcWks.length>0){
-    var fcH='<div style="font-family:\'Cormorant Garamond\',serif;font-size:18px;font-weight:700;color:var(--forest);margin:20px 0 12px;padding-bottom:6px;border-bottom:2px solid var(--border)">Food Cost % Trend — '+monthName+'</div><div style="background:var(--white);border:1.5px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:20px"><table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr style="background:#f0ede6"><th style="padding:9px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Week</th><th style="padding:9px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Food Cost</th><th style="padding:9px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">F&B Revenue</th><th style="padding:9px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Cost %</th><th style="padding:9px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Status</th></tr></thead><tbody>';
-    fcWks.forEach(function(wk){
-      var fc=fcByWk[wk];
-      var pct=fc.revenue>0?(fc.cost/fc.revenue*100).toFixed(1):0;
-      var status=pct>35?'<span style="color:#c0392b;font-weight:600">⚠ Above Target</span>':pct>28?'<span style="color:#2e7d52;font-weight:600">✓ On Target</span>':'<span style="color:#2980b9;font-weight:600">↓ Below Range</span>';
-      var color=pct>35?'#c0392b':pct>28?'#2e7d52':'#2980b9';
-      fcH+='<tr><td style="padding:9px 12px;border-bottom:1px solid #ede9e0;font-weight:600">'+fmtDate(wk)+'</td><td style="padding:9px 12px;border-bottom:1px solid #ede9e0;text-align:right">'+fmtUGX(fc.cost)+'</td><td style="padding:9px 12px;border-bottom:1px solid #ede9e0;text-align:right">'+fmtUGX(fc.revenue)+'</td><td style="padding:9px 12px;border-bottom:1px solid #ede9e0;text-align:right;font-weight:700;color:'+color+'">'+pct+'%</td><td style="padding:9px 12px;border-bottom:1px solid #ede9e0">'+status+'</td></tr>';
-    });
-    fcH+='<tr style="background:#f0ede6"><td colspan="2" style="padding:9px 12px;font-weight:600">Target</td><td colspan="3" style="padding:9px 12px;color:var(--muted)">28% — 35% of F&B Revenue</td></tr></tbody></table></div>';
-    html+=fcH;
-  }
-
 document.getElementById('modal-title').textContent='Monthly Report — Uganda Cultural Lodges | '+monthName;
   document.getElementById('modal-meta').textContent='Administrator view only | Generated '+fmtDT(new Date().toISOString());
   document.getElementById('modal-actions').innerHTML='';
