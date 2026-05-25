@@ -245,6 +245,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
 
   <div class="tab-bar">
     <div class="tab active" data-tab="dashboard" onclick="switchTab(this)">Dashboard</div>
+    <div class="tab" data-tab="drafts" onclick="openDraftsPage(this)">Drafts</div>
     <div class="tab" data-tab="bar-sales" onclick="switchTab(this)">Bar Sales</div>
     <div class="tab" data-tab="bar-stock" onclick="switchTab(this)">Bar Stock</div>
     <div class="tab" data-tab="restaurant" onclick="switchTab(this)">Restaurant Sales</div>
@@ -274,7 +275,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
         <div class="dash-tabs" style="margin-bottom:0;border-bottom:none;">
           <div class="dash-tab active" onclick="showDashTab(this,'all')">All Lodges</div>
-          <div class="dash-tab" onclick="showDashTab(this,'analytics')" id="analytics-tab">ðŸ“Š Analytics</div>
+          <div class="dash-tab" onclick="showDashTab(this,'analytics')" id="analytics-tab">Analytics</div>
           <div class="dash-tab" onclick="showDashTab(this,'admin')" id="admin-tab" style="display:none">âš™ Users</div>
           <div class="dash-tab" onclick="showDashTab(this,'Hoima Cultural Lodge')">Hoima</div>
           <div class="dash-tab" onclick="showDashTab(this,'Lake Mulehe Gorilla Lodge')">Lake Mulehe</div>
@@ -285,7 +286,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
         <div style="display:flex;align-items:center;gap:10px;">
           <label style="font-size:12px;font-weight:600;color:var(--muted)">Week of:</label>
           <input type="date" id="consolidated-week" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;"/>
-          <button onclick="generateConsolidated()" id="consolidated-btn" style="padding:8px 18px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">ðŸ“Š Consolidated Report</button>
+          <button onclick="generateConsolidated()" id="consolidated-btn" style="padding:8px 18px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Consolidated Report</button>
           <span id="monthly-btn-wrap" style="display:none">
             <select id="monthly-lodge" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;margin-left:8px;">
               <option value="all">All Lodges</option>
@@ -300,7 +301,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
               <option value="2026-07">July 2026</option>
               <option value="2026-08">August 2026</option>
             </select>
-            <button onclick="generateMonthly()" style="padding:8px 18px;background:var(--gold);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-left:6px;">ðŸ“… Monthly Report</button>
+            <button onclick="generateMonthly()" style="padding:8px 18px;background:var(--gold);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-left:6px;">Monthly Report</button>
           </span>
         </div>
       </div>
@@ -491,11 +492,11 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
   <div class="submit-bar" id="submit-bar" style="display:none">
     <div class="submit-status" id="submit-status">Fill all sheets and preview before submitting.</div>
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <button class="btn-preview" onclick="showPreview()">&#128065; Preview</button>
-      <button style="padding:12px 24px;background:var(--white);color:var(--forest);border:2px solid var(--forest);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="saveDraft()">ðŸ’¾ Save Draft</button>
+      <button class="btn-preview" onclick="showPreview()">Preview</button>
+      <button style="padding:12px 24px;background:var(--white);color:var(--forest);border:2px solid var(--forest);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="saveDraft()">Save Draft</button>
       <button style="padding:12px 24px;background:var(--white);color:var(--muted);border:2px solid var(--border);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="saveDraft(true)">Save New Draft</button>
-      <button style="padding:12px 24px;background:var(--white);color:var(--amber);border:2px solid var(--amber);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="openCurrentDraft()">ðŸ“‚ Open Draft</button>
-      <button class="btn-submit" onclick="doSubmit()">âœ“ Submit Weekly Report</button>
+      <button style="padding:12px 24px;background:var(--white);color:var(--amber);border:2px solid var(--amber);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="openCurrentDraft()">Open Draft</button>
+      <button class="btn-submit" onclick="doSubmit()">Submit Weekly Report</button>
     </div>
   </div>
 </div>
@@ -550,7 +551,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
     </div>
     <div class="header-right">
       <span id="user-email"></span>
-      <button id="my-drafts-btn" onclick="goToMyDrafts()" style="display:none;padding:7px 16px;background:var(--gold);color:var(--white);border:none;border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">ðŸ“‹ My Drafts</button>
+      <button id="my-drafts-btn" onclick="goToMyDrafts()" style="display:none;padding:7px 16px;background:var(--gold);color:var(--white);border:none;border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">My Drafts</button>
       <button class="btn-logout" onclick="doLogout()">Sign Out</button>
     </div>
   </header>
@@ -586,7 +587,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
         <div class="dash-tabs" style="margin-bottom:0;border-bottom:none;">
           <div class="dash-tab active" onclick="showDashTab(this,'all')">All Lodges</div>
-          <div class="dash-tab" onclick="showDashTab(this,'analytics')" id="analytics-tab">ðŸ“Š Analytics</div>
+          <div class="dash-tab" onclick="showDashTab(this,'analytics')" id="analytics-tab">Analytics</div>
           <div class="dash-tab" onclick="showDashTab(this,'admin')" id="admin-tab" style="display:none">âš™ Users</div>
           <div class="dash-tab" onclick="showDashTab(this,'Hoima Cultural Lodge')">Hoima</div>
           <div class="dash-tab" onclick="showDashTab(this,'Lake Mulehe Gorilla Lodge')">Lake Mulehe</div>
@@ -597,7 +598,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
         <div style="display:flex;align-items:center;gap:10px;">
           <label style="font-size:12px;font-weight:600;color:var(--muted)">Week of:</label>
           <input type="date" id="consolidated-week" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;"/>
-          <button onclick="generateConsolidated()" id="consolidated-btn" style="padding:8px 18px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">ðŸ“Š Consolidated Report</button>
+          <button onclick="generateConsolidated()" id="consolidated-btn" style="padding:8px 18px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Consolidated Report</button>
           <span id="monthly-btn-wrap" style="display:none">
             <select id="monthly-lodge" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;margin-left:8px;">
               <option value="all">All Lodges</option>
@@ -612,7 +613,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
               <option value="2026-07">July 2026</option>
               <option value="2026-08">August 2026</option>
             </select>
-            <button onclick="generateMonthly()" style="padding:8px 18px;background:var(--gold);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-left:6px;">ðŸ“… Monthly Report</button>
+            <button onclick="generateMonthly()" style="padding:8px 18px;background:var(--gold);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-left:6px;">Monthly Report</button>
           </span>
         </div>
       </div>
@@ -803,11 +804,11 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
   <div class="submit-bar" id="submit-bar" style="display:none">
     <div class="submit-status" id="submit-status">Fill all sheets and preview before submitting.</div>
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <button class="btn-preview" onclick="showPreview()">&#128065; Preview</button>
-      <button style="padding:12px 24px;background:var(--white);color:var(--forest);border:2px solid var(--forest);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="saveDraft()">ðŸ’¾ Save Draft</button>
+      <button class="btn-preview" onclick="showPreview()">Preview</button>
+      <button style="padding:12px 24px;background:var(--white);color:var(--forest);border:2px solid var(--forest);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="saveDraft()">Save Draft</button>
       <button style="padding:12px 24px;background:var(--white);color:var(--muted);border:2px solid var(--border);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="saveDraft(true)">Save New Draft</button>
-      <button style="padding:12px 24px;background:var(--white);color:var(--amber);border:2px solid var(--amber);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="openCurrentDraft()">ðŸ“‚ Open Draft</button>
-      <button class="btn-submit" onclick="doSubmit()">âœ“ Submit Weekly Report</button>
+      <button style="padding:12px 24px;background:var(--white);color:var(--amber);border:2px solid var(--amber);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="openCurrentDraft()">Open Draft</button>
+      <button class="btn-submit" onclick="doSubmit()">Submit Weekly Report</button>
     </div>
   </div>
 </div>
@@ -1224,7 +1225,27 @@ function switchTab(el){
   const isEntry=name!=='dashboard';
   document.getElementById('week-bar').style.display=isEntry?'flex':'none';
   document.getElementById('submit-bar').style.display=isEntry?'flex':'none';
-  if(name==='dashboard')loadDashboard();
+  if(name==='dashboard'){
+    currentDashTab='all';
+    document.querySelectorAll('.dash-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.dash-tab[onclick*="all"]').forEach(t=>t.classList.add('active'));
+    loadDashboard();
+  }
+}
+function openDraftsPage(el){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('pane-dashboard').classList.add('active');
+  if(el) el.classList.add('active');
+  document.getElementById('week-bar').style.display='none';
+  document.getElementById('submit-bar').style.display='none';
+  document.getElementById('dash-analytics-wrap').style.display='none';
+  document.getElementById('dash-admin-wrap').style.display='none';
+  document.getElementById('dash-table-wrap').style.display='block';
+  document.querySelectorAll('.dash-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('#drafts-tab').forEach(t=>t.classList.add('active'));
+  currentDashTab='drafts';
+  loadDashboard();
 }
 function showDashTab(el,tab){
   document.querySelectorAll('.dash-tab').forEach(t=>t.classList.remove('active'));
@@ -2889,7 +2910,7 @@ async function openDraftById(id, lodge, weekOf){
   fillDraftTable('training', r.training_log||[]);
   fillDraftTable('incidents', r.incidents||[]);
   switchTab(document.querySelector('.tab[data-tab="bar-sales"]'));
-  setStatus('âœ“ Draft loaded â€” '+fmtDate(weekOf)+'. Continue editing and Save Draft when done.','success');
+  setStatus('Draft loaded - '+fmtDate(weekOf)+'. Continue editing and Save Draft when done.','success');
 }
 
 function fillDraftTable(tabName, rows){
@@ -3085,12 +3106,12 @@ async function saveDraft(forceNew){
       if(res.data&&res.data.id) currentDraftId=res.data.id;
     }
     if(error)throw error;
-    setStatus((createNew?'✓ New draft saved — ':'✓ Draft saved — ')+fmtDT(new Date().toISOString()),'success');
-    btn.disabled=false;btn.textContent=createNew?'Save New Draft':'💾 Save Draft';
+    setStatus((createNew?'New draft saved - ':'Draft saved - ')+fmtDT(new Date().toISOString()),'success');
+    btn.disabled=false;btn.textContent=createNew?'Save New Draft':'Save Draft';
     loadDashboard();
   }catch(err){
     setStatus('Error saving draft: '+(err.message||''),'error');
-    btn.disabled=false;btn.textContent=createNew?'Save New Draft':'💾 Save Draft';
+    btn.disabled=false;btn.textContent=createNew?'Save New Draft':'Save Draft';
   }
 }
 
@@ -3732,4 +3753,5 @@ checkSession();
 </script>
 </body>
 </html>
+
 
