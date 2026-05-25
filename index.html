@@ -1996,6 +1996,7 @@ async function loadDashboard(){
     .order('submitted_at',{ascending:false}).limit(100);
 
   if(sup&&myLodge){
+    console.log('Supervisor query — tab:',currentDashTab,'lodge:',myLodge);
     if(currentDashTab==='drafts'){
       q=q.eq('lodge',myLodge).eq('is_draft',true);
     } else {
