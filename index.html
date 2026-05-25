@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Uganda Cultural Lodges — Weekly Reporting</title>
+<title>Uganda Cultural Lodges â€” Weekly Reporting</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.min.css"/>
@@ -214,7 +214,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
     <div class="form-group"><label>Email Address</label>
       <input type="email" id="auth-email" placeholder="your@email.com" autocomplete="email"/></div>
     <div class="form-group"><label>Password</label>
-      <input type="password" id="auth-password" placeholder="••••••••"/></div>
+      <input type="password" id="auth-password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"/></div>
     <button class="btn-primary" onclick="doLogin()">Sign In</button>
     <div class="auth-error" id="auth-error"></div>
   </div>
@@ -274,8 +274,8 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
         <div class="dash-tabs" style="margin-bottom:0;border-bottom:none;">
           <div class="dash-tab active" onclick="showDashTab(this,'all')">All Lodges</div>
-          <div class="dash-tab" onclick="showDashTab(this,'analytics')" id="analytics-tab">📊 Analytics</div>
-          <div class="dash-tab" onclick="showDashTab(this,'admin')" id="admin-tab" style="display:none">⚙ Users</div>
+          <div class="dash-tab" onclick="showDashTab(this,'analytics')" id="analytics-tab">ðŸ“Š Analytics</div>
+          <div class="dash-tab" onclick="showDashTab(this,'admin')" id="admin-tab" style="display:none">âš™ Users</div>
           <div class="dash-tab" onclick="showDashTab(this,'Hoima Cultural Lodge')">Hoima</div>
           <div class="dash-tab" onclick="showDashTab(this,'Lake Mulehe Gorilla Lodge')">Lake Mulehe</div>
           <div class="dash-tab" onclick="showDashTab(this,'Kigarama Wilderness Lodge')">Kigarama</div>
@@ -285,7 +285,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
         <div style="display:flex;align-items:center;gap:10px;">
           <label style="font-size:12px;font-weight:600;color:var(--muted)">Week of:</label>
           <input type="date" id="consolidated-week" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;"/>
-          <button onclick="generateConsolidated()" id="consolidated-btn" style="padding:8px 18px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">📊 Consolidated Report</button>
+          <button onclick="generateConsolidated()" id="consolidated-btn" style="padding:8px 18px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">ðŸ“Š Consolidated Report</button>
           <span id="monthly-btn-wrap" style="display:none">
             <select id="monthly-lodge" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;margin-left:8px;">
               <option value="all">All Lodges</option>
@@ -300,7 +300,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
               <option value="2026-07">July 2026</option>
               <option value="2026-08">August 2026</option>
             </select>
-            <button onclick="generateMonthly()" style="padding:8px 18px;background:var(--gold);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-left:6px;">📅 Monthly Report</button>
+            <button onclick="generateMonthly()" style="padding:8px 18px;background:var(--gold);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-left:6px;">ðŸ“… Monthly Report</button>
           </span>
         </div>
       </div>
@@ -368,7 +368,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
     </div>
 
     <div class="pane" id="pane-bar-stock">
-      <div class="section-header"><h2>Bar Stock</h2><p>Weekly reconciliation — what you had, received, issued, and what is actually left.</p></div>
+      <div class="section-header"><h2>Bar Stock</h2><p>Weekly reconciliation â€” what you had, received, issued, and what is actually left.</p></div>
       <div class="form-table-wrap"><table class="form-table">
         <thead><tr><th>Group</th><th>Item Name</th><th>Unit</th><th>Par Level</th><th>Unit Cost (UGX)</th><th>Opening</th><th>Received</th><th>Issued/Used</th><th>Expected Closing</th><th>Actual Closing</th><th>Variance</th><th>Par Status</th><th>Value: Opening</th><th>Value: Issued</th><th>Value: Closing</th><th>Value: Variance</th><th></th></tr></thead>
         <tbody id="body-bar-stock"></tbody></table></div>
@@ -410,7 +410,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
       <button class="btn-add-row" onclick="addRow('kitchen')">+ Add Row</button>
       <div class="summary-box">
         <div class="summary-item"><label>Total Cost of Food Used</label><div class="value" id="kitchen-cost-used">UGX 0</div></div>
-        <div style="font-size:12px;color:var(--muted);line-height:1.6;">Food cost % is calculated automatically from restaurant sales. Target: 28–35%. Flag if above 35%.</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6;">Food cost % is calculated automatically from restaurant sales. Target: 28â€“35%. Flag if above 35%.</div>
       </div>
     </div>
 
@@ -439,7 +439,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
     </div>
 
     <div class="pane" id="pane-maintenance">
-      <div class="section-header"><h2>Maintenance Log</h2><p>Record every maintenance issue — what broke, who reported it, what was done, and whether it is resolved.</p></div>
+      <div class="section-header"><h2>Maintenance Log</h2><p>Record every maintenance issue â€” what broke, who reported it, what was done, and whether it is resolved.</p></div>
       <div class="form-table-wrap"><table class="form-table">
         <thead><tr><th>Date</th><th>Category</th><th>Item / Area Affected</th><th>Issue Description</th><th>Reported By</th><th>Action Taken</th><th>Status</th><th>Remarks</th><th></th></tr></thead>
         <tbody id="body-maintenance"></tbody></table></div>
@@ -471,7 +471,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
     <div class="pane" id="pane-training">
       <div class="section-header"><h2>Training Log</h2>
         <p>Record every training session conducted this week. This feeds directly into KPI assessment.</p></div>
-      <div class="notice green">&#9432; Every session must be recorded — topic, trainer, attendees, and key points. Signed acknowledgement sheets to be kept physically at the lodge.</div>
+      <div class="notice green">&#9432; Every session must be recorded â€” topic, trainer, attendees, and key points. Signed acknowledgement sheets to be kept physically at the lodge.</div>
       <div class="form-table-wrap"><table class="form-table">
         <thead><tr><th>Date</th><th>Training Topic</th><th>Trainer</th><th>Duration (hrs)</th><th>Attendees</th><th>No. Attended</th><th>Key Points Covered</th><th>Follow-up Required?</th><th>Remarks</th><th></th></tr></thead>
         <tbody id="body-training"></tbody></table></div>
@@ -479,7 +479,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
     </div>
 
     <div class="pane" id="pane-incidents">
-      <div class="section-header"><h2>Incidents &amp; Concerns</h2><p>Record every incident. Serious concerns must be escalated immediately — do not wait for Friday.</p></div>
+      <div class="section-header"><h2>Incidents &amp; Concerns</h2><p>Record every incident. Serious concerns must be escalated immediately â€” do not wait for Friday.</p></div>
       <div class="notice">&#9888; If nothing happened this week, write NONE in the description field.</div>
       <div class="form-table-wrap"><table class="form-table">
         <thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Person(s) Involved</th><th>Action Taken</th><th>Escalated?</th><th>Status</th><th></th></tr></thead>
@@ -492,9 +492,10 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
     <div class="submit-status" id="submit-status">Fill all sheets and preview before submitting.</div>
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <button class="btn-preview" onclick="showPreview()">&#128065; Preview</button>
-      <button style="padding:12px 24px;background:var(--white);color:var(--forest);border:2px solid var(--forest);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="saveDraft()">💾 Save Draft</button>
-      <button style="padding:12px 24px;background:var(--white);color:var(--amber);border:2px solid var(--amber);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="openCurrentDraft()">📂 Open Draft</button>
-      <button class="btn-submit" onclick="doSubmit()">✓ Submit Weekly Report</button>
+      <button style="padding:12px 24px;background:var(--white);color:var(--forest);border:2px solid var(--forest);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="saveDraft()">ðŸ’¾ Save Draft</button>
+      <button style="padding:12px 24px;background:var(--white);color:var(--muted);border:2px solid var(--border);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="saveDraft(true)">Save New Draft</button>
+      <button style="padding:12px 24px;background:var(--white);color:var(--amber);border:2px solid var(--amber);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="openCurrentDraft()">ðŸ“‚ Open Draft</button>
+      <button class="btn-submit" onclick="doSubmit()">âœ“ Submit Weekly Report</button>
     </div>
   </div>
 </div>
@@ -549,7 +550,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
     </div>
     <div class="header-right">
       <span id="user-email"></span>
-      <button id="my-drafts-btn" onclick="goToMyDrafts()" style="display:none;padding:7px 16px;background:var(--gold);color:var(--white);border:none;border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">📋 My Drafts</button>
+      <button id="my-drafts-btn" onclick="goToMyDrafts()" style="display:none;padding:7px 16px;background:var(--gold);color:var(--white);border:none;border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">ðŸ“‹ My Drafts</button>
       <button class="btn-logout" onclick="doLogout()">Sign Out</button>
     </div>
   </header>
@@ -585,8 +586,8 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
         <div class="dash-tabs" style="margin-bottom:0;border-bottom:none;">
           <div class="dash-tab active" onclick="showDashTab(this,'all')">All Lodges</div>
-          <div class="dash-tab" onclick="showDashTab(this,'analytics')" id="analytics-tab">📊 Analytics</div>
-          <div class="dash-tab" onclick="showDashTab(this,'admin')" id="admin-tab" style="display:none">⚙ Users</div>
+          <div class="dash-tab" onclick="showDashTab(this,'analytics')" id="analytics-tab">ðŸ“Š Analytics</div>
+          <div class="dash-tab" onclick="showDashTab(this,'admin')" id="admin-tab" style="display:none">âš™ Users</div>
           <div class="dash-tab" onclick="showDashTab(this,'Hoima Cultural Lodge')">Hoima</div>
           <div class="dash-tab" onclick="showDashTab(this,'Lake Mulehe Gorilla Lodge')">Lake Mulehe</div>
           <div class="dash-tab" onclick="showDashTab(this,'Kigarama Wilderness Lodge')">Kigarama</div>
@@ -596,7 +597,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
         <div style="display:flex;align-items:center;gap:10px;">
           <label style="font-size:12px;font-weight:600;color:var(--muted)">Week of:</label>
           <input type="date" id="consolidated-week" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;"/>
-          <button onclick="generateConsolidated()" id="consolidated-btn" style="padding:8px 18px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">📊 Consolidated Report</button>
+          <button onclick="generateConsolidated()" id="consolidated-btn" style="padding:8px 18px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">ðŸ“Š Consolidated Report</button>
           <span id="monthly-btn-wrap" style="display:none">
             <select id="monthly-lodge" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;margin-left:8px;">
               <option value="all">All Lodges</option>
@@ -611,7 +612,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
               <option value="2026-07">July 2026</option>
               <option value="2026-08">August 2026</option>
             </select>
-            <button onclick="generateMonthly()" style="padding:8px 18px;background:var(--gold);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-left:6px;">📅 Monthly Report</button>
+            <button onclick="generateMonthly()" style="padding:8px 18px;background:var(--gold);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-left:6px;">ðŸ“… Monthly Report</button>
           </span>
         </div>
       </div>
@@ -679,7 +680,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
     </div>
 
     <div class="pane" id="pane-bar-stock">
-      <div class="section-header"><h2>Bar Stock</h2><p>Weekly reconciliation — what you had, received, issued, and what is actually left.</p></div>
+      <div class="section-header"><h2>Bar Stock</h2><p>Weekly reconciliation â€” what you had, received, issued, and what is actually left.</p></div>
       <div class="form-table-wrap"><table class="form-table">
         <thead><tr><th>Group</th><th>Item Name</th><th>Unit</th><th>Par Level</th><th>Unit Cost (UGX)</th><th>Opening</th><th>Received</th><th>Issued/Used</th><th>Expected Closing</th><th>Actual Closing</th><th>Variance</th><th>Par Status</th><th>Value: Opening</th><th>Value: Issued</th><th>Value: Closing</th><th>Value: Variance</th><th></th></tr></thead>
         <tbody id="body-bar-stock"></tbody></table></div>
@@ -721,7 +722,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
       <button class="btn-add-row" onclick="addRow('kitchen')">+ Add Row</button>
       <div class="summary-box">
         <div class="summary-item"><label>Total Cost of Food Used</label><div class="value" id="kitchen-cost-used">UGX 0</div></div>
-        <div style="font-size:12px;color:var(--muted);line-height:1.6;">Food cost % is calculated automatically from restaurant sales. Target: 28–35%. Flag if above 35%.</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6;">Food cost % is calculated automatically from restaurant sales. Target: 28â€“35%. Flag if above 35%.</div>
       </div>
     </div>
 
@@ -750,7 +751,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
     </div>
 
     <div class="pane" id="pane-maintenance">
-      <div class="section-header"><h2>Maintenance Log</h2><p>Record every maintenance issue — what broke, who reported it, what was done, and whether it is resolved.</p></div>
+      <div class="section-header"><h2>Maintenance Log</h2><p>Record every maintenance issue â€” what broke, who reported it, what was done, and whether it is resolved.</p></div>
       <div class="form-table-wrap"><table class="form-table">
         <thead><tr><th>Date</th><th>Category</th><th>Item / Area Affected</th><th>Issue Description</th><th>Reported By</th><th>Action Taken</th><th>Status</th><th>Remarks</th><th></th></tr></thead>
         <tbody id="body-maintenance"></tbody></table></div>
@@ -782,7 +783,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
     <div class="pane" id="pane-training">
       <div class="section-header"><h2>Training Log</h2>
         <p>Record every training session conducted this week. This feeds directly into KPI assessment.</p></div>
-      <div class="notice green">&#9432; Every session must be recorded — topic, trainer, attendees, and key points. Signed acknowledgement sheets to be kept physically at the lodge.</div>
+      <div class="notice green">&#9432; Every session must be recorded â€” topic, trainer, attendees, and key points. Signed acknowledgement sheets to be kept physically at the lodge.</div>
       <div class="form-table-wrap"><table class="form-table">
         <thead><tr><th>Date</th><th>Training Topic</th><th>Trainer</th><th>Duration (hrs)</th><th>Attendees</th><th>No. Attended</th><th>Key Points Covered</th><th>Follow-up Required?</th><th>Remarks</th><th></th></tr></thead>
         <tbody id="body-training"></tbody></table></div>
@@ -790,7 +791,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
     </div>
 
     <div class="pane" id="pane-incidents">
-      <div class="section-header"><h2>Incidents &amp; Concerns</h2><p>Record every incident. Serious concerns must be escalated immediately — do not wait for Friday.</p></div>
+      <div class="section-header"><h2>Incidents &amp; Concerns</h2><p>Record every incident. Serious concerns must be escalated immediately â€” do not wait for Friday.</p></div>
       <div class="notice">&#9888; If nothing happened this week, write NONE in the description field.</div>
       <div class="form-table-wrap"><table class="form-table">
         <thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Person(s) Involved</th><th>Action Taken</th><th>Escalated?</th><th>Status</th><th></th></tr></thead>
@@ -803,9 +804,10 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
     <div class="submit-status" id="submit-status">Fill all sheets and preview before submitting.</div>
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <button class="btn-preview" onclick="showPreview()">&#128065; Preview</button>
-      <button style="padding:12px 24px;background:var(--white);color:var(--forest);border:2px solid var(--forest);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="saveDraft()">💾 Save Draft</button>
-      <button style="padding:12px 24px;background:var(--white);color:var(--amber);border:2px solid var(--amber);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="openCurrentDraft()">📂 Open Draft</button>
-      <button class="btn-submit" onclick="doSubmit()">✓ Submit Weekly Report</button>
+      <button style="padding:12px 24px;background:var(--white);color:var(--forest);border:2px solid var(--forest);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="saveDraft()">ðŸ’¾ Save Draft</button>
+      <button style="padding:12px 24px;background:var(--white);color:var(--muted);border:2px solid var(--border);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="saveDraft(true)">Save New Draft</button>
+      <button style="padding:12px 24px;background:var(--white);color:var(--amber);border:2px solid var(--amber);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="openCurrentDraft()">ðŸ“‚ Open Draft</button>
+      <button class="btn-submit" onclick="doSubmit()">âœ“ Submit Weekly Report</button>
     </div>
   </div>
 </div>
@@ -831,7 +833,7 @@ const SUPA_URL='https://ehcwjajkszanptkoyrne.supabase.co';
 const SUPA_KEY='sb_publishable_D5OI_3Kf3Z7LYbHZ8jy76g_vNavtwpY';
 const ADMIN_EMAIL='kshidy@gmail.com';
 
-// ── PERMISSIONS ───────────────────────────────────────────────────────────────
+// â”€â”€ PERMISSIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Edit this object to manage all user access in one place
 const PERMISSIONS={
   'kshidy@gmail.com':             {role:'admin',      lodge:null},
@@ -853,11 +855,11 @@ function canAdminActions(){return isAdmin();}
 const {createClient}=supabase;
 const sb=createClient(SUPA_URL,SUPA_KEY);
 const LODGES=['Hoima Cultural Lodge','Lake Mulehe Gorilla Lodge','Kigarama Wilderness Lodge'];
-const LODGE_ICONS={'Hoima Cultural Lodge':'🏡','Lake Mulehe Gorilla Lodge':'🦍','Kigarama Wilderness Lodge':'🌿'};
-let currentUser=null, currentLodge=null, currentReport=null, currentDashTab='all';
+const LODGE_ICONS={'Hoima Cultural Lodge':'ðŸ¡','Lake Mulehe Gorilla Lodge':'ðŸ¦','Kigarama Wilderness Lodge':'ðŸŒ¿'};
+let currentUser=null, currentLodge=null, currentReport=null, currentDashTab='all', currentDraftId=null;
 let itemMaster=[];
 
-// ── AUTH ──────────────────────────────────────────────────────────────────────
+// â”€â”€ AUTH â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function doLogin(){
   const email=document.getElementById('auth-email').value.trim();
   const password=document.getElementById('auth-password').value;
@@ -922,7 +924,7 @@ async function doLogin(){
       const dashBtn=document.createElement('button');
       dashBtn.className='lodge-btn';
       dashBtn.style.cssText='border-color:var(--forest);color:var(--forest);font-weight:600;margin-top:8px;';
-      dashBtn.innerHTML='<span class="lodge-icon">📊</span> View Dashboard (All Lodges)';
+      dashBtn.innerHTML='<span class="lodge-icon">ðŸ“Š</span> View Dashboard (All Lodges)';
       dashBtn.onclick=async()=>{
         document.getElementById('lodge-screen').style.display='none';
         document.getElementById('app-screen').style.display='block';
@@ -994,7 +996,7 @@ async function checkSession(){
       const dashBtn=document.createElement('button');
       dashBtn.className='lodge-btn';
       dashBtn.style.cssText='border-color:var(--forest);color:var(--forest);font-weight:600;margin-top:8px;';
-      dashBtn.innerHTML='<span class="lodge-icon">📊</span> View Dashboard (All Lodges)';
+      dashBtn.innerHTML='<span class="lodge-icon">ðŸ“Š</span> View Dashboard (All Lodges)';
       dashBtn.onclick=async()=>{
         document.getElementById('lodge-screen').style.display='none';
         document.getElementById('app-screen').style.display='block';
@@ -1011,7 +1013,7 @@ async function checkSession(){
 }
 // Roles defined in PERMISSIONS object above
 
-// ── ITEM MASTER ───────────────────────────────────────────────────────────────
+// â”€â”€ ITEM MASTER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function loadItemMaster(){
   // Load All Lodges items plus lodge-specific items
   const lodges=['All Lodges'];
@@ -1038,23 +1040,23 @@ function getEffectiveCategory(tabCategory){
 }
 
 function getGroups(category){
-  // STRICT category matching — Bar Sales never shows Bar items and vice versa
+  // STRICT category matching â€” Bar Sales never shows Bar items and vice versa
   if(currentLodge&&currentLodge!=='All Lodges'){
     const lodgeGroups=itemMaster
       .filter(i=>i.lodge===currentLodge&&i.category===category)
       .map(i=>i.grp);
     if(lodgeGroups.length>0) return [...new Set(lodgeGroups)];
   }
-  // Fall back to All Lodges — same category only
+  // Fall back to All Lodges â€” same category only
   return [...new Set(itemMaster.filter(i=>i.lodge==='All Lodges'&&i.category===category).map(i=>i.grp))];
 }
 function getItems(category,grp){
-  // STRICT category matching — never mix Bar and Bar Sales
+  // STRICT category matching â€” never mix Bar and Bar Sales
   if(currentLodge&&currentLodge!=='All Lodges'){
     const lodgeItems=itemMaster.filter(i=>i.lodge===currentLodge&&i.category===category&&i.grp===grp);
     if(lodgeItems.length>0) return lodgeItems;
   }
-  // Fall back to All Lodges — same category only
+  // Fall back to All Lodges â€” same category only
   return itemMaster.filter(i=>i.lodge==='All Lodges'&&i.category===category&&i.grp===grp);
 }
 
@@ -1066,7 +1068,7 @@ function wireDropdowns(groupTd, itemTd, unitInp, parInp, category){
   let itemData={};
   let groupTS=null, itemTS=null;
 
-  // ── GROUP SELECT ──────────────────────────────────────────────
+  // â”€â”€ GROUP SELECT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const gSel=document.createElement('select');
   const blankG=document.createElement('option');blankG.value='';blankG.textContent='Group...';gSel.appendChild(blankG);
   getGroups(category).forEach(g=>{
@@ -1075,13 +1077,13 @@ function wireDropdowns(groupTd, itemTd, unitInp, parInp, category){
   while(groupTd.firstChild)groupTd.removeChild(groupTd.firstChild);
   groupTd.appendChild(gSel);
 
-  // ── ITEM SELECT ───────────────────────────────────────────────
+  // â”€â”€ ITEM SELECT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const iSel=document.createElement('select');
   const blankI=document.createElement('option');blankI.value='';blankI.textContent='Select group first...';iSel.appendChild(blankI);
   while(itemTd.firstChild)itemTd.removeChild(itemTd.firstChild);
   itemTd.appendChild(iSel);
 
-  // ── INIT TOM SELECT ───────────────────────────────────────────
+  // â”€â”€ INIT TOM SELECT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   groupTS=new TomSelect(gSel,{
     placeholder:'Group...',allowEmptyOption:true,
     onInitialize:function(){this.control.style.cursor='pointer';},
@@ -1121,7 +1123,7 @@ function wireDropdowns(groupTd, itemTd, unitInp, parInp, category){
     itemTS.clear();itemTS.clearOptions();
     const opts=[];
     getItems(category,grp).forEach(item=>{
-      const label=item.item_name+(item.selling_price>0?' — UGX '+item.selling_price.toLocaleString():'');
+      const label=item.item_name+(item.selling_price>0?' â€” UGX '+item.selling_price.toLocaleString():'');
       opts.push({value:item.item_name,text:label});
       itemData[item.item_name]={unit:item.unit,par:item.par_level,price:item.selling_price||0};
     });
@@ -1130,7 +1132,7 @@ function wireDropdowns(groupTd, itemTd, unitInp, parInp, category){
   }
 }
 
-// ── LODGE SELECTOR ────────────────────────────────────────────────────────────
+// â”€â”€ LODGE SELECTOR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function showLodgeSelector(){
   console.log('showLodgeSelector called, currentUser:', currentUser?currentUser.email:'null');
   // Supervisors skip lodge selector - go straight to their lodge
@@ -1159,13 +1161,14 @@ async function showLodgeSelector(){
     const dashBtn=document.createElement('button');
     dashBtn.className='lodge-btn';
     dashBtn.style.cssText='border-color:var(--forest);color:var(--forest);font-weight:600;margin-top:8px;';
-    dashBtn.innerHTML='<span class="lodge-icon">📊</span> View Dashboard (All Lodges)';
+    dashBtn.innerHTML='<span class="lodge-icon">ðŸ“Š</span> View Dashboard (All Lodges)';
     dashBtn.onclick=async()=>{
       document.getElementById('lodge-screen').style.display='none';
       document.getElementById('app-screen').style.display='block';
       document.getElementById('user-email').textContent=currentUser.email;
       document.getElementById('lodge-name-header').textContent='All Lodges';
       currentLodge=null;
+      currentDraftId=null;
       await loadItemMaster();
       switchTab(document.querySelector('.tab[data-tab="dashboard"]'));
       loadDashboard();
@@ -1184,6 +1187,7 @@ async function selectLodge(lodge){
     return;
   }
   currentLodge=lodge;
+  currentDraftId=null;
   document.getElementById('lodge-screen').style.display='none';
   document.getElementById('app-screen').style.display='block';
   document.getElementById('user-email').textContent=currentUser.email;
@@ -1210,7 +1214,7 @@ async function selectLodge(lodge){
 
 function changeLodge(){showLodgeSelector();}
 
-// ── TABS ──────────────────────────────────────────────────────────────────────
+// â”€â”€ TABS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function switchTab(el){
   document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -1241,11 +1245,89 @@ function showDashTab(el,tab){
   }
 }
 
-// ── HELPERS ───────────────────────────────────────────────────────────────────
+function dashboardTableHTML(mode){
+  if(mode==='drafts'){
+    return '<table style="width:100%;border-collapse:collapse;font-size:13px">'+
+      '<thead><tr style="background:#f0ede6">'+
+      '<th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Lodge</th>'+
+      '<th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Week Of</th>'+
+      '<th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Last Saved</th>'+
+      '<th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Saved By</th>'+
+      '<th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Revenue Preview</th>'+
+      '<th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Open</th>'+
+      '<th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Actions</th>'+
+      '</tr></thead><tbody id="dash-drafts-tbody"></tbody></table>';
+  }
+  return '<table style="width:100%;border-collapse:collapse;font-size:13px">'+
+    '<thead><tr style="background:#f0ede6">'+
+    '<th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Lodge</th>'+
+    '<th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Week Of</th>'+
+    '<th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Submitted</th>'+
+    '<th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Revenue</th>'+
+    '<th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Status</th>'+
+    '<th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">View</th>'+
+    '<th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Actions</th>'+
+    '</tr></thead><tbody id="dash-tbody"></tbody></table>';
+}
+
+function setDashboardTableMode(mode){
+  const wrap=document.getElementById('dash-table-wrap');
+  if(!wrap) return;
+  if(wrap.dataset.mode!==mode){
+    wrap.innerHTML=dashboardTableHTML(mode);
+    wrap.dataset.mode=mode;
+  }
+}
+
+function calcReportRevenue(r){
+  let rev=0;
+  (r.bar_sales||[]).forEach(s=>{rev+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
+  (r.restaurant_sales||[]).forEach(s=>{rev+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
+  (r.room_sales||[]).forEach(s=>{rev+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
+  return rev;
+}
+
+function renderDraftManager(rows){
+  setDashboardTableMode('drafts');
+  const tbody=document.getElementById('dash-drafts-tbody');
+  if(!tbody) return;
+  tbody.innerHTML='';
+  if(!rows||!rows.length){
+    tbody.innerHTML='<tr><td colspan="7" style="padding:24px;text-align:center;color:var(--muted)">No saved drafts found.</td></tr>';
+    return;
+  }
+  rows.slice().sort((a,b)=>new Date(b.last_saved_at||b.submitted_at||0)-new Date(a.last_saved_at||a.submitted_at||0)).forEach(r=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=
+      '<td><span class="badge badge-blue">'+(r.lodge||'Unknown')+'</span></td>'+
+      '<td><strong>'+fmtDate(r.week_of)+'</strong></td>'+
+      '<td>'+(r.last_saved_at?fmtDT(r.last_saved_at):fmtDT(r.submitted_at))+'</td>'+
+      '<td>'+((r.user_email||'').replace('@ugandaculturallodges.com',''))+'</td>'+
+      '<td><strong>'+fmtUGX(calcReportRevenue(r))+'</strong></td>';
+    const openTd=document.createElement('td');
+    const openBtn=document.createElement('button');
+    openBtn.textContent='Continue';
+    openBtn.style.cssText='padding:6px 14px;background:var(--amber);color:#fff;border:none;border-radius:4px;font-size:12px;cursor:pointer;font-family:Jost,sans-serif';
+    openBtn.onclick=()=>openDraftById(r.id,r.lodge,r.week_of);
+    openTd.appendChild(openBtn);
+    tr.appendChild(openTd);
+
+    const actTd=document.createElement('td');
+    const delBtn=document.createElement('button');
+    delBtn.textContent='Delete Draft';
+    delBtn.style.cssText='padding:5px 12px;background:var(--error);color:#fff;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-family:Jost,sans-serif';
+    delBtn.onclick=()=>promptDelete(r.id);
+    actTd.appendChild(delBtn);
+    tr.appendChild(actTd);
+    tbody.appendChild(tr);
+  });
+}
+
+// â”€â”€ HELPERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function n(v){return parseFloat(String(v||0).replace(/[^0-9.-]/g,''))||0;}
-function fmtUGX(v){if(v===null||v===undefined||isNaN(v))return'—';return'UGX '+Math.round(v).toLocaleString();}
-function fmtDate(d){if(!d)return'—';return new Date(d+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});}
-function fmtDT(d){if(!d)return'—';return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}
+function fmtUGX(v){if(v===null||v===undefined||isNaN(v))return'â€”';return'UGX '+Math.round(v).toLocaleString();}
+function fmtDate(d){if(!d)return'â€”';return new Date(d+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});}
+function fmtDT(d){if(!d)return'â€”';return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}
 function updateWeekLabel(){
   const val=document.getElementById('week-of').value;if(!val)return;
   const d=new Date(val+'T00:00:00');
@@ -1261,9 +1343,9 @@ function parBadge(actual,par){
 function makeInp(type,ph,cls){const i=document.createElement('input');i.type=type;i.placeholder=ph||'';if(cls)i.className=cls;return i;}
 function makeSel(opts){const s=document.createElement('select');opts.forEach(o=>{const op=document.createElement('option');op.textContent=o;s.appendChild(op);});return s;}
 function tdEl(content,cls){const el=document.createElement('td');if(cls)el.className=cls;if(typeof content==='string')el.innerHTML=content;else if(content)el.appendChild(content);return el;}
-function calcTd(cls){const el=document.createElement('td');el.className='calc-cell '+cls;el.textContent='—';return el;}
+function calcTd(cls){const el=document.createElement('td');el.className='calc-cell '+cls;el.textContent='â€”';return el;}
 
-// ── ROW BUILDER ───────────────────────────────────────────────────────────────
+// â”€â”€ ROW BUILDER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function addRow(name){
   const tb=document.getElementById('body-'+name);
   const tr=document.createElement('tr');
@@ -1280,7 +1362,7 @@ function buildRow(tr,name){
   const RTYPE=['Single Room','Double Room','Twin Room','Family Room','Banda','Suite','Other'];
 
   const delBtn=document.createElement('button');
-  delBtn.textContent='✕';
+  delBtn.textContent='âœ•';
   delBtn.style.cssText='background:none;border:none;color:var(--error);cursor:pointer;font-size:16px;padding:4px 8px';
   delBtn.onclick=function(){tr.remove();calcTotals();};
   const delTd=document.createElement('td');delTd.appendChild(delBtn);
@@ -1537,7 +1619,7 @@ function buildRow(tr,name){
   }
 }
 
-// ── CALCULATIONS ──────────────────────────────────────────────────────────────
+// â”€â”€ CALCULATIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function getItemName(tr){
   // Get item name from item dropdown or other input
   const iSel=tr.querySelector('select.item-sel, td:nth-child(2) select, td:nth-child(3) select');
@@ -1655,7 +1737,7 @@ function calcStaffTotal(){
   if(el)el.textContent='Collected: '+fmtUGX(totalPaid)+' | Standard Value: '+fmtUGX(totalStd)+' | Complimentary: '+fmtUGX(totalStd-totalPaid);
 }
 
-// ── EXTRACT TABLE DATA ────────────────────────────────────────────────────────
+// â”€â”€ EXTRACT TABLE DATA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function extractTable(name){
   const rows=[];
   document.querySelectorAll('#body-'+name+' tr').forEach(tr=>{
@@ -1825,7 +1907,7 @@ function extractTable(name){
   return rows;
 }
 
-// ── PREVIEW ───────────────────────────────────────────────────────────────────
+// â”€â”€ PREVIEW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function showPreview(){
   const weekOf=document.getElementById('week-of').value;
   if(!weekOf){setStatus('Please select the week first.','error');return;}
@@ -1839,9 +1921,9 @@ function showPreview(){
   const secRows=document.querySelectorAll('#body-security tr').length;
   const incRows=document.querySelectorAll('#body-incidents tr').length;
   const used=parseFloat(document.getElementById('kitchen-cost-used').textContent.replace('UGX','').replace(/,/g,''))||0;
-  const fcPct=restTotal>0?(used/restTotal*100).toFixed(1)+'%':'—';
+  const fcPct=restTotal>0?(used/restTotal*100).toFixed(1)+'%':'â€”';
 
-  document.getElementById('preview-lodge').textContent=currentLodge||'—';
+  document.getElementById('preview-lodge').textContent=currentLodge||'â€”';
   document.getElementById('preview-week').textContent=fmtDate(weekOf);
   document.getElementById('preview-summary').innerHTML=`
     <div class="preview-section"><h3>Revenue</h3>
@@ -1866,7 +1948,7 @@ function showPreview(){
 function closePreview(){document.getElementById('preview-overlay').classList.remove('open');}
 async function submitFromPreview(){closePreview();await doSubmit();}
 
-// ── SUBMIT ────────────────────────────────────────────────────────────────────
+// â”€â”€ SUBMIT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function doSubmit(){
   const weekOf=document.getElementById('week-of').value;
   if(!weekOf){setStatus('Please select the week first.','error');return;}
@@ -1883,7 +1965,7 @@ async function doSubmit(){
       .select('id').eq('lodge',currentLodge).eq('week_of',weekOf)
       .eq('is_draft',false).eq('archived',false).limit(1);
     if(existing&&existing.length>0){
-      setStatus('A report for '+currentLodge+' — week of '+fmtDate(weekOf)+' already exists. Contact the administrator to make changes.','error');
+      setStatus('A report for '+currentLodge+' â€” week of '+fmtDate(weekOf)+' already exists. Contact the administrator to make changes.','error');
       btn.disabled=false;btn.textContent='Submit Weekly Report';
       return;
     }
@@ -1912,8 +1994,8 @@ async function doSubmit(){
     };
     const {error}=await sb.from('weekly_reports').insert([payload]);
     if(error)throw error;
-    setStatus('✓ Report submitted — '+currentLodge+' | '+fmtDate(weekOf),'success');
-    btn.textContent='✓ Submitted';
+    setStatus('âœ“ Report submitted â€” '+currentLodge+' | '+fmtDate(weekOf),'success');
+    btn.textContent='âœ“ Submitted';
     setTimeout(()=>{btn.disabled=false;btn.textContent='Submit Weekly Report';},4000);
     loadDashboard();
   }catch(err){
@@ -1923,28 +2005,28 @@ async function doSubmit(){
 }
 function setStatus(msg,type){const el=document.getElementById('submit-status');el.textContent=msg;el.className='submit-status '+type;}
 
-// ── DASHBOARD ─────────────────────────────────────────────────────────────────
+// â”€â”€ DASHBOARD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function loadDashboard(){
   if(!currentUser){console.log('loadDashboard: no currentUser');return;}
 
-  // ── DETERMINE ROLE ──────────────────────────────────────────
+  // â”€â”€ DETERMINE ROLE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const role=getUserRole();
   const myLodge=getUserLodge();
   const sup=role==='supervisor';
   const admin=role==='admin';
   const gm=role==='gm';
 
-  // ── LOAD DRAFT ────────────────────────────────────────────────────────────────
+  // â”€â”€ LOAD DRAFT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 
-// ── OPEN CURRENT DRAFT ────────────────────────────────────────────────────────
+// â”€â”€ OPEN CURRENT DRAFT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function openCurrentDraft(){
   const weekOf=document.getElementById('week-of').value;
   if(!weekOf){setStatus('Please select the week first.','error');return;}
   if(!currentLodge){setStatus('No lodge selected.','error');return;}
   setStatus('Loading draft...','');
   const {data,error}=await sb.from('weekly_reports')
-    .select('*').eq('lodge',currentLodge).eq('week_of',weekOf).eq('is_draft',true).limit(1);
+    .select('*').eq('lodge',currentLodge).eq('week_of',weekOf).eq('is_draft',true).order('last_saved_at',{ascending:false}).limit(1);
   if(error||!data||!data.length){
     setStatus('No saved draft found for this lodge and week.','error');
     return;
@@ -1952,17 +2034,17 @@ async function openCurrentDraft(){
   await openDraftById(data[0].id, data[0].lodge, data[0].week_of);
 }
 
-// ── AUTO ARCHIVE (admin only) ────────────────────────────────
+// â”€â”€ AUTO ARCHIVE (admin only) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   if(admin) autoArchiveOldReports();
 
-  // ── SHOW/HIDE UI ELEMENTS ────────────────────────────────────
-  // Tabs — supervisors see only Drafts tab on dashboard; admin/GM see all
+  // â”€â”€ SHOW/HIDE UI ELEMENTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // Tabs â€” supervisors see only Drafts tab on dashboard; admin/GM see all
   document.querySelectorAll('.dash-tab').forEach(t=>t.style.display='none');
   if(!sup){
     // Admin and GM see all lodge tabs
     document.querySelectorAll('.dash-tab').forEach(t=>t.style.display='block');
   }
-  // Drafts tab — always visible for supervisors and admin
+  // Drafts tab â€” always visible for supervisors and admin
   document.querySelectorAll('#drafts-tab').forEach(t=>t.style.display=(admin||sup)?'block':'none');
   // Admin-only tab
   document.querySelectorAll('#admin-tab').forEach(t=>t.style.display=admin?'block':'none');
@@ -1976,7 +2058,7 @@ async function openCurrentDraft(){
   // Week selector - hide for supervisors on dashboard
   const wkBar=document.querySelector('.week-bar');
   if(wkBar) wkBar.style.display=sup?'none':'';
-  // My Drafts button in header — show for supervisors only
+  // My Drafts button in header â€” show for supervisors only
   const myDraftsBtn=document.getElementById('my-drafts-btn');
   if(myDraftsBtn) myDraftsBtn.style.display=sup?'inline-block':'none';
   // For supervisors: default to showing their own submitted reports, not drafts
@@ -1988,18 +2070,18 @@ async function openCurrentDraft(){
     }
   }
 
-  // ── BUILD STAT CARDS HTML FIRST ─────────────────────────────
+  // â”€â”€ BUILD STAT CARDS HTML FIRST â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const statsEl=document.getElementById('dash-stats');
   if(statsEl&&!document.getElementById('stat-active')){
     statsEl.innerHTML=
-      '<div class="stat-card"><div class="stat-label">Active Reports</div><div class="stat-value" id="stat-active">—</div></div>'+
-      '<div class="stat-card"><div class="stat-label">Hoima</div><div class="stat-value" id="stat-hoima">—</div></div>'+
-      '<div class="stat-card"><div class="stat-label">Lake</div><div class="stat-value" id="stat-mulehe">—</div></div>'+
-      '<div class="stat-card"><div class="stat-label">Kigarama</div><div class="stat-value" id="stat-kigarama">—</div></div>'+
-      '<div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value" id="stat-revenue">—</div></div>';
+      '<div class="stat-card"><div class="stat-label">Active Reports</div><div class="stat-value" id="stat-active">â€”</div></div>'+
+      '<div class="stat-card"><div class="stat-label">Hoima</div><div class="stat-value" id="stat-hoima">â€”</div></div>'+
+      '<div class="stat-card"><div class="stat-label">Lake</div><div class="stat-value" id="stat-mulehe">â€”</div></div>'+
+      '<div class="stat-card"><div class="stat-label">Kigarama</div><div class="stat-value" id="stat-kigarama">â€”</div></div>'+
+      '<div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value" id="stat-revenue">â€”</div></div>';
   }
 
-  // ── STATS QUERY ──────────────────────────────────────────────
+  // â”€â”€ STATS QUERY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   let statsQ=sb.from('weekly_reports')
     .select('id,lodge,bar_sales,restaurant_sales,room_sales')
     .eq('archived',false).eq('is_draft',false);
@@ -2013,18 +2095,18 @@ async function openCurrentDraft(){
     (r.room_sales||[]).forEach(s=>{totalRev+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
   });
   document.getElementById('stat-active').textContent=allActive.length;
-  document.getElementById('stat-hoima').textContent=sup&&myLodge!=='Hoima Cultural Lodge'?'—':allActive.filter(r=>r.lodge==='Hoima Cultural Lodge').length;
-  document.getElementById('stat-mulehe').textContent=sup&&myLodge!=='Lake Mulehe Gorilla Lodge'?'—':allActive.filter(r=>r.lodge==='Lake Mulehe Gorilla Lodge').length;
-  document.getElementById('stat-kigarama').textContent=sup&&myLodge!=='Kigarama Wilderness Lodge'?'—':allActive.filter(r=>r.lodge==='Kigarama Wilderness Lodge').length;
+  document.getElementById('stat-hoima').textContent=sup&&myLodge!=='Hoima Cultural Lodge'?'â€”':allActive.filter(r=>r.lodge==='Hoima Cultural Lodge').length;
+  document.getElementById('stat-mulehe').textContent=sup&&myLodge!=='Lake Mulehe Gorilla Lodge'?'â€”':allActive.filter(r=>r.lodge==='Lake Mulehe Gorilla Lodge').length;
+  document.getElementById('stat-kigarama').textContent=sup&&myLodge!=='Kigarama Wilderness Lodge'?'â€”':allActive.filter(r=>r.lodge==='Kigarama Wilderness Lodge').length;
   document.getElementById('stat-revenue').textContent=fmtUGX(totalRev);
 
-  // ── REPORTS QUERY ─────────────────────────────────────────────
+  // â”€â”€ REPORTS QUERY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   let q=sb.from('weekly_reports')
-    .select('id,week_of,lodge,submitted_at,user_email,archived,is_draft,bar_sales,restaurant_sales,room_sales,bar_stock,stores_stock,kitchen,room_inspections,security_log,incidents,kitchen_sales_revenue,room_revenue')
+    .select('id,week_of,lodge,submitted_at,last_saved_at,user_email,archived,is_draft,bar_sales,restaurant_sales,room_sales,bar_stock,stores_stock,kitchen,room_inspections,security_log,incidents,kitchen_sales_revenue,room_revenue')
     .order('submitted_at',{ascending:false}).limit(100);
 
   if(sup&&myLodge){
-    console.log('Supervisor query — tab:',currentDashTab,'lodge:',myLodge);
+    console.log('Supervisor query â€” tab:',currentDashTab,'lodge:',myLodge);
     if(currentDashTab==='drafts'){
       q=q.eq('lodge',myLodge).eq('is_draft',true);
     } else {
@@ -2043,11 +2125,16 @@ async function openCurrentDraft(){
   const {data:rows,error}=await q;
   console.log('Dashboard query - role:',role,'myLodge:',myLodge,'sup:',sup,'rows:',rows?rows.length:0,'error:',error);
   if(error){console.error('Dashboard error:',error);return;}
+  if(currentDashTab==='drafts'){
+    renderDraftManager(rows||[]);
+    return;
+  }
 
-  // ── BUILD TABLE ───────────────────────────────────────────────
+  // â”€â”€ BUILD TABLE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Ensure table wrap is visible
   const tableWrap=document.getElementById('dash-table-wrap');
   if(tableWrap) tableWrap.style.display='block';
+  setDashboardTableMode('reports');
   const tbody=document.getElementById('dash-tbody');
   if(!tbody) return;
   tbody.innerHTML='';
@@ -2056,10 +2143,7 @@ async function openCurrentDraft(){
     return;
   }
   rows.forEach(r=>{
-    let rev=0;
-    (r.bar_sales||[]).forEach(s=>{rev+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
-    (r.restaurant_sales||[]).forEach(s=>{rev+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
-    (r.room_sales||[]).forEach(s=>{rev+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
+    let rev=calcReportRevenue(r);
     const tr=document.createElement('tr');
     tr.innerHTML=
       '<td><span class="badge badge-blue">'+(r.lodge||'Unknown')+'</span></td>'+
@@ -2103,7 +2187,7 @@ async function openCurrentDraft(){
   });
 }
 
-// ── GO TO MY DRAFTS ──────────────────────────────────────────────────────────
+// â”€â”€ GO TO MY DRAFTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function goToMyDrafts(){
   // Switch to dashboard tab, then activate Drafts sub-tab
   const dashTabEl=document.querySelector('.tab[data-tab="dashboard"]');
@@ -2112,7 +2196,7 @@ function goToMyDrafts(){
   if(draftsTabEl) showDashTab(draftsTabEl,'drafts');
 }
 
-// ── ARCHIVE & DELETE ──────────────────────────────────────────────────────────
+// â”€â”€ ARCHIVE & DELETE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function archiveReport(id,val){
   const confirmed=val?confirm('Archive this report? It will be hidden from the main dashboard.'):confirm('Unarchive this report?');
   if(!confirmed) return;
@@ -2136,17 +2220,17 @@ async function confirmDelete(){
   alert('Report deleted successfully.');
 }
 
-// ── REPORT MODAL ──────────────────────────────────────────────────────────────
+// â”€â”€ REPORT MODAL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function openReport(r){
   currentReport=r;
-  document.getElementById('modal-title').textContent='Report — '+(r.lodge||'')+'  |  '+fmtDate(r.week_of);
+  document.getElementById('modal-title').textContent='Report â€” '+(r.lodge||'')+'  |  '+fmtDate(r.week_of);
   document.getElementById('modal-meta').textContent='Submitted by '+r.user_email+' on '+fmtDT(r.submitted_at);
   document.getElementById('confirm-delete').style.display='none';
   document.getElementById('edit-section').style.display='none';
   const actEl=document.getElementById('modal-actions');actEl.innerHTML='';
-  const pBtn=document.createElement('button');pBtn.className='btn-action btn-forest';pBtn.textContent='⬇ Print / Download';pBtn.onclick=()=>window.print();actEl.appendChild(pBtn);
+  const pBtn=document.createElement('button');pBtn.className='btn-action btn-forest';pBtn.textContent='â¬‡ Print / Download';pBtn.onclick=()=>window.print();actEl.appendChild(pBtn);
   if(isAdmin()){
-    const eBtn=document.createElement('button');eBtn.className='btn-action btn-amber';eBtn.textContent='✏ Edit';eBtn.onclick=()=>showEditSection(r);actEl.appendChild(eBtn);
+    const eBtn=document.createElement('button');eBtn.className='btn-action btn-amber';eBtn.textContent='âœ Edit';eBtn.onclick=()=>showEditSection(r);actEl.appendChild(eBtn);
     const aBtn=document.createElement('button');aBtn.className='btn-action btn-amber';aBtn.textContent=r.archived?'Unarchive':'Archive';aBtn.onclick=()=>{archiveReport(r.id,!r.archived);closeModal();};actEl.appendChild(aBtn);
     const dBtn=document.createElement('button');dBtn.className='btn-action btn-danger';dBtn.textContent='Delete';dBtn.onclick=()=>promptDelete(r.id);actEl.appendChild(dBtn);
   }
@@ -2163,11 +2247,11 @@ function closeModal(){document.getElementById('report-modal').classList.remove('
 function toggleDetail(id){
   const el=document.getElementById(id);
   const btn=document.getElementById('toggle-'+id);
-  if(el.style.display==='none'){el.style.display='block';if(btn)btn.textContent='▲ Hide Detail';}
-  else{el.style.display='none';if(btn)btn.textContent='▼ Show Detail';}
+  if(el.style.display==='none'){el.style.display='block';if(btn)btn.textContent='â–² Hide Detail';}
+  else{el.style.display='none';if(btn)btn.textContent='â–¼ Show Detail';}
 }
 
-// ── REPORT HTML ───────────────────────────────────────────────────────────────
+// â”€â”€ REPORT HTML â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function buildReportHTML(r){
   console.log('buildReportHTML called with:', r?r.lodge:'null', r?r.week_of:'null');
   console.log('bar_sales:', r&&r.bar_sales?r.bar_sales.length:'missing');
@@ -2212,7 +2296,7 @@ function buildReportHTML(r){
     const varTxt=(row.variance||'').replace('+','').trim();
     const varUnits=parseFloat(varTxt)||0;
     const cost=n(row.unit_cost||row.unit_price);
-    if(varUnits<0){varItems.push({item:row.item||'—',units:varUnits,value:varUnits*cost});totalVarVal+=varUnits*cost;}
+    if(varUnits<0){varItems.push({item:row.item||'â€”',units:varUnits,value:varUnits*cost});totalVarVal+=varUnits*cost;}
   });
 
   // Par alerts
@@ -2254,7 +2338,7 @@ function buildReportHTML(r){
   ).join('');
 
   const roomRows=roomSales.filter(s=>s.room_no||s.guest_name).map(s=>
-    '<tr><td>'+s.date+'</td><td>'+s.room_no+'</td><td>'+(s.guest_name||'—')+'</td>'+
+    '<tr><td>'+s.date+'</td><td>'+s.room_no+'</td><td>'+(s.guest_name||'â€”')+'</td>'+
     '<td>'+s.room_type+'</td><td style="text-align:right">'+s.nights+'</td>'+
     '<td style="text-align:right">'+fmtUGX(n(s.rate_per_night))+'</td>'+
     '<td style="text-align:right;font-weight:600">'+s.total_value+'</td><td>'+s.payment+'</td></tr>'
@@ -2324,7 +2408,7 @@ function buildReportHTML(r){
       <div class="summary-card ${fcStatus}">
         <div class="sc-label">Food Cost %</div>
         <div class="sc-value">${fcPct>0?fcPct.toFixed(1)+'%':'No data'}</div>
-        <div class="sc-note">${fcPct>35?'⚠ Above 35% — flag immediately':fcPct>0?'Target: 28–35%':'Fill kitchen sheet'}</div></div>
+        <div class="sc-note">${fcPct>35?'âš  Above 35% â€” flag immediately':fcPct>0?'Target: 28â€“35%':'Fill kitchen sheet'}</div></div>
       <div class="summary-card ${totalVarVal<0?'red':'green'}">
         <div class="sc-label">Stock Variance</div>
         <div class="sc-value">${varItems.length>0?varItems.reduce((s,v)=>s+v.units,0)+' units short':'None'}</div>
@@ -2364,13 +2448,13 @@ function buildReportHTML(r){
     </div>
 
     ${varItems.length>0?`
-    <div class="notice red">⚠ Stock shortages detected. ${varItems.length} item(s) missing. Total value: ${fmtUGX(totalVarVal)}. Investigate immediately.</div>`:''}
+    <div class="notice red">âš  Stock shortages detected. ${varItems.length} item(s) missing. Total value: ${fmtUGX(totalVarVal)}. Investigate immediately.</div>`:''}
 
     <!-- DETAIL SECTIONS -->
     ${barSalesRows?`
     <div class="detail-section">
       <div class="section-title" onclick="toggleDetail('d-bar-sales')">
-        Bar Sales <span class="toggle" id="toggle-d-bar-sales">▼ Show Detail</span>
+        Bar Sales <span class="toggle" id="toggle-d-bar-sales">â–¼ Show Detail</span>
       </div>
       <div id="d-bar-sales" style="display:none">
         <table class="recon-table">
@@ -2384,7 +2468,7 @@ function buildReportHTML(r){
     ${restRows?`
     <div class="detail-section">
       <div class="section-title" onclick="toggleDetail('d-restaurant')">
-        Restaurant Sales <span class="toggle" id="toggle-d-restaurant">▼ Show Detail</span>
+        Restaurant Sales <span class="toggle" id="toggle-d-restaurant">â–¼ Show Detail</span>
       </div>
       <div id="d-restaurant" style="display:none">
         <table class="recon-table">
@@ -2398,7 +2482,7 @@ function buildReportHTML(r){
     ${roomRows?`
     <div class="detail-section">
       <div class="section-title" onclick="toggleDetail('d-rooms-sales')">
-        Room Sales — Walk-ins Only <span class="toggle" id="toggle-d-rooms-sales">▼ Show Detail</span>
+        Room Sales â€” Walk-ins Only <span class="toggle" id="toggle-d-rooms-sales">â–¼ Show Detail</span>
       </div>
       <div id="d-rooms-sales" style="display:none">
         <table class="recon-table">
@@ -2412,7 +2496,7 @@ function buildReportHTML(r){
     ${barStockRows?`
     <div class="detail-section">
       <div class="section-title" onclick="toggleDetail('d-bar-stock')">
-        Bar Stock Reconciliation <span class="toggle" id="toggle-d-bar-stock">▼ Show Detail</span>
+        Bar Stock Reconciliation <span class="toggle" id="toggle-d-bar-stock">â–¼ Show Detail</span>
       </div>
       <div id="d-bar-stock" style="display:none">
         <table class="recon-table">
@@ -2423,14 +2507,14 @@ function buildReportHTML(r){
           <table class="recon-table" style="margin-top:6px">
             <thead><tr><th>Item</th><th style="text-align:right">Units Short</th><th style="text-align:right">Value (UGX)</th></tr></thead>
             <tbody>${varRows}</tbody>
-          </table></div>`:'<div class="notice green" style="margin-top:8px">✓ No stock shortages.</div>'}
+          </table></div>`:'<div class="notice green" style="margin-top:8px">âœ“ No stock shortages.</div>'}
       </div>
     </div>`:''}
 
     ${kitchenRows?`
     <div class="detail-section">
       <div class="section-title" onclick="toggleDetail('d-kitchen')">
-        Kitchen / Food Cost <span class="toggle" id="toggle-d-kitchen">▼ Show Detail</span>
+        Kitchen / Food Cost <span class="toggle" id="toggle-d-kitchen">â–¼ Show Detail</span>
       </div>
       <div id="d-kitchen" style="display:none">
         <table class="recon-table">
@@ -2443,7 +2527,7 @@ function buildReportHTML(r){
     ${roomInspRows?`
     <div class="detail-section">
       <div class="section-title" onclick="toggleDetail('d-room-insp')">
-        Room Inspections <span class="toggle" id="toggle-d-room-insp">▼ Show Detail</span>
+        Room Inspections <span class="toggle" id="toggle-d-room-insp">â–¼ Show Detail</span>
       </div>
       <div id="d-room-insp" style="display:none">
         <table class="recon-table">
@@ -2451,38 +2535,38 @@ function buildReportHTML(r){
           <tbody>${roomInspRows}</tbody>
         </table>
       </div>
-    </div>`:'<div class="notice green">✓ No room inspections recorded.</div>'}
+    </div>`:'<div class="notice green">âœ“ No room inspections recorded.</div>'}
 
     ${housekeeping.length>0?`
     <div class="detail-section">
       <div class="section-title" onclick="toggleDetail('d-housekeeping')">
-        Housekeeping Log <span class="toggle" id="toggle-d-housekeeping">▼ Show Detail</span>
+        Housekeeping Log <span class="toggle" id="toggle-d-housekeeping">â–¼ Show Detail</span>
       </div>
       <div id="d-housekeeping" style="display:none">
         <table class="recon-table">
           <thead><tr><th>Date</th><th>Area</th><th>Standard Met?</th><th>Issue Found</th><th>Action Taken</th><th>Resolved?</th><th>Inspector</th></tr></thead>
-          <tbody>${housekeeping.filter(h=>h.area).map(h=>'<tr><td>'+h.date+'</td><td>'+h.area+'</td><td><span class="badge '+(h.standard_met==='Yes - Met'?'badge-green':h.standard_met==='Partial'?'badge-amber':'badge-red')+'">'+h.standard_met+'</span></td><td>'+(h.issue||'—')+'</td><td>'+(h.action||'—')+'</td><td>'+h.resolved+'</td><td>'+h.inspector+'</td></tr>').join('')}</tbody>
+          <tbody>${housekeeping.filter(h=>h.area).map(h=>'<tr><td>'+h.date+'</td><td>'+h.area+'</td><td><span class="badge '+(h.standard_met==='Yes - Met'?'badge-green':h.standard_met==='Partial'?'badge-amber':'badge-red')+'">'+h.standard_met+'</span></td><td>'+(h.issue||'â€”')+'</td><td>'+(h.action||'â€”')+'</td><td>'+h.resolved+'</td><td>'+h.inspector+'</td></tr>').join('')}</tbody>
         </table>
       </div>
-    </div>`:'<div class="notice green">✓ No housekeeping entries recorded.</div>'}
+    </div>`:'<div class="notice green">âœ“ No housekeeping entries recorded.</div>'}
 
     ${maintenance.filter(m=>m.item).length>0?`
     <div class="detail-section">
       <div class="section-title" onclick="toggleDetail('d-maintenance')">
-        Maintenance Log <span class="toggle" id="toggle-d-maintenance">▼ Show Detail</span>
+        Maintenance Log <span class="toggle" id="toggle-d-maintenance">â–¼ Show Detail</span>
       </div>
       <div id="d-maintenance" style="display:none">
         <table class="recon-table">
           <thead><tr><th>Date</th><th>Category</th><th>Item/Area</th><th>Issue</th><th>Action Taken</th><th>Status</th></tr></thead>
-          <tbody>${maintenance.filter(m=>m.item).map(m=>'<tr><td>'+m.date+'</td><td>'+m.category+'</td><td>'+m.item+'</td><td>'+m.issue+'</td><td>'+(m.action||'—')+'</td><td><span class="badge '+(m.status==='Closed'?'badge-green':m.status==='In Progress'?'badge-amber':'badge-red')+'">'+m.status+'</span></td></tr>').join('')}</tbody>
+          <tbody>${maintenance.filter(m=>m.item).map(m=>'<tr><td>'+m.date+'</td><td>'+m.category+'</td><td>'+m.item+'</td><td>'+m.issue+'</td><td>'+(m.action||'â€”')+'</td><td><span class="badge '+(m.status==='Closed'?'badge-green':m.status==='In Progress'?'badge-amber':'badge-red')+'">'+m.status+'</span></td></tr>').join('')}</tbody>
         </table>
       </div>
-    </div>`:'<div class="notice green">✓ No maintenance issues logged.</div>'}
+    </div>`:'<div class="notice green">âœ“ No maintenance issues logged.</div>'}
 
     ${secRows?`
     <div class="detail-section">
       <div class="section-title" onclick="toggleDetail('d-security')">
-        Security Log <span class="toggle" id="toggle-d-security">▼ Show Detail</span>
+        Security Log <span class="toggle" id="toggle-d-security">â–¼ Show Detail</span>
       </div>
       <div id="d-security" style="display:none">
         <table class="recon-table">
@@ -2490,17 +2574,17 @@ function buildReportHTML(r){
           <tbody>${secRows}</tbody>
         </table>
       </div>
-    </div>`:'<div class="notice green">✓ No security log entries.</div>'}
+    </div>`:'<div class="notice green">âœ“ No security log entries.</div>'}
 
     ${staffComp.filter(s=>s.person_name||s.item).length>0?`
     <div class="detail-section">
       <div class="section-title" onclick="toggleDetail('d-staff-comp')">
-        Staff &amp; Complimentary <span class="toggle" id="toggle-d-staff-comp">▼ Show Detail</span>
+        Staff &amp; Complimentary <span class="toggle" id="toggle-d-staff-comp">â–¼ Show Detail</span>
       </div>
       <div id="d-staff-comp" style="display:none">
         <table class="recon-table">
           <thead><tr><th>Date</th><th>Name</th><th>Category</th><th>Item</th><th style="text-align:right">Qty</th><th style="text-align:right">Std Value</th><th style="text-align:right">Paid</th><th style="text-align:right">Variance</th><th>Authorised By</th></tr></thead>
-          <tbody>${(staffComp||[]).filter(s=>s.person_name||s.item).map(s=>{const paid=n(s.amount_paid||0);const stdVal=parseFloat((s.standard_total||'0').replace('UGX','').replace(/,/g,''))||0;return'<tr><td>'+(s.date||'')+'</td><td>'+(s.person_name||'')+'</td><td>'+(s.category||'')+'</td><td>'+(s.item||'')+'</td><td style="text-align:right">'+(s.quantity||'')+'</td><td style="text-align:right">'+(s.standard_total||'—')+'</td><td style="text-align:right">'+fmtUGX(paid)+'</td><td style="text-align:right;color:'+(paid<stdVal?'var(--error)':'var(--success)')+'">'+fmtUGX(paid-stdVal)+'</td><td>'+(s.authorised_by||'')+'</td></tr>';}).join('')}</tbody>
+          <tbody>${(staffComp||[]).filter(s=>s.person_name||s.item).map(s=>{const paid=n(s.amount_paid||0);const stdVal=parseFloat((s.standard_total||'0').replace('UGX','').replace(/,/g,''))||0;return'<tr><td>'+(s.date||'')+'</td><td>'+(s.person_name||'')+'</td><td>'+(s.category||'')+'</td><td>'+(s.item||'')+'</td><td style="text-align:right">'+(s.quantity||'')+'</td><td style="text-align:right">'+(s.standard_total||'â€”')+'</td><td style="text-align:right">'+fmtUGX(paid)+'</td><td style="text-align:right;color:'+(paid<stdVal?'var(--error)':'var(--success)')+'">'+fmtUGX(paid-stdVal)+'</td><td>'+(s.authorised_by||'')+'</td></tr>';}).join('')}</tbody>
           <tfoot><tr><td colspan="5">TOTAL</td><td style="text-align:right">${fmtUGX(staffCompValue)}</td><td style="text-align:right">${fmtUGX(staffCompCollected)}</td><td style="text-align:right;color:var(--error)">${fmtUGX(staffCompCollected-staffCompValue)}</td><td></td></tr></tfoot>
         </table>
       </div>
@@ -2509,7 +2593,7 @@ function buildReportHTML(r){
     ${trainingRows.filter(t=>t.topic).length>0?`
     <div class="detail-section">
       <div class="section-title" onclick="toggleDetail('d-training')">
-        Training Log <span class="toggle" id="toggle-d-training">▼ Show Detail</span>
+        Training Log <span class="toggle" id="toggle-d-training">â–¼ Show Detail</span>
       </div>
       <div id="d-training" style="display:none">
         <table class="recon-table">
@@ -2517,12 +2601,12 @@ function buildReportHTML(r){
           <tbody>${(trainingRows||[]).filter(t=>t&&t.topic).map(t=>'<tr><td>'+(t.date||'')+'</td><td>'+(t.topic||'')+'</td><td>'+(t.trainer||'')+'</td><td>'+(t.duration_hours||'0')+' hrs</td><td>'+(t.attendees||'')+'</td><td>'+(t.attendee_count||'0')+'</td><td>'+(t.followup_required||'')+'</td></tr>').join('')}</tbody>
         </table>
       </div>
-    </div>`:'<div class="notice green">✓ No training sessions recorded this week.</div>'}
+    </div>`:'<div class="notice green">âœ“ No training sessions recorded this week.</div>'}
 
     ${incRows?`
     <div class="detail-section">
       <div class="section-title" onclick="toggleDetail('d-incidents')">
-        Incidents <span class="toggle" id="toggle-d-incidents">▼ Show Detail</span>
+        Incidents <span class="toggle" id="toggle-d-incidents">â–¼ Show Detail</span>
       </div>
       <div id="d-incidents" style="display:none">
         <table class="recon-table">
@@ -2530,11 +2614,11 @@ function buildReportHTML(r){
           <tbody>${incRows}</tbody>
         </table>
       </div>
-    </div>`:'<div class="notice green">✓ No incidents recorded.</div>'}
+    </div>`:'<div class="notice green">âœ“ No incidents recorded.</div>'}
   `;
 }
 
-// ── EDIT SECTION ──────────────────────────────────────────────────────────────
+// â”€â”€ EDIT SECTION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function showEditSection(r){
   const es=document.getElementById('edit-section');
   es.style.display='block';es.scrollIntoView({behavior:'smooth'});
@@ -2588,14 +2672,14 @@ async function saveEdits(){
   const payload={};Object.keys(updates).forEach(k=>{payload[k]=updates[k];});
   const {error}=await sb.from('weekly_reports').update(payload).eq('id',currentReport.id);
   if(error){statusEl.textContent='Error: '+error.message;statusEl.className='save-status err';return;}
-  statusEl.textContent='✓ Saved';statusEl.className='save-status ok';
+  statusEl.textContent='âœ“ Saved';statusEl.className='save-status ok';
   const {data}=await sb.from('weekly_reports').select('*').eq('id',currentReport.id).single();
   if(data){currentReport=data;document.getElementById('modal-body').innerHTML=buildReportHTML(data);}
   loadDashboard();
 }
 
 
-// ── CONSOLIDATED REPORT ───────────────────────────────────────────────────────
+// â”€â”€ CONSOLIDATED REPORT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function generateConsolidated(){
   const weekOf=document.getElementById('consolidated-week').value;
   if(!weekOf){alert('Please select a week first.');return;}
@@ -2653,7 +2737,7 @@ async function generateConsolidated(){
 
   html+=`
     <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-bottom:20px;">
-      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:8px;">Consolidated Report — Week of ${fmtDate(weekOf)}</div>
+      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:8px;">Consolidated Report â€” Week of ${fmtDate(weekOf)}</div>
       <div style="font-size:13px;color:var(--muted)">${submitted} of 3 lodge reports received.${missing.length>0?' <span style="color:var(--error);font-weight:600">Missing: '+missing.join(', ')+'</span>':' <span style="color:var(--success);font-weight:600">All lodges reported.</span>'}</div>
     </div>
 
@@ -2685,7 +2769,7 @@ async function generateConsolidated(){
       <tbody>
         ${LODGES.map(l=>{
           const rev=lodgeRevs[l]||{bar:0,rest:0,room:0,total:0};
-          const st=lodgeStatus[l]||'—';
+          const st=lodgeStatus[l]||'â€”';
           const hasReport=data.find(r=>r.lodge===l);
           return`<tr>
             <td style="padding:10px 14px;border-bottom:1px solid #ede9e0;font-weight:600">${l}</td>
@@ -2725,12 +2809,12 @@ async function generateConsolidated(){
       </tbody>
     </table>`;
   } else {
-    html+='<div style="background:#f0faf4;border:1.5px solid #a8d5b5;border-radius:var(--radius);padding:12px 16px;font-size:13px;color:#2e7d52;margin-bottom:16px;">✓ No incidents recorded across any lodge this week.</div>';
+    html+='<div style="background:#f0faf4;border:1.5px solid #a8d5b5;border-radius:var(--radius);padding:12px 16px;font-size:13px;color:#2e7d52;margin-bottom:16px;">âœ“ No incidents recorded across any lodge this week.</div>';
   }
 }
 
 
-// ── OPEN DRAFT ───────────────────────────────────────────────────────────────
+// â”€â”€ OPEN DRAFT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function setSelectValue(sel,val){
   if(!sel) return;
   val=val||'';
@@ -2773,6 +2857,7 @@ async function openDraftById(id, lodge, weekOf){
   if(error||!data||!data.length){alert('Could not load draft.');return;}
   const r=data[0];
   // Switch to reporting view
+  currentDraftId=r.id;
   currentLodge=lodge;
   await loadItemMaster();
   document.getElementById('lodge-screen').style.display='none';
@@ -2804,7 +2889,7 @@ async function openDraftById(id, lodge, weekOf){
   fillDraftTable('training', r.training_log||[]);
   fillDraftTable('incidents', r.incidents||[]);
   switchTab(document.querySelector('.tab[data-tab="bar-sales"]'));
-  setStatus('✓ Draft loaded — '+fmtDate(weekOf)+'. Continue editing and Save Draft when done.','success');
+  setStatus('âœ“ Draft loaded â€” '+fmtDate(weekOf)+'. Continue editing and Save Draft when done.','success');
 }
 
 function fillDraftTable(tabName, rows){
@@ -2831,7 +2916,7 @@ function fillDraftTable(tabName, rows){
       restoreDraftDropdowns(tr,row.group||'',row.item||'');
       setTimeout(function(){
         var s2=tr.querySelectorAll('select');var p2=tr.querySelectorAll('input');
-        // Item dropdown — use Tom Select setValue if available
+        // Item dropdown â€” use Tom Select setValue if available
         if(p2[1])p2[1].value=row.unit||'';
         if(p2[2])p2[2].value=row.qty_sold||'';
         if(p2[3]){p2[3].value=row.selling_price||'';p2[3].dispatchEvent(new Event('input'));}
@@ -2943,17 +3028,18 @@ function fillDraftTable(tabName, rows){
   });
 }
 
-// ── DUPLICATE CHECK ───────────────────────────────────────────────────────────
+// â”€â”€ DUPLICATE CHECK â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function checkDuplicate(rows, report){
   return rows.filter(r=>r.lodge===report.lodge&&r.week_of===report.week_of&&r.id!==report.id&&!r.is_draft).length>0;
 }
 
-// ── SAVE DRAFT ────────────────────────────────────────────────────────────────
-async function saveDraft(){
+// â”€â”€ SAVE DRAFT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+async function saveDraft(forceNew){
   const weekOf=document.getElementById('week-of').value;
   if(!weekOf){setStatus('Please select the week first.','error');return;}
-  setStatus('Saving draft...','');
-  const btn=document.querySelector('button[onclick="saveDraft()"]');
+  const createNew=forceNew===true;
+  setStatus(createNew?'Saving new draft...':'Saving draft...','');
+  const btn=document.querySelector(createNew?'button[onclick="saveDraft(true)"]':'button[onclick="saveDraft()"]');
   btn.disabled=true;btn.textContent='Saving...';
 
   let restTotal=0;
@@ -2962,9 +3048,13 @@ async function saveDraft(){
   document.querySelectorAll('#body-room-sales .room-total').forEach(c=>{roomTotal+=parseFloat(c.textContent.replace('UGX','').replace(/,/g,''))||0;});
 
   try{
-    // Check if draft already exists for this lodge and week
-    const {data:existing}=await sb.from('weekly_reports')
-      .select('id').eq('lodge',currentLodge).eq('week_of',weekOf).eq('is_draft',true).limit(1);
+    let existing=[];
+    if(!createNew&&!currentDraftId){
+      const res=await sb.from('weekly_reports')
+        .select('id').eq('lodge',currentLodge).eq('week_of',weekOf).eq('is_draft',true)
+        .order('last_saved_at',{ascending:false}).limit(1);
+      existing=res.data||[];
+    }
 
     const payload={
       week_of:weekOf,lodge:currentLodge,user_id:currentUser.id,
@@ -2982,25 +3072,29 @@ async function saveDraft(){
     };
 
     let error;
-    if(existing&&existing.length>0){
+    if(!createNew&&(currentDraftId||(existing&&existing.length>0))){
+      const draftId=currentDraftId||existing[0].id;
       // Update existing draft
-      ({error}=await sb.from('weekly_reports').update(payload).eq('id',existing[0].id));
+      ({error}=await sb.from('weekly_reports').update(payload).eq('id',draftId));
+      currentDraftId=draftId;
     } else {
       // Create new draft
       payload.submitted_at=new Date().toISOString();
-      ({error}=await sb.from('weekly_reports').insert([payload]));
+      const res=await sb.from('weekly_reports').insert([payload]).select('id').single();
+      error=res.error;
+      if(res.data&&res.data.id) currentDraftId=res.data.id;
     }
     if(error)throw error;
-    setStatus('✓ Draft saved — '+fmtDT(new Date().toISOString()),'success');
-    btn.disabled=false;btn.textContent='💾 Save Draft';
+    setStatus((createNew?'✓ New draft saved — ':'✓ Draft saved — ')+fmtDT(new Date().toISOString()),'success');
+    btn.disabled=false;btn.textContent=createNew?'Save New Draft':'💾 Save Draft';
     loadDashboard();
   }catch(err){
     setStatus('Error saving draft: '+(err.message||''),'error');
-    btn.disabled=false;btn.textContent='💾 Save Draft';
+    btn.disabled=false;btn.textContent=createNew?'Save New Draft':'💾 Save Draft';
   }
 }
 
-// ── MONTHLY REPORT ────────────────────────────────────────────────────────────
+// â”€â”€ MONTHLY REPORT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function generateMonthly(){
   if(!isAdmin()){alert('Monthly reports are for administrators only.');return;}
   const monthVal=document.getElementById('monthly-month').value;
@@ -3050,7 +3144,7 @@ async function generateMonthly(){
 
   let html=`
     <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-bottom:20px;">
-      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:4px;">Monthly Report — Uganda Cultural Lodges</div>
+      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:4px;">Monthly Report â€” Uganda Cultural Lodges</div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--forest)">${monthName}</div>
       <div style="font-size:13px;color:var(--muted);margin-top:4px;">${weeks.length} week(s) of data | Generated ${fmtDT(new Date().toISOString())}</div>
     </div>
@@ -3059,7 +3153,7 @@ async function generateMonthly(){
       <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px;border-top:4px solid var(--forest)">
         <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Total Revenue</div>
         <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--forest)">${fmtUGX(grandTotal)}</div>
-        <div style="font-size:12px;color:var(--muted)">All lodges — ${monthName}</div>
+        <div style="font-size:12px;color:var(--muted)">All lodges â€” ${monthName}</div>
       </div>
       ${displayLodges.map(l=>`
       <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px;">
@@ -3069,7 +3163,7 @@ async function generateMonthly(){
       </div>`).join('')}
     </div>
 
-    <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--forest);margin:0 0 12px;padding-bottom:6px;border-bottom:2px solid var(--border);">Revenue by Lodge — Monthly Summary</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--forest);margin:0 0 12px;padding-bottom:6px;border-bottom:2px solid var(--border);">Revenue by Lodge â€” Monthly Summary</div>
     <table style="width:100%;border-collapse:collapse;font-size:13px;background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:24px;">
       <thead><tr style="background:#f0ede6;">
         <th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Lodge</th>
@@ -3119,7 +3213,7 @@ async function generateMonthly(){
       </tbody>
     </table>
     <div style="margin-top:8px;display:flex;gap:12px;">
-      <button onclick="window.print()" style="padding:9px 20px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">⬇ Print / Download</button>
+      <button onclick="window.print()" style="padding:9px 20px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">â¬‡ Print / Download</button>
     </div>`;
 
   
@@ -3158,13 +3252,13 @@ async function generateMonthly(){
       <div style="font-size:12px;color:var(--muted)">Collected: ${fmtUGX(totCompColl)}</div>
     </div>
   </div>
-  ${allIncM.length>0?`<div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--forest);margin:16px 0 8px;border-bottom:1px solid var(--border);padding-bottom:4px">Incidents This Month</div><table style="width:100%;border-collapse:collapse;font-size:13px;background:var(--white);border:1.5px solid var(--border);border-radius:6px;margin-bottom:16px;"><thead><tr style="background:#f0ede6"><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Week</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Lodge</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Category</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Description</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Status</th></tr></thead><tbody>${allIncM.map(i=>'<tr><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+fmtDate(i.week)+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;font-weight:600">'+i.lodge+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+i.category+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+i.description+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0"><span style="padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;background:'+(i.status==='Open'?'#fde8e8;color:#c0392b':'#e3f2e8;color:#2e7d52')+'">'+i.status+'</span></td></tr>').join('')}</tbody></table>`:'<div style="background:#f0faf4;border:1.5px solid #a8d5b5;border-radius:6px;padding:10px 14px;font-size:13px;color:#2e7d52;margin-bottom:16px">✓ No incidents this month.</div>'}
-  ${allTrainM.length>0?`<div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--forest);margin:16px 0 8px;border-bottom:1px solid var(--border);padding-bottom:4px">Training Log This Month</div><table style="width:100%;border-collapse:collapse;font-size:13px;background:var(--white);border:1.5px solid var(--border);border-radius:6px;margin-bottom:16px;"><thead><tr style="background:#f0ede6"><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Date</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Lodge</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Topic</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Trainer</th><th style="padding:8px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Attended</th></tr></thead><tbody>${allTrainM.map(t=>'<tr><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+t.date+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;font-weight:600">'+t.lodge+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+t.topic+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+t.trainer+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;text-align:right">'+(t.attendee_count||0)+'</td></tr>').join('')}</tbody><tfoot><tr style="background:#f0ede6;font-weight:700"><td colspan="4" style="padding:8px 12px">TOTAL STAFF TRAINED</td><td style="padding:8px 12px;text-align:right">${totalTrainedM}</td></tr></tfoot></table>`:'<div style="background:#fff8ed;border:1.5px solid #e8c87a;border-radius:6px;padding:10px 14px;font-size:13px;color:#7a5a10;margin-bottom:16px">⚠ No training sessions recorded this month.</div>'}
+  ${allIncM.length>0?`<div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--forest);margin:16px 0 8px;border-bottom:1px solid var(--border);padding-bottom:4px">Incidents This Month</div><table style="width:100%;border-collapse:collapse;font-size:13px;background:var(--white);border:1.5px solid var(--border);border-radius:6px;margin-bottom:16px;"><thead><tr style="background:#f0ede6"><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Week</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Lodge</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Category</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Description</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Status</th></tr></thead><tbody>${allIncM.map(i=>'<tr><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+fmtDate(i.week)+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;font-weight:600">'+i.lodge+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+i.category+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+i.description+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0"><span style="padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;background:'+(i.status==='Open'?'#fde8e8;color:#c0392b':'#e3f2e8;color:#2e7d52')+'">'+i.status+'</span></td></tr>').join('')}</tbody></table>`:'<div style="background:#f0faf4;border:1.5px solid #a8d5b5;border-radius:6px;padding:10px 14px;font-size:13px;color:#2e7d52;margin-bottom:16px">âœ“ No incidents this month.</div>'}
+  ${allTrainM.length>0?`<div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--forest);margin:16px 0 8px;border-bottom:1px solid var(--border);padding-bottom:4px">Training Log This Month</div><table style="width:100%;border-collapse:collapse;font-size:13px;background:var(--white);border:1.5px solid var(--border);border-radius:6px;margin-bottom:16px;"><thead><tr style="background:#f0ede6"><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Date</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Lodge</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Topic</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Trainer</th><th style="padding:8px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Attended</th></tr></thead><tbody>${allTrainM.map(t=>'<tr><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+t.date+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;font-weight:600">'+t.lodge+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+t.topic+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+t.trainer+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;text-align:right">'+(t.attendee_count||0)+'</td></tr>').join('')}</tbody><tfoot><tr style="background:#f0ede6;font-weight:700"><td colspan="4" style="padding:8px 12px">TOTAL STAFF TRAINED</td><td style="padding:8px 12px;text-align:right">${totalTrainedM}</td></tr></tfoot></table>`:'<div style="background:#fff8ed;border:1.5px solid #e8c87a;border-radius:6px;padding:10px 14px;font-size:13px;color:#7a5a10;margin-bottom:16px">âš  No training sessions recorded this month.</div>'}
   ${openMaintM.length>0?`<div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--forest);margin:16px 0 8px;border-bottom:1px solid var(--border);padding-bottom:4px">Open Maintenance Items</div><table style="width:100%;border-collapse:collapse;font-size:13px;background:var(--white);border:1.5px solid var(--border);border-radius:6px;margin-bottom:16px;"><thead><tr style="background:#f0ede6"><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Lodge</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Item</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Issue</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Status</th></tr></thead><tbody>${openMaintM.map(m=>'<tr><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;font-weight:600">'+m.lodge+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+m.item+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+m.issue+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0"><span style="padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;background:'+(m.status==='Open'?'#fde8e8;color:#c0392b':'#fff3cd;color:#856404')+'">'+m.status+'</span></td></tr>').join('')}</tbody></table>`:''}
-  ${allCompM.length>0?`<div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--forest);margin:16px 0 8px;border-bottom:1px solid var(--border);padding-bottom:4px">Staff &amp; Complimentary This Month</div><table style="width:100%;border-collapse:collapse;font-size:13px;background:var(--white);border:1.5px solid var(--border);border-radius:6px;margin-bottom:16px;"><thead><tr style="background:#f0ede6"><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Lodge</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Name</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Category</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Item</th><th style="padding:8px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Std Value</th><th style="padding:8px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Paid</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Authorised</th></tr></thead><tbody>${allCompM.map(s=>'<tr><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;font-weight:600">'+s.lodge+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+(s.person_name||'')+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+(s.category||'')+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+(s.item||'')+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;text-align:right">'+(s.standard_total||'—')+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;text-align:right">'+fmtUGX(n(s.amount_paid||0))+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+(s.authorised_by||'—')+'</td></tr>').join('')}</tbody><tfoot><tr style="background:#f0ede6;font-weight:700"><td colspan="4" style="padding:8px 12px">TOTAL</td><td style="padding:8px 12px;text-align:right">${fmtUGX(totCompVal)}</td><td style="padding:8px 12px;text-align:right">${fmtUGX(totCompColl)}</td><td></td></tr></tfoot></table>`:''}
-  <div style="margin-top:8px;display:flex;gap:12px;"><button onclick="window.print()" style="padding:9px 20px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">⬇ Print / Download</button></div>`;
+  ${allCompM.length>0?`<div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--forest);margin:16px 0 8px;border-bottom:1px solid var(--border);padding-bottom:4px">Staff &amp; Complimentary This Month</div><table style="width:100%;border-collapse:collapse;font-size:13px;background:var(--white);border:1.5px solid var(--border);border-radius:6px;margin-bottom:16px;"><thead><tr style="background:#f0ede6"><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Lodge</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Name</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Category</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Item</th><th style="padding:8px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Std Value</th><th style="padding:8px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Paid</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Authorised</th></tr></thead><tbody>${allCompM.map(s=>'<tr><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;font-weight:600">'+s.lodge+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+(s.person_name||'')+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+(s.category||'')+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+(s.item||'')+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;text-align:right">'+(s.standard_total||'â€”')+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;text-align:right">'+fmtUGX(n(s.amount_paid||0))+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+(s.authorised_by||'â€”')+'</td></tr>').join('')}</tbody><tfoot><tr style="background:#f0ede6;font-weight:700"><td colspan="4" style="padding:8px 12px">TOTAL</td><td style="padding:8px 12px;text-align:right">${fmtUGX(totCompVal)}</td><td style="padding:8px 12px;text-align:right">${fmtUGX(totCompColl)}</td><td></td></tr></tfoot></table>`:''}
+  <div style="margin-top:8px;display:flex;gap:12px;"><button onclick="window.print()" style="padding:9px 20px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">â¬‡ Print / Download</button></div>`;
 
-document.getElementById('modal-title').textContent='Monthly Report — Uganda Cultural Lodges | '+monthName;
+document.getElementById('modal-title').textContent='Monthly Report â€” Uganda Cultural Lodges | '+monthName;
   document.getElementById('modal-meta').textContent='Administrator view only | Generated '+fmtDT(new Date().toISOString());
   document.getElementById('modal-actions').innerHTML='';
   document.getElementById('confirm-delete').style.display='none';
@@ -3174,7 +3268,7 @@ document.getElementById('modal-title').textContent='Monthly Report — Uganda Cu
 
 }
 
-// ── ANALYTICS ────────────────────────────────────────────────────────────────
+// â”€â”€ ANALYTICS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 let chartInstances={};
 function destroyChart(id){if(chartInstances[id]){chartInstances[id].destroy();delete chartInstances[id];}}
 
@@ -3188,7 +3282,7 @@ async function loadAnalytics(){
     return;
   }
 
-  // ── REVENUE CALCULATIONS ─────────────────────────────────────
+  // â”€â”€ REVENUE CALCULATIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const lodgeRevenue={};
   const weekRevenue={};
   const barTotal={},restTotal={},roomTotal={};
@@ -3219,7 +3313,7 @@ async function loadAnalytics(){
   const grandTotal=Object.values(lodgeRevenue).reduce((s,v)=>s+v,0);
   const weeks=Object.keys(weekRevenue).sort();
 
-  // ── WEEK ON WEEK ──────────────────────────────────────────────
+  // â”€â”€ WEEK ON WEEK â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const lastWeek=weeks[weeks.length-1];
   const prevWeek=weeks[weeks.length-2];
   const lastWkRev=weekRevenue[lastWeek]||0;
@@ -3227,14 +3321,14 @@ async function loadAnalytics(){
   const wkChange=prevWkRev>0?((lastWkRev-prevWkRev)/prevWkRev*100).toFixed(1):0;
   const wkUp=lastWkRev>=prevWkRev;
 
-  // ── TOP SELLING LODGE ─────────────────────────────────────────
+  // â”€â”€ TOP SELLING LODGE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const topLodge=LODGES.reduce((a,b)=>lodgeRevenue[a]>lodgeRevenue[b]?a:b);
   const topLodgePct=grandTotal>0?(lodgeRevenue[topLodge]/grandTotal*100).toFixed(1):0;
 
-  // ── TOP ITEMS ─────────────────────────────────────────────────
+  // â”€â”€ TOP ITEMS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const topItems=Object.entries(itemSales).sort((a,b)=>b[1]-a[1]).slice(0,8);
 
-  // ── SUMMARY CARDS ─────────────────────────────────────────────
+  // â”€â”€ SUMMARY CARDS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const cards=document.getElementById('analytics-cards');
   cards.innerHTML=`
     <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;border-top:4px solid var(--forest)">
@@ -3244,21 +3338,21 @@ async function loadAnalytics(){
     </div>
     <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;border-top:4px solid ${wkUp?'#2e7d52':'#c0392b'}">
       <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Week on Week</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:${wkUp?'#2e7d52':'#c0392b'}">${wkUp?'▲':'▼'} ${Math.abs(wkChange)}%</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:${wkUp?'#2e7d52':'#c0392b'}">${wkUp?'â–²':'â–¼'} ${Math.abs(wkChange)}%</div>
       <div style="font-size:12px;color:var(--muted);margin-top:4px">${fmtUGX(lastWkRev)} vs ${fmtUGX(prevWkRev)} prev week</div>
     </div>
     <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;border-top:4px solid var(--gold)">
       <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Top Performing Lodge</div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--forest)">${topLodge.split(' ')[0]}</div>
-      <div style="font-size:12px;color:var(--muted);margin-top:4px">${fmtUGX(lodgeRevenue[topLodge])} — ${topLodgePct}% of group revenue</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">${fmtUGX(lodgeRevenue[topLodge])} â€” ${topLodgePct}% of group revenue</div>
     </div>
     <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;border-top:4px solid #8e44ad">
       <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Top Selling Item</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--forest)">${topItems[0]?topItems[0][0]:'—'}</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--forest)">${topItems[0]?topItems[0][0]:'â€”'}</div>
       <div style="font-size:12px;color:var(--muted);margin-top:4px">${topItems[0]?topItems[0][1]+' units sold':''}</div>
     </div>`;
 
-  // ── LODGE REVENUE BAR CHART ───────────────────────────────────
+  // â”€â”€ LODGE REVENUE BAR CHART â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   destroyChart('lodge-revenue');
   const ctx1=document.getElementById('chart-lodge-revenue').getContext('2d');
   chartInstances['lodge-revenue']=new Chart(ctx1,{
@@ -3274,7 +3368,7 @@ async function loadAnalytics(){
     options:{responsive:true,plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:v=>v>=1000000?(v/1000000).toFixed(1)+'M':v>=1000?(v/1000).toFixed(0)+'K':v}}}}
   });
 
-  // ── WEEKLY TREND LINE CHART ───────────────────────────────────
+  // â”€â”€ WEEKLY TREND LINE CHART â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   destroyChart('weekly-trend');
   const ctx2=document.getElementById('chart-weekly-trend').getContext('2d');
   chartInstances['weekly-trend']=new Chart(ctx2,{
@@ -3291,7 +3385,7 @@ async function loadAnalytics(){
     options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v>=1000000?(v/1000000).toFixed(1)+'M':v>=1000?(v/1000).toFixed(0)+'K':v}}}}
   });
 
-  // ── REVENUE MIX DONUT ─────────────────────────────────────────
+  // â”€â”€ REVENUE MIX DONUT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   destroyChart('revenue-mix');
   const totalBar=LODGES.reduce((s,l)=>s+barTotal[l],0);
   const totalRest=LODGES.reduce((s,l)=>s+restTotal[l],0);
@@ -3306,7 +3400,7 @@ async function loadAnalytics(){
     options:{responsive:true,plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:function(ctx){var pct=(ctx.parsed/grandTotal*100).toFixed(1);return ctx.label+': '+fmtUGX(ctx.parsed)+' ('+pct+'%)';}}}}}
   });
 
-  // ── TOP ITEMS BAR CHART ───────────────────────────────────────
+  // â”€â”€ TOP ITEMS BAR CHART â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   destroyChart('top-items');
   const ctx4=document.getElementById('chart-top-items').getContext('2d');
   chartInstances['top-items']=new Chart(ctx4,{
@@ -3323,7 +3417,7 @@ async function loadAnalytics(){
     options:{responsive:true,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{callback:v=>Math.round(v)}}}}
   });
 
-  // ── LODGE COMPARISON TABLE ────────────────────────────────────
+  // â”€â”€ LODGE COMPARISON TABLE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const insights=document.getElementById('analytics-insights');
   // Build lodge comparison table
   let insHtml='<div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:20px">';
@@ -3371,7 +3465,7 @@ async function loadAnalytics(){
 
 
 }
-// ── ADMIN PANEL ──────────────────────────────────────────────────────────────
+// â”€â”€ ADMIN PANEL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function loadAdminPanel(){
   if(!isAdmin()) return;
   const tbody=document.getElementById('admin-users-table');
@@ -3380,7 +3474,7 @@ function loadAdminPanel(){
   const roleColors={admin:'var(--forest)',gm:'var(--gold)',supervisor:'var(--amber)'};
   const accessDesc={
     admin:'All lodges, all reports, monthly, analytics, archive, delete',
-    gm:'All lodges, consolidated report, analytics — read only',
+    gm:'All lodges, consolidated report, analytics â€” read only',
     supervisor:'Own lodge only, submit and save drafts'
   };
   tbody.innerHTML=Object.entries(PERMISSIONS).map(([email,p])=>{
@@ -3399,7 +3493,7 @@ function loadAdminPanel(){
   }).join('');
 }
 
-// ── CARRY FORWARD STOCK ──────────────────────────────────────────────────────
+// â”€â”€ CARRY FORWARD STOCK â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function carryForwardStock(){
   if(!currentLodge)return;
   // Get current week
@@ -3425,14 +3519,14 @@ async function carryForwardStock(){
   console.log('Previous stock loaded:',window._prevBarStock.length,'bar items,',window._prevStoreStock.length,'store items');
 }
 
-// ── LOAD DRAFT ────────────────────────────────────────────────────────────────
+// â”€â”€ LOAD DRAFT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function loadDraft(){
   const weekOf=document.getElementById('week-of').value;
   if(!weekOf){setStatus('Please select the week first.','error');return;}
   if(!currentLodge){setStatus('No lodge selected.','error');return;}
   setStatus('Looking for saved draft...','');
   const {data,error}=await sb.from('weekly_reports')
-    .select('*').eq('lodge',currentLodge).eq('week_of',weekOf).eq('is_draft',true).limit(1);
+    .select('*').eq('lodge',currentLodge).eq('week_of',weekOf).eq('is_draft',true).order('last_saved_at',{ascending:false}).limit(1);
   if(error||!data||!data.length){
     setStatus('No draft found for this lodge and week.','error');
     return;
@@ -3601,10 +3695,10 @@ async function loadDraft(){
   fillTable('staff-comp', r.staff_complimentary||[]);
   fillTable('training', r.training_log||[]);
   fillTable('incidents', r.incidents||[]);
-  setStatus('✓ Draft loaded for week of '+fmtDate(weekOf)+'. Continue editing and save draft again when done.','success');
+  setStatus('âœ“ Draft loaded for week of '+fmtDate(weekOf)+'. Continue editing and save draft again when done.','success');
 }
 
-// ── OPEN CURRENT DRAFT ────────────────────────────────────────────────────────
+// â”€â”€ OPEN CURRENT DRAFT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function openCurrentDraft(){
   const weekOf=document.getElementById('week-of').value;
   if(!weekOf){setStatus('Please select the week first.','error');return;}
@@ -3619,7 +3713,7 @@ async function openCurrentDraft(){
   await openDraftById(data[0].id, data[0].lodge, data[0].week_of);
 }
 
-// ── AUTO ARCHIVE ──────────────────────────────────────────────────────────────
+// â”€â”€ AUTO ARCHIVE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function autoArchiveOldReports(){
   // Archive reports older than 2 months
   const cutoff=new Date();
@@ -3638,3 +3732,4 @@ checkSession();
 </script>
 </body>
 </html>
+
