@@ -1967,40 +1967,193 @@ async function loadDraft(){
   setStatus('✓ Draft loaded for week of '+fmtDate(weekOf)+'. Continue editing.','success');
 }
 
+function setTomSelect(sel, value){
+  // Set value on a Tom Select enhanced dropdown
+  if(!sel||!value) return;
+  if(sel.tomselect){
+    sel.tomselect.setValue(value, true);
+  } else {
+    sel.value=value;
+    sel.dispatchEvent(new Event('change'));
+  }
+}
+
 function populateTable(name, rows){
   if(!rows||!rows.length) return;
   const tbody=document.getElementById('body-'+name);
   if(!tbody) return;
-  // Clear existing rows and rebuild
   tbody.innerHTML='';
-  rows.forEach(function(row){
+
+  rows.forEach(function(row, rowIdx){
     addRow(name);
     const tr=tbody.lastElementChild;
     if(!tr) return;
-    const allInps=tr.querySelectorAll('input');
-    const allSels=tr.querySelectorAll('select');
-    if(name==='bar-sales'||name==='restaurant'){
+
+    if(name==='bar-sales'){
+      const allInps=tr.querySelectorAll('input');
+      const allSels=tr.querySelectorAll('select');
       if(allInps[0]) allInps[0].value=row.date||'';
-      if(allSels[0]) allSels[0].value=row.group||'';
-      // Trigger group change to load items
-      if(allSels[0]) allSels[0].dispatchEvent(new Event('change'));
+      // Set group via Tom Select, wait, then set item
+      setTomSelect(allSels[0], row.group||'');
       setTimeout(function(){
-        const allSels2=tr.querySelectorAll('select');
-        if(allSels2[1]) allSels2[1].value=row.item||'';
-        allSels2[1] && allSels2[1].dispatchEvent(new Event('change'));
-        if(allInps[2]) allInps[2].value=row.qty_sold||'';
-        if(allInps[3]) allInps[3].value=row.selling_price||'';
-        if(allInps[3]) allInps[3].dispatchEvent(new Event('input'));
-        const payIdx=name==='bar-sales'?2:3;
-        if(allSels2[payIdx]) allSels2[payIdx].value=row.payment||'';
-        const remIdx=name==='bar-sales'?4:3;
-        if(allInps[remIdx]) allInps[remIdx].value=row.remarks||'';
-      },100);
-    } else {
-      // For other tabs, fill inputs sequentially
-      const vals=Object.values(row).filter(v=>typeof v==='string');
-      allInps.forEach(function(inp,i){ if(vals[i+1]!==undefined) inp.value=vals[i+1]; });
-      allSels.forEach(function(sel,i){ if(vals[i]!==undefined) sel.value=vals[i]; });
+        const sels=tr.querySelectorAll('select');
+        setTomSelect(sels[1], row.item||'');
+        setTimeout(function(){
+          const inps=tr.querySelectorAll('input');
+          if(inps[2]) inps[2].value=row.qty_sold||'';
+          if(inps[3]){inps[3].value=row.selling_price||'';inps[3].dispatchEvent(new Event('input'));}
+          const sels2=tr.querySelectorAll('select');
+          if(sels2[2]) setTomSelect(sels2[2], row.payment||'Cash');
+          if(inps[4]) inps[4].value=row.remarks||'';
+        },150);
+      },150);
+
+    } else if(name==='restaurant'){
+      const allInps=tr.querySelectorAll('input');
+      const allSels=tr.querySelectorAll('select');
+      if(allInps[0]) allInps[0].value=row.date||'';
+      setTomSelect(allSels[0], row.group||'');
+      setTimeout(function(){
+        const sels=tr.querySelectorAll('select');
+        setTomSelect(sels[1], row.item||'');
+        setTimeout(function(){
+          const inps=tr.querySelectorAll('input');
+          if(inps[1]) inps[1].value=row.qty_sold||'';
+          if(inps[2]){inps[2].value=row.selling_price||'';inps[2].dispatchEvent(new Event('input'));}
+          const sels2=tr.querySelectorAll('select');
+          if(sels2[2]) setTomSelect(sels2[2], row.meal_period||'Breakfast');
+          if(sels2[3]) setTomSelect(sels2[3], row.payment||'Cash');
+          if(inps[3]) inps[3].value=row.remarks||'';
+        },150);
+      },150);
+
+    } else if(name==='bar-stock'||name==='stores'){
+      const allInps=tr.querySelectorAll('input');
+      const allSels=tr.querySelectorAll('select');
+      setTomSelect(allSels[0], row.group||'');
+      setTimeout(function(){
+        const sels=tr.querySelectorAll('select');
+        setTomSelect(sels[1], row.item||'');
+        const inps=tr.querySelectorAll('input');
+        if(inps[0]) inps[0].value=row.unit||'';
+        if(inps[1]) inps[1].value=row.par_level||'';
+        if(inps[2]) inps[2].value=row.unit_cost||'';
+        if(inps[3]) inps[3].value=row.opening||'';
+        if(inps[4]) inps[4].value=row.received||'';
+        if(inps[5]) inps[5].value=row.issued||'';
+        if(inps[6]){inps[6].value=row.actual_closing||'';inps[6].dispatchEvent(new Event('input'));}
+      },150);
+
+    } else if(name==='kitchen'){
+      const allInps=tr.querySelectorAll('input');
+      const allSels=tr.querySelectorAll('select');
+      setTomSelect(allSels[0], row.group||'');
+      setTimeout(function(){
+        const sels=tr.querySelectorAll('select');
+        setTomSelect(sels[1], row.item||'');
+        const inps=tr.querySelectorAll('input');
+        if(inps[0]) inps[0].value=row.unit||'';
+        if(inps[1]) inps[1].value=row.par_level||'';
+        if(inps[2]) inps[2].value=row.unit_cost||'';
+        if(inps[3]) inps[3].value=row.qty_purchased||'';
+        if(inps[4]) inps[4].value=row.qty_used||'';
+        if(inps[5]){inps[5].value=row.qty_wasted||'';inps[5].dispatchEvent(new Event('input'));}
+        if(inps[6]) inps[6].value=row.remarks||'';
+      },150);
+
+    } else if(name==='room-sales'){
+      const allInps=tr.querySelectorAll('input');
+      const allSels=tr.querySelectorAll('select');
+      if(allInps[0]) allInps[0].value=row.date||'';
+      if(allInps[1]) allInps[1].value=row.room_no||'';
+      if(allInps[2]) allInps[2].value=row.guest_name||'';
+      setTomSelect(allSels[0], row.room_type||'');
+      if(allInps[3]) allInps[3].value=row.nights||'';
+      if(allInps[4]){allInps[4].value=row.rate_per_night||'';allInps[4].dispatchEvent(new Event('input'));}
+      setTomSelect(allSels[1], row.payment||'Cash');
+      if(allInps[5]) allInps[5].value=row.remarks||'';
+
+    } else if(name==='rooms'){
+      const allInps=tr.querySelectorAll('input');
+      const allSels=tr.querySelectorAll('select');
+      if(allInps[0]) allInps[0].value=row.room||'';
+      if(allInps[1]) allInps[1].value=row.date||'';
+      if(allInps[2]) allInps[2].value=row.inspector||'';
+      if(allInps[3]) allInps[3].value=row.deficiency||'';
+      if(allInps[4]) allInps[4].value=row.action||'';
+      setTomSelect(allSels[0], row.resolved||'');
+      if(allInps[5]) allInps[5].value=row.remarks||'';
+
+    } else if(name==='housekeeping'){
+      const allInps=tr.querySelectorAll('input');
+      const allSels=tr.querySelectorAll('select');
+      if(allInps[0]) allInps[0].value=row.date||'';
+      setTomSelect(allSels[0], row.area||'');
+      setTomSelect(allSels[1], row.standard_met||'');
+      if(allInps[1]) allInps[1].value=row.issue||'';
+      if(allInps[2]) allInps[2].value=row.action||'';
+      setTomSelect(allSels[2], row.resolved||'');
+      if(allInps[3]) allInps[3].value=row.inspector||'';
+
+    } else if(name==='security'){
+      const allInps=tr.querySelectorAll('input');
+      const allSels=tr.querySelectorAll('select');
+      if(allInps[0]) allInps[0].value=row.date||'';
+      setTomSelect(allSels[0], row.type||'');
+      if(allInps[1]) allInps[1].value=row.conductor||'';
+      if(allInps[2]) allInps[2].value=row.time||'';
+      if(allInps[3]) allInps[3].value=row.findings||'';
+      if(allInps[4]) allInps[4].value=row.action||'';
+      if(allInps[5]) allInps[5].value=row.signoff||'';
+
+    } else if(name==='maintenance'){
+      const allInps=tr.querySelectorAll('input');
+      const allSels=tr.querySelectorAll('select');
+      if(allInps[0]) allInps[0].value=row.date||'';
+      setTomSelect(allSels[0], row.category||'');
+      if(allInps[1]) allInps[1].value=row.item||'';
+      if(allInps[2]) allInps[2].value=row.issue||'';
+      if(allInps[3]) allInps[3].value=row.reported_by||'';
+      if(allInps[4]) allInps[4].value=row.action||'';
+      setTomSelect(allSels[1], row.status||'');
+      if(allInps[5]) allInps[5].value=row.remarks||'';
+
+    } else if(name==='staff-comp'){
+      const allInps=tr.querySelectorAll('input');
+      const allSels=tr.querySelectorAll('select');
+      if(allInps[0]) allInps[0].value=row.date||'';
+      if(allInps[1]) allInps[1].value=row.person_name||'';
+      setTomSelect(allSels[0], row.category||'');
+      if(allInps[2]) allInps[2].value=row.item||'';
+      if(allInps[3]) allInps[3].value=row.quantity||'';
+      if(allInps[4]) allInps[4].value=row.standard_price||'';
+      if(allInps[5]){allInps[5].value=row.amount_paid||'';allInps[5].dispatchEvent(new Event('input'));}
+      if(allInps[6]) allInps[6].value=row.authorised_by||'';
+      if(allInps[7]) allInps[7].value=row.remarks||'';
+
+    } else if(name==='training'){
+      const allInps=tr.querySelectorAll('input');
+      const allSels=tr.querySelectorAll('select');
+      if(allInps[0]) allInps[0].value=row.date||'';
+      if(allInps[1]) allInps[1].value=row.topic||'';
+      if(allInps[2]) allInps[2].value=row.trainer||'';
+      if(allInps[3]) allInps[3].value=row.duration_hours||'';
+      if(allInps[4]) allInps[4].value=row.attendees||'';
+      if(allInps[5]) allInps[5].value=row.attendee_count||'';
+      if(allInps[6]) allInps[6].value=row.key_points||'';
+      setTomSelect(allSels[0], row.followup_required||'');
+      if(allInps[7]) allInps[7].value=row.remarks||'';
+
+    } else if(name==='incidents'){
+      const allInps=tr.querySelectorAll('input');
+      const allSels=tr.querySelectorAll('select');
+      if(allInps[0]) allInps[0].value=row.date||'';
+      setTomSelect(allSels[0], row.category||'');
+      if(allInps[1]) allInps[1].value=row.description||'';
+      if(allInps[2]) allInps[2].value=row.persons||'';
+      if(allInps[3]) allInps[3].value=row.action||'';
+      setTomSelect(allSels[1], row.escalated||'');
+      setTomSelect(allSels[2], row.status||'');
     }
   });
 }
@@ -3285,40 +3438,193 @@ async function loadDraft(){
   setStatus('✓ Draft loaded for week of '+fmtDate(weekOf)+'. Continue editing.','success');
 }
 
+function setTomSelect(sel, value){
+  // Set value on a Tom Select enhanced dropdown
+  if(!sel||!value) return;
+  if(sel.tomselect){
+    sel.tomselect.setValue(value, true);
+  } else {
+    sel.value=value;
+    sel.dispatchEvent(new Event('change'));
+  }
+}
+
 function populateTable(name, rows){
   if(!rows||!rows.length) return;
   const tbody=document.getElementById('body-'+name);
   if(!tbody) return;
-  // Clear existing rows and rebuild
   tbody.innerHTML='';
-  rows.forEach(function(row){
+
+  rows.forEach(function(row, rowIdx){
     addRow(name);
     const tr=tbody.lastElementChild;
     if(!tr) return;
-    const allInps=tr.querySelectorAll('input');
-    const allSels=tr.querySelectorAll('select');
-    if(name==='bar-sales'||name==='restaurant'){
+
+    if(name==='bar-sales'){
+      const allInps=tr.querySelectorAll('input');
+      const allSels=tr.querySelectorAll('select');
       if(allInps[0]) allInps[0].value=row.date||'';
-      if(allSels[0]) allSels[0].value=row.group||'';
-      // Trigger group change to load items
-      if(allSels[0]) allSels[0].dispatchEvent(new Event('change'));
+      // Set group via Tom Select, wait, then set item
+      setTomSelect(allSels[0], row.group||'');
       setTimeout(function(){
-        const allSels2=tr.querySelectorAll('select');
-        if(allSels2[1]) allSels2[1].value=row.item||'';
-        allSels2[1] && allSels2[1].dispatchEvent(new Event('change'));
-        if(allInps[2]) allInps[2].value=row.qty_sold||'';
-        if(allInps[3]) allInps[3].value=row.selling_price||'';
-        if(allInps[3]) allInps[3].dispatchEvent(new Event('input'));
-        const payIdx=name==='bar-sales'?2:3;
-        if(allSels2[payIdx]) allSels2[payIdx].value=row.payment||'';
-        const remIdx=name==='bar-sales'?4:3;
-        if(allInps[remIdx]) allInps[remIdx].value=row.remarks||'';
-      },100);
-    } else {
-      // For other tabs, fill inputs sequentially
-      const vals=Object.values(row).filter(v=>typeof v==='string');
-      allInps.forEach(function(inp,i){ if(vals[i+1]!==undefined) inp.value=vals[i+1]; });
-      allSels.forEach(function(sel,i){ if(vals[i]!==undefined) sel.value=vals[i]; });
+        const sels=tr.querySelectorAll('select');
+        setTomSelect(sels[1], row.item||'');
+        setTimeout(function(){
+          const inps=tr.querySelectorAll('input');
+          if(inps[2]) inps[2].value=row.qty_sold||'';
+          if(inps[3]){inps[3].value=row.selling_price||'';inps[3].dispatchEvent(new Event('input'));}
+          const sels2=tr.querySelectorAll('select');
+          if(sels2[2]) setTomSelect(sels2[2], row.payment||'Cash');
+          if(inps[4]) inps[4].value=row.remarks||'';
+        },150);
+      },150);
+
+    } else if(name==='restaurant'){
+      const allInps=tr.querySelectorAll('input');
+      const allSels=tr.querySelectorAll('select');
+      if(allInps[0]) allInps[0].value=row.date||'';
+      setTomSelect(allSels[0], row.group||'');
+      setTimeout(function(){
+        const sels=tr.querySelectorAll('select');
+        setTomSelect(sels[1], row.item||'');
+        setTimeout(function(){
+          const inps=tr.querySelectorAll('input');
+          if(inps[1]) inps[1].value=row.qty_sold||'';
+          if(inps[2]){inps[2].value=row.selling_price||'';inps[2].dispatchEvent(new Event('input'));}
+          const sels2=tr.querySelectorAll('select');
+          if(sels2[2]) setTomSelect(sels2[2], row.meal_period||'Breakfast');
+          if(sels2[3]) setTomSelect(sels2[3], row.payment||'Cash');
+          if(inps[3]) inps[3].value=row.remarks||'';
+        },150);
+      },150);
+
+    } else if(name==='bar-stock'||name==='stores'){
+      const allInps=tr.querySelectorAll('input');
+      const allSels=tr.querySelectorAll('select');
+      setTomSelect(allSels[0], row.group||'');
+      setTimeout(function(){
+        const sels=tr.querySelectorAll('select');
+        setTomSelect(sels[1], row.item||'');
+        const inps=tr.querySelectorAll('input');
+        if(inps[0]) inps[0].value=row.unit||'';
+        if(inps[1]) inps[1].value=row.par_level||'';
+        if(inps[2]) inps[2].value=row.unit_cost||'';
+        if(inps[3]) inps[3].value=row.opening||'';
+        if(inps[4]) inps[4].value=row.received||'';
+        if(inps[5]) inps[5].value=row.issued||'';
+        if(inps[6]){inps[6].value=row.actual_closing||'';inps[6].dispatchEvent(new Event('input'));}
+      },150);
+
+    } else if(name==='kitchen'){
+      const allInps=tr.querySelectorAll('input');
+      const allSels=tr.querySelectorAll('select');
+      setTomSelect(allSels[0], row.group||'');
+      setTimeout(function(){
+        const sels=tr.querySelectorAll('select');
+        setTomSelect(sels[1], row.item||'');
+        const inps=tr.querySelectorAll('input');
+        if(inps[0]) inps[0].value=row.unit||'';
+        if(inps[1]) inps[1].value=row.par_level||'';
+        if(inps[2]) inps[2].value=row.unit_cost||'';
+        if(inps[3]) inps[3].value=row.qty_purchased||'';
+        if(inps[4]) inps[4].value=row.qty_used||'';
+        if(inps[5]){inps[5].value=row.qty_wasted||'';inps[5].dispatchEvent(new Event('input'));}
+        if(inps[6]) inps[6].value=row.remarks||'';
+      },150);
+
+    } else if(name==='room-sales'){
+      const allInps=tr.querySelectorAll('input');
+      const allSels=tr.querySelectorAll('select');
+      if(allInps[0]) allInps[0].value=row.date||'';
+      if(allInps[1]) allInps[1].value=row.room_no||'';
+      if(allInps[2]) allInps[2].value=row.guest_name||'';
+      setTomSelect(allSels[0], row.room_type||'');
+      if(allInps[3]) allInps[3].value=row.nights||'';
+      if(allInps[4]){allInps[4].value=row.rate_per_night||'';allInps[4].dispatchEvent(new Event('input'));}
+      setTomSelect(allSels[1], row.payment||'Cash');
+      if(allInps[5]) allInps[5].value=row.remarks||'';
+
+    } else if(name==='rooms'){
+      const allInps=tr.querySelectorAll('input');
+      const allSels=tr.querySelectorAll('select');
+      if(allInps[0]) allInps[0].value=row.room||'';
+      if(allInps[1]) allInps[1].value=row.date||'';
+      if(allInps[2]) allInps[2].value=row.inspector||'';
+      if(allInps[3]) allInps[3].value=row.deficiency||'';
+      if(allInps[4]) allInps[4].value=row.action||'';
+      setTomSelect(allSels[0], row.resolved||'');
+      if(allInps[5]) allInps[5].value=row.remarks||'';
+
+    } else if(name==='housekeeping'){
+      const allInps=tr.querySelectorAll('input');
+      const allSels=tr.querySelectorAll('select');
+      if(allInps[0]) allInps[0].value=row.date||'';
+      setTomSelect(allSels[0], row.area||'');
+      setTomSelect(allSels[1], row.standard_met||'');
+      if(allInps[1]) allInps[1].value=row.issue||'';
+      if(allInps[2]) allInps[2].value=row.action||'';
+      setTomSelect(allSels[2], row.resolved||'');
+      if(allInps[3]) allInps[3].value=row.inspector||'';
+
+    } else if(name==='security'){
+      const allInps=tr.querySelectorAll('input');
+      const allSels=tr.querySelectorAll('select');
+      if(allInps[0]) allInps[0].value=row.date||'';
+      setTomSelect(allSels[0], row.type||'');
+      if(allInps[1]) allInps[1].value=row.conductor||'';
+      if(allInps[2]) allInps[2].value=row.time||'';
+      if(allInps[3]) allInps[3].value=row.findings||'';
+      if(allInps[4]) allInps[4].value=row.action||'';
+      if(allInps[5]) allInps[5].value=row.signoff||'';
+
+    } else if(name==='maintenance'){
+      const allInps=tr.querySelectorAll('input');
+      const allSels=tr.querySelectorAll('select');
+      if(allInps[0]) allInps[0].value=row.date||'';
+      setTomSelect(allSels[0], row.category||'');
+      if(allInps[1]) allInps[1].value=row.item||'';
+      if(allInps[2]) allInps[2].value=row.issue||'';
+      if(allInps[3]) allInps[3].value=row.reported_by||'';
+      if(allInps[4]) allInps[4].value=row.action||'';
+      setTomSelect(allSels[1], row.status||'');
+      if(allInps[5]) allInps[5].value=row.remarks||'';
+
+    } else if(name==='staff-comp'){
+      const allInps=tr.querySelectorAll('input');
+      const allSels=tr.querySelectorAll('select');
+      if(allInps[0]) allInps[0].value=row.date||'';
+      if(allInps[1]) allInps[1].value=row.person_name||'';
+      setTomSelect(allSels[0], row.category||'');
+      if(allInps[2]) allInps[2].value=row.item||'';
+      if(allInps[3]) allInps[3].value=row.quantity||'';
+      if(allInps[4]) allInps[4].value=row.standard_price||'';
+      if(allInps[5]){allInps[5].value=row.amount_paid||'';allInps[5].dispatchEvent(new Event('input'));}
+      if(allInps[6]) allInps[6].value=row.authorised_by||'';
+      if(allInps[7]) allInps[7].value=row.remarks||'';
+
+    } else if(name==='training'){
+      const allInps=tr.querySelectorAll('input');
+      const allSels=tr.querySelectorAll('select');
+      if(allInps[0]) allInps[0].value=row.date||'';
+      if(allInps[1]) allInps[1].value=row.topic||'';
+      if(allInps[2]) allInps[2].value=row.trainer||'';
+      if(allInps[3]) allInps[3].value=row.duration_hours||'';
+      if(allInps[4]) allInps[4].value=row.attendees||'';
+      if(allInps[5]) allInps[5].value=row.attendee_count||'';
+      if(allInps[6]) allInps[6].value=row.key_points||'';
+      setTomSelect(allSels[0], row.followup_required||'');
+      if(allInps[7]) allInps[7].value=row.remarks||'';
+
+    } else if(name==='incidents'){
+      const allInps=tr.querySelectorAll('input');
+      const allSels=tr.querySelectorAll('select');
+      if(allInps[0]) allInps[0].value=row.date||'';
+      setTomSelect(allSels[0], row.category||'');
+      if(allInps[1]) allInps[1].value=row.description||'';
+      if(allInps[2]) allInps[2].value=row.persons||'';
+      if(allInps[3]) allInps[3].value=row.action||'';
+      setTomSelect(allSels[1], row.escalated||'');
+      setTomSelect(allSels[2], row.status||'');
     }
   });
 }
