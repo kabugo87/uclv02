@@ -2103,13 +2103,19 @@ async function openCurrentDraft(){
 
   // ── BUILD STAT CARDS HTML FIRST ─────────────────────────────
   const statsEl=document.getElementById('dash-stats');
-  if(statsEl&&!document.getElementById('stat-active')){
-    statsEl.innerHTML=
-      '<div class="stat-card"><div class="stat-label">Active Reports</div><div class="stat-value" id="stat-active">—</div></div>'+
-      '<div class="stat-card"><div class="stat-label">Hoima</div><div class="stat-value" id="stat-hoima">—</div></div>'+
-      '<div class="stat-card"><div class="stat-label">Lake</div><div class="stat-value" id="stat-mulehe">—</div></div>'+
-      '<div class="stat-card"><div class="stat-label">Kigarama</div><div class="stat-value" id="stat-kigarama">—</div></div>'+
-      '<div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value" id="stat-revenue">—</div></div>';
+  if(sup){
+    // Supervisors see no stats bar — it only shows cross-lodge data irrelevant to them
+    if(statsEl) statsEl.style.display='none';
+  } else {
+    if(statsEl) statsEl.style.display='';
+    if(statsEl&&!document.getElementById('stat-active')){
+      statsEl.innerHTML=
+        '<div class="stat-card"><div class="stat-label">Active Reports</div><div class="stat-value" id="stat-active">—</div></div>'+
+        '<div class="stat-card"><div class="stat-label">Hoima</div><div class="stat-value" id="stat-hoima">—</div></div>'+
+        '<div class="stat-card"><div class="stat-label">Lake</div><div class="stat-value" id="stat-mulehe">—</div></div>'+
+        '<div class="stat-card"><div class="stat-label">Kigarama</div><div class="stat-value" id="stat-kigarama">—</div></div>'+
+        '<div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value" id="stat-revenue">—</div></div>';
+    }
   }
 
   // ── STATS QUERY ──────────────────────────────────────────────
