@@ -2792,6 +2792,7 @@ async function generateMonthly(){
   const weeks=[...new Set(data.map(r=>r.week_of))].sort();
 
   // Revenue per lodge per week
+  const displayLodges=lodgeFilter&&lodgeFilter!=='all'?[lodgeFilter]:LODGES;
   const lodgeData={};
   displayLodges.forEach(l=>{lodgeData[l]={weeks:{},totalBar:0,totalRest:0,totalRoom:0,total:0,incidents:0,openMaint:0};});
 
