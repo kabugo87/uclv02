@@ -321,7 +321,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
       </div>
       <div id="dash-analytics-wrap" style="display:none;padding:0 0 24px">
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;margin-bottom:16px" id="analytics-cards"></div>
-  <div id="analytics-narrative" style="margin-bottom:24px"></div>
+  <div id="analytics-narrative" style="margin-bottom:20px"></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px" id="analytics-charts">
           <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px">
             <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--forest);margin-bottom:16px">Revenue by Lodge</div>
@@ -631,7 +631,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
       </div>
       <div id="dash-analytics-wrap" style="display:none;padding:0 0 24px">
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;margin-bottom:16px" id="analytics-cards"></div>
-  <div id="analytics-narrative" style="margin-bottom:24px"></div>
+  <div id="analytics-narrative" style="margin-bottom:20px"></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px" id="analytics-charts">
           <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px">
             <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--forest);margin-bottom:16px">Revenue by Lodge</div>
@@ -2906,6 +2906,7 @@ async function generateMonthly(){
   });});
 
   html+=`<div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--forest);margin:20px 0 12px;padding-bottom:6px;border-bottom:2px solid var(--border)">Operational Summary</div>
+  <div style="margin-bottom:16px" id="monthly-narrative"></div>
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:20px;">
     <div style="background:var(--white);border:1.5px solid var(--border);border-radius:6px;padding:14px;border-left:4px solid ${allIncM.filter(i=>i.status==='Open').length>0?'var(--error)':'var(--success)'}">
       <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Incidents</div>
@@ -2940,6 +2941,34 @@ document.getElementById('modal-title').textContent='Monthly Report — Uganda Cu
   document.getElementById('confirm-delete').style.display='none';
   document.getElementById('edit-section').style.display='none';
   document.getElementById('modal-body').innerHTML=html;
+  // Populate monthly narrative
+  setTimeout(function(){
+    const mNarr=document.getElementById('monthly-narrative');
+    if(mNarr){
+      const mInsights=[];
+      const sortedWks2=weeks.slice().sort();
+      if(sortedWks2.length>=2){
+        const lastW2=sortedWks2[sortedWks2.length-1];
+        const prevW2=sortedWks2[sortedWks2.length-2];
+        const lastT2=LODGES.reduce(function(s,l){return s+(lodgeData[l].weeks[lastW2]?lodgeData[l].weeks[lastW2].total:0);},0);
+        const prevT2=LODGES.reduce(function(s,l){return s+(lodgeData[l].weeks[prevW2]?lodgeData[l].weeks[prevW2].total:0);},0);
+        if(prevT2>0){
+          const pct2=((lastT2-prevT2)/prevT2*100).toFixed(1);
+          const up2=lastT2>=prevT2;
+          mInsights.push((up2?'📈':'📉')+' <strong>Final week '+(up2?'improved':'declined')+' by '+Math.abs(pct2)+'%</strong> — '+fmtUGX(lastT2)+' vs '+fmtUGX(prevT2)+' the previous week.');
+        }
+      }
+      const topML=LODGES.reduce(function(a,b){return lodgeData[a].total>lodgeData[b].total?a:b;});
+      const topMPct=grandTotal>0?(lodgeData[topML].total/grandTotal*100).toFixed(1):0;
+      mInsights.push('🏆 <strong>'+topML.split(' ')[0]+' led the group in '+monthName+'</strong> with '+fmtUGX(lodgeData[topML].total)+' ('+topMPct+'% of group total).');
+      const mBar=LODGES.reduce(function(s,l){return s+lodgeData[l].totalBar;},0);
+      const mRest=LODGES.reduce(function(s,l){return s+lodgeData[l].totalRest;},0);
+      const mRoom=LODGES.reduce(function(s,l){return s+lodgeData[l].totalRoom;},0);
+      const mTopStream=mBar>mRest&&mBar>mRoom?'Bar':mRest>mRoom?'Restaurant':'Rooms';
+      mInsights.push('💰 <strong>'+mTopStream+' was the strongest revenue stream</strong> for '+monthName+'.');
+      mNarr.innerHTML=mInsights.map(function(i){return '<div style="padding:10px 16px;border-left:3px solid var(--forest);margin-bottom:8px;background:#f8f6f0;border-radius:0 6px 6px 0;font-size:13px;line-height:1.6;color:var(--dark)">'+i+'</div>';}).join('');
+    }
+  },100);
   document.getElementById('report-modal').classList.add('open');
 
 }
@@ -3028,39 +3057,6 @@ async function loadAnalytics(){
       <div style="font-size:12px;color:var(--muted);margin-top:4px">${topItems[0]?topItems[0][1]+' units sold':''}</div>
     </div>`;
 
-  // ── INTERPRETIVE NARRATIVE ───────────────────────────────────
-  const narrativeEl=document.getElementById('analytics-narrative');
-  if(narrativeEl){
-    const insights=[];
-    
-    // Week on week insight
-    if(wkUp){
-      insights.push('📈 <strong>Revenue is growing.</strong> The most recent week recorded '+fmtUGX(lastWkRev)+', up '+Math.abs(wkChange)+'% from the previous week ('+fmtUGX(prevWkRev)+').');
-    } else {
-      insights.push('📉 <strong>Revenue declined this week.</strong> The most recent week recorded '+fmtUGX(lastWkRev)+', down '+Math.abs(wkChange)+'% from the previous week ('+fmtUGX(prevWkRev)+'). Review what drove the decline.');
-    }
-
-    // Top lodge insight
-    insights.push('🏆 <strong>'+topLodge.split(' ')[0]+' is the top performing lodge</strong>, contributing '+fmtUGX(lodgeRevenue[topLodge])+' — '+topLodgePct+'% of total group revenue.');
-
-    // Revenue mix insight
-    const barPct=grandTotal>0?(totalBar/grandTotal*100).toFixed(1):0;
-    const restPct=grandTotal>0?(totalRest/grandTotal*100).toFixed(1):0;
-    const roomPct=grandTotal>0?(totalRoom/grandTotal*100).toFixed(1):0;
-    const topStream=barPct>restPct&&barPct>roomPct?'Bar ('+barPct+'%)':restPct>roomPct?'Restaurant ('+restPct+'%)':'Rooms ('+roomPct+'%)';
-    insights.push('💰 <strong>'+topStream+' is your strongest revenue stream</strong> across all lodges. Bar: '+barPct+'% | Restaurant: '+restPct+'% | Rooms: '+roomPct+'%.');
-
-    // Best seller insight
-    if(topItems[0]){
-      insights.push('⭐ <strong>'+topItems[0][0]+' is your best selling item</strong> with '+topItems[0][1]+' units sold. '+(topItems[1]?'Second is '+topItems[1][0]+' with '+topItems[1][1]+' units.':''));
-    }
-
-    // Weeks of data
-    insights.push('📊 Analysis based on <strong>'+data.length+' reports</strong> across <strong>'+weeks.length+' weeks</strong>.');
-
-    narrativeEl.innerHTML=insights.map(i=>'<div style="padding:10px 14px;border-left:3px solid var(--forest);margin-bottom:10px;background:#f8f6f0;border-radius:0 6px 6px 0;font-size:13px;line-height:1.6">'+i+'</div>').join('');
-  }
-
   // ── LODGE REVENUE BAR CHART ───────────────────────────────────
   destroyChart('lodge-revenue');
   const ctx1=document.getElementById('chart-lodge-revenue').getContext('2d');
@@ -3128,6 +3124,39 @@ async function loadAnalytics(){
 
   // ── LODGE COMPARISON TABLE ────────────────────────────────────
   const insights=document.getElementById('analytics-insights');
+  // ── NARRATIVE INSIGHTS ───────────────────────────────────────
+  const narrativeEl=document.getElementById('analytics-narrative');
+  if(narrativeEl){
+    const insights=[];
+    // Week on week
+    if(prevWkRev>0){
+      const pctChange=((lastWkRev-prevWkRev)/prevWkRev*100).toFixed(1);
+      if(wkUp){
+        insights.push('📈 <strong>Revenue is growing.</strong> The most recent week recorded '+fmtUGX(lastWkRev)+', up '+Math.abs(pctChange)+'% from the previous week ('+fmtUGX(prevWkRev)+').');
+      } else {
+        insights.push('📉 <strong>Revenue declined this week.</strong> The most recent week recorded '+fmtUGX(lastWkRev)+', down '+Math.abs(pctChange)+'% from the previous week ('+fmtUGX(prevWkRev)+'). Review what drove the decline.');
+      }
+    }
+    // Top lodge
+    const topLodgeRevs=LODGES.map(l=>({lodge:l,rev:lodgeRevenue[l]||0})).sort((a,b)=>b.rev-a.rev);
+    const topL=topLodgeRevs[0];
+    const topLPct=grandTotal>0?(topL.rev/grandTotal*100).toFixed(1):0;
+    insights.push('🏆 <strong>'+topL.lodge.split(' ')[0]+' is the top performing lodge</strong>, contributing '+fmtUGX(topL.rev)+' — '+topLPct+'% of total group revenue.');
+    // Revenue mix
+    const bPct=grandTotal>0?(totalBar/grandTotal*100).toFixed(1):0;
+    const rPct=grandTotal>0?(totalRest/grandTotal*100).toFixed(1):0;
+    const roPct=grandTotal>0?(totalRoom/grandTotal*100).toFixed(1):0;
+    const topStream=totalBar>totalRest&&totalBar>totalRoom?'Bar ('+bPct+'%)':totalRest>totalRoom?'Restaurant ('+rPct+'%)':'Rooms ('+roPct+'%)';
+    insights.push('💰 <strong>'+topStream+' is the strongest revenue stream.</strong> Bar: '+bPct+'% | Restaurant: '+rPct+'% | Rooms: '+roPct+'% of total revenue.');
+    // Best seller
+    if(topItems[0]){
+      insights.push('⭐ <strong>'+topItems[0][0]+' is the best selling item</strong> with '+topItems[0][1]+' units sold.'+(topItems[1]?' Followed by '+topItems[1][0]+' ('+topItems[1][1]+' units).':''));
+    }
+    // Data basis
+    insights.push('📊 Analysis based on <strong>'+data.length+' reports</strong> across <strong>'+weeks.length+' week'+(weeks.length!==1?'s':'')+'</strong>.');
+    narrativeEl.innerHTML=insights.map(i=>'<div style="padding:10px 16px;border-left:3px solid var(--forest);margin-bottom:8px;background:#f8f6f0;border-radius:0 6px 6px 0;font-size:13px;line-height:1.6;color:var(--dark)">'+i+'</div>').join('');
+  }
+
   // Build lodge comparison table
   let insHtml='<div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:20px">';
   insHtml+='<div style="font-family:\'Cormorant Garamond\',serif;font-size:18px;font-weight:700;color:var(--forest);margin-bottom:16px">Lodge Performance Comparison</div>';
