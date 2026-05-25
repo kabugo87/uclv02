@@ -6,8 +6,7 @@
 <title>Uganda Cultural Lodges — Weekly Reporting</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.min.css"/>
-<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+<!-- Tom Select removed: using native searchable select -->
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Jost:wght@300;400;500;600&display=swap');
 :root{--forest:#1a3a2a;--gold:#c8922a;--sand:#f5f0e8;--white:#ffffff;--dark:#111a14;--muted:#6b7c6e;--border:#d4cfc5;--error:#c0392b;--success:#2e7d52;--amber:#d4820a;--radius:6px;}
@@ -1067,10 +1066,11 @@ function styleSelect(s){
 
 function wireDropdowns(groupTd, itemTd, unitInp, parInp, category){
   let itemData={};
-  let groupTS=null, itemTS=null;
 
-  // ── GROUP SELECT ──────────────────────────────────────────────
+  // ── GROUP SELECT (native) ─────────────────────────────────────
   const gSel=document.createElement('select');
+  gSel.className='wd-group';
+  styleSelect(gSel);
   const blankG=document.createElement('option');blankG.value='';blankG.textContent='Group...';gSel.appendChild(blankG);
   getGroups(category).forEach(g=>{
     const op=document.createElement('option');op.value=g;op.textContent=g;gSel.appendChild(op);
@@ -1078,58 +1078,82 @@ function wireDropdowns(groupTd, itemTd, unitInp, parInp, category){
   while(groupTd.firstChild)groupTd.removeChild(groupTd.firstChild);
   groupTd.appendChild(gSel);
 
-  // ── ITEM SELECT ───────────────────────────────────────────────
+  // ── ITEM SELECT (native + search input) ───────────────────────
   const iSel=document.createElement('select');
+  iSel.className='wd-item';
+  styleSelect(iSel);
+  iSel.style.width='100%';
   const blankI=document.createElement('option');blankI.value='';blankI.textContent='Select group first...';iSel.appendChild(blankI);
+
+  // Search box above item select
+  const searchInp=document.createElement('input');
+  searchInp.type='text';
+  searchInp.placeholder='Type to filter...';
+  searchInp.className='wd-search';
+  searchInp.style.cssText='width:100%;padding:3px 6px;border:1px solid var(--border);border-radius:3px;font-size:11px;font-family:Jost,sans-serif;margin-bottom:2px;box-sizing:border-box;display:none;';
+
   while(itemTd.firstChild)itemTd.removeChild(itemTd.firstChild);
+  itemTd.appendChild(searchInp);
   itemTd.appendChild(iSel);
 
-  // ── INIT TOM SELECT ───────────────────────────────────────────
-  groupTS=new TomSelect(gSel,{
-    placeholder:'Group...',allowEmptyOption:true,
-    onInitialize:function(){this.control.style.cursor='pointer';},
-    onChange:function(val){
-      if(!val){itemTS&&itemTS.clear();itemTS&&itemTS.clearOptions();return;}
-      rebuildItemOptions(val);
-    }
+  // ── GROUP CHANGE → rebuild items ─────────────────────────────
+  gSel.addEventListener('change',function(){
+    const grp=gSel.value;
+    rebuildItemOptions(grp);
   });
 
-  itemTS=new TomSelect(iSel,{
-    placeholder:'Type to search or select...',allowEmptyOption:true,
-    create:false,
-    onChange:function(val){
-      const props=itemData[val]||{};
-      if(unitInp&&props.unit)unitInp.value=props.unit;
-      if(parInp&&props.par)parInp.value=props.par;
-      if(props.price&&props.price!==0){
-        const tr=gSel.closest('tr');
-        const priceInp=tr?tr.querySelector('.price'):null;
-        if(priceInp){priceInp.value=props.price;priceInp.dispatchEvent(new Event('input'));}
-      }
-      // Other
-      const existing=itemTd.querySelector('.other-inp');
-      if(val==='Other'){
-        if(!existing){
-          const inp=document.createElement('input');
-          inp.type='text';inp.placeholder='Type item name...';inp.className='other-inp';
-          inp.style.cssText='width:100%;margin-top:3px;padding:4px 6px;border:1px solid var(--border);border-radius:3px;font-size:12px;font-family:Jost,sans-serif';
-          itemTd.appendChild(inp);
-        }
-      } else {if(existing)existing.remove();}
+  // ── ITEM CHANGE → fill unit/price ────────────────────────────
+  iSel.addEventListener('change',function(){
+    const val=iSel.value;
+    const props=itemData[val]||{};
+    if(unitInp&&props.unit)unitInp.value=props.unit;
+    if(parInp&&props.par)parInp.value=props.par;
+    if(props.price&&props.price!==0){
+      const tr=gSel.closest('tr');
+      const priceInp=tr?tr.querySelector('.price'):null;
+      if(priceInp){priceInp.value=props.price;priceInp.dispatchEvent(new Event('input'));}
     }
+    // Other — show free-text input
+    const existing=itemTd.querySelector('.other-inp');
+    if(val==='Other'){
+      if(!existing){
+        const inp=document.createElement('input');
+        inp.type='text';inp.placeholder='Type item name...';inp.className='other-inp';
+        inp.style.cssText='width:100%;margin-top:3px;padding:4px 6px;border:1px solid var(--border);border-radius:3px;font-size:12px;font-family:Jost,sans-serif';
+        itemTd.appendChild(inp);
+      }
+    } else {if(existing)existing.remove();}
   });
+
+  // ── SEARCH INPUT → filter item options ───────────────────────
+  searchInp.addEventListener('input',function(){
+    const q=searchInp.value.toLowerCase();
+    Array.from(iSel.options).forEach(o=>{
+      o.style.display=(o.value===''||o.text.toLowerCase().includes(q))?'':'none';
+    });
+  });
+
+  // Show/hide search when item select gains/loses focus
+  iSel.addEventListener('focus',function(){searchInp.style.display='block';searchInp.value='';
+    Array.from(iSel.options).forEach(o=>o.style.display='');});
+  iSel.addEventListener('blur',function(){setTimeout(function(){searchInp.style.display='none';},200);});
 
   function rebuildItemOptions(grp){
     itemData={};
-    itemTS.clear();itemTS.clearOptions();
-    const opts=[];
+    iSel.innerHTML='';
+    const blk=document.createElement('option');blk.value='';
+    blk.textContent=grp?'Select item...':'Select group first...';
+    iSel.appendChild(blk);
+    if(!grp) return;
     getItems(category,grp).forEach(item=>{
-      const label=item.item_name+(item.selling_price>0?' — UGX '+item.selling_price.toLocaleString():'');
-      opts.push({value:item.item_name,text:label});
+      const op=document.createElement('option');
+      op.value=item.item_name;
+      op.textContent=item.item_name+(item.selling_price>0?' — UGX '+item.selling_price.toLocaleString():'');
+      iSel.appendChild(op);
       itemData[item.item_name]={unit:item.unit,par:item.par_level,price:item.selling_price||0};
     });
-    opts.push({value:'Other',text:'+ Other (specify)'});
-    itemTS.addOptions(opts);
+    const otherOp=document.createElement('option');otherOp.value='Other';otherOp.textContent='+ Other (specify)';
+    iSel.appendChild(otherOp);
   }
 }
 
@@ -1303,7 +1327,6 @@ function setDashboardTableMode(mode){
 function calcReportRevenue(r){
   let rev=0;
   function parseUGX(v){return parseFloat(String(v||'').replace(/[^0-9.-]/g,''))||0;}
-  // Skip blank rows. Fall back to qty*price if total_value absent/zero.
   (r.bar_sales||[]).filter(s=>s.item&&String(s.item).trim()).forEach(s=>{
     var tv=parseUGX(s.total_value);
     rev+=tv>0?tv:parseFloat(s.qty_sold||0)*parseUGX(s.selling_price);
@@ -2850,12 +2873,6 @@ async function generateConsolidated(){
 function setSelectValue(sel,val){
   if(!sel) return;
   val=val||'';
-  if(sel.tomselect){
-    if(val&&!sel.tomselect.options[val]) sel.tomselect.addOption({value:val,text:val});
-    sel.tomselect.setValue(val,false);
-    sel.tomselect.refreshOptions(false);
-    return;
-  }
   let found=false;
   for(let i=0;i<sel.options.length;i++){
     if(sel.options[i].value===val){found=true;break;}
@@ -2869,14 +2886,14 @@ function setSelectValue(sel,val){
 }
 
 function restoreDraftDropdowns(tr,groupVal,itemVal){
-  const selects=tr.querySelectorAll('select');
-  const groupSel=selects[0];
-  const itemSel=selects[1];
+  const groupSel=tr.querySelector('select.wd-group');
+  const itemSel=tr.querySelector('select.wd-item');
   if(groupSel){
     setSelectValue(groupSel,groupVal);
-    if(!groupSel.tomselect) groupSel.dispatchEvent(new Event('change'));
+    groupSel.dispatchEvent(new Event('change')); // triggers rebuildItemOptions
   }
-  setTimeout(function(){setSelectValue(itemSel,itemVal);},0);
+  // rebuildItemOptions is synchronous so item options are ready immediately
+  if(itemSel) setSelectValue(itemSel,itemVal);
 }
 
 function openDraft(r){
@@ -2921,8 +2938,8 @@ async function openDraftById(id, lodge, weekOf){
   fillDraftTable('training', r.training_log||[]);
   fillDraftTable('incidents', r.incidents||[]);
   switchTab(document.querySelector('.tab[data-tab="bar-sales"]'));
-  // Per-row setTimeout(0) handlers finish before this setTimeout(50) fires
-  setTimeout(function(){calcTotals();calcStaffTotal();},50);
+  calcTotals();
+  calcStaffTotal();
   setStatus('Draft loaded - '+fmtDate(weekOf)+'. Continue editing and Save Draft when done.','success');
 }
 
@@ -2945,41 +2962,32 @@ function fillDraftTable(tabName, rows){
       var o=document.createElement('option');o.value=val;o.textContent=val;sel.appendChild(o);sel.value=val;
     }
     if(tabName==='bar-sales'){
-      // Set date via type attribute — unaffected by TomSelect
-      var _dateInp=tr.querySelector('input[type="date"]');
-      if(_dateInp)_dateInp.value=row.date||'';
+      var _d=tr.querySelector('input[type="date"]');if(_d)_d.value=row.date||'';
       restoreDraftDropdowns(tr,row.group||'',row.item||'');
-      setTimeout(function(){
-        // Use class/placeholder selectors — immune to TomSelect injecting extra inputs
-        var _unit=tr.querySelector('input[placeholder="Unit"]')||tr.querySelector('input.unit');
-        var _qty=tr.querySelector('input.qty');
-        var _price=tr.querySelector('input.price');
-        var _rem=tr.querySelector('input[placeholder="Remarks"]');
-        var _s2=tr.querySelectorAll('select');
-        if(_unit)_unit.value=row.unit||'';
-        if(_qty)_qty.value=row.qty_sold||'';
-        if(_price)_price.value=row.selling_price||'';
-        if(_s2[2])setS(_s2[2],row.payment||'Cash');
-        if(_rem)_rem.value=row.remarks||'';
-        // Compute per-row total directly
-        if(_qty&&_price)calcSalesRow(tr,'bar-sales');
-      },0);
+      var _qty=tr.querySelector('input.qty');
+      var _price=tr.querySelector('input.price');
+      var _unit=tr.querySelector('input[placeholder="Unit"]');
+      var _rem=tr.querySelector('input[placeholder="Remarks"]');
+      var _pay=tr.querySelector('select.wd-pay')||tr.querySelectorAll('select')[2];
+      if(_unit)_unit.value=row.unit||'';
+      if(_qty)_qty.value=row.qty_sold||'';
+      if(_price)_price.value=row.selling_price||'';
+      if(_pay)setS(_pay,row.payment||'Cash');
+      if(_rem)_rem.value=row.remarks||'';
+      if(_qty&&_price)calcSalesRow(tr,'bar-sales');
     } else if(tabName==='restaurant'){
-      var _dateInp2=tr.querySelector('input[type="date"]');
-      if(_dateInp2)_dateInp2.value=row.date||'';
+      var _d2=tr.querySelector('input[type="date"]');if(_d2)_d2.value=row.date||'';
       restoreDraftDropdowns(tr,row.group||'',row.item||'');
-      setTimeout(function(){
-        var _qty2=tr.querySelector('input.qty');
-        var _price2=tr.querySelector('input.price');
-        var _rem2=tr.querySelector('input[placeholder="Remarks"]');
-        var _s3=tr.querySelectorAll('select');
-        if(_qty2)_qty2.value=row.qty_sold||'';
-        if(_price2)_price2.value=row.selling_price||'';
-        if(_s3[2])setS(_s3[2],row.meal_period||'Breakfast');
-        if(_s3[3])setS(_s3[3],row.payment||'Cash');
-        if(_rem2)_rem2.value=row.remarks||'';
-        if(_qty2&&_price2)calcSalesRow(tr,'restaurant');
-      },0);
+      var _qty2=tr.querySelector('input.qty');
+      var _price2=tr.querySelector('input.price');
+      var _rem2=tr.querySelector('input[placeholder="Remarks"]');
+      var _sels2=tr.querySelectorAll('select');
+      if(_qty2)_qty2.value=row.qty_sold||'';
+      if(_price2)_price2.value=row.selling_price||'';
+      if(_sels2[2])setS(_sels2[2],row.meal_period||'Breakfast');
+      if(_sels2[3])setS(_sels2[3],row.payment||'Cash');
+      if(_rem2)_rem2.value=row.remarks||'';
+      if(_qty2&&_price2)calcSalesRow(tr,'restaurant');
     } else if(tabName==='bar-stock'||tabName==='stores'){
       if(sl[0]){setS(sl[0],row.group||'');sl[0].dispatchEvent(new Event('change'));}
       if(sl[1])setS(sl[1],row.item||'');
@@ -3592,49 +3600,32 @@ async function loadDraft(){
       const sl=tr.querySelectorAll('select');
       function setS(sel,val){if(sel&&val){for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===val){sel.selectedIndex=i;return;}}var o=document.createElement('option');o.value=val;o.textContent=val;sel.appendChild(o);sel.value=val;}}
       if(tabName==='bar-sales'){
-        if(ip[0])ip[0].value=row.date||'';
-        var savedRow=row; var savedTr=tr;
-        var sg0=savedTr.querySelectorAll('select')[0];
-        if(sg0&&sg0.tomselect){
-          sg0.tomselect.setValue(savedRow.group||'',true);
-          sg0.tomselect.trigger('change',savedRow.group||'');
-        } else if(sg0){setS(sg0,savedRow.group||'');sg0.dispatchEvent(new Event('change'));}
-        setTimeout(function(){
-          var s2=savedTr.querySelectorAll('select');
-          var p2=savedTr.querySelectorAll('input');
-          if(s2[1]&&s2[1].tomselect){
-            var iv=savedRow.item||'';
-            if(iv&&!s2[1].tomselect.getOption(iv))s2[1].tomselect.addOption({value:iv,text:iv});
-            s2[1].tomselect.setValue(iv);
-          } else if(s2[1]){setS(s2[1],savedRow.item||'');}
-          if(p2[1])p2[1].value=savedRow.unit||'';
-          if(p2[2])p2[2].value=savedRow.qty_sold||'';
-          if(p2[3]){p2[3].value=savedRow.selling_price||'';p2[3].dispatchEvent(new Event('input'));}
-          if(s2[2])setS(s2[2],savedRow.payment||'Cash');
-          if(p2[4])p2[4].value=savedRow.remarks||'';
-        },80);
+        var _d=tr.querySelector('input[type="date"]');if(_d)_d.value=row.date||'';
+        restoreDraftDropdowns(tr,row.group||'',row.item||'');
+        var _qty=tr.querySelector('input.qty');
+        var _price=tr.querySelector('input.price');
+        var _unit=tr.querySelector('input[placeholder="Unit"]');
+        var _rem=tr.querySelector('input[placeholder="Remarks"]');
+        var _pay=tr.querySelectorAll('select')[2];
+        if(_unit)_unit.value=row.unit||'';
+        if(_qty)_qty.value=row.qty_sold||'';
+        if(_price)_price.value=row.selling_price||'';
+        if(_pay)setS(_pay,row.payment||'Cash');
+        if(_rem)_rem.value=row.remarks||'';
+        if(_qty&&_price)calcSalesRow(tr,'bar-sales');
       } else if(tabName==='restaurant'){
-        if(ip[0])ip[0].value=row.date||'';
-        var savedRow2=row; var savedTr2=tr;
-        var sg2=savedTr2.querySelectorAll('select')[0];
-        if(sg2&&sg2.tomselect){
-          sg2.tomselect.setValue(savedRow2.group||'',true);
-          sg2.tomselect.trigger('change',savedRow2.group||'');
-        } else if(sg2){setS(sg2,savedRow2.group||'');sg2.dispatchEvent(new Event('change'));}
-        setTimeout(function(){
-          var s2=savedTr2.querySelectorAll('select');
-          var p2=savedTr2.querySelectorAll('input');
-          if(s2[1]&&s2[1].tomselect){
-            var iv=savedRow2.item||'';
-            if(iv&&!s2[1].tomselect.getOption(iv))s2[1].tomselect.addOption({value:iv,text:iv});
-            s2[1].tomselect.setValue(iv);
-          } else if(s2[1]){setS(s2[1],savedRow2.item||'');}
-          if(p2[1])p2[1].value=savedRow2.qty_sold||'';
-          if(p2[2]){p2[2].value=savedRow2.selling_price||'';p2[2].dispatchEvent(new Event('input'));}
-          if(s2[2])setS(s2[2],savedRow2.meal_period||'Breakfast');
-          if(s2[3])setS(s2[3],savedRow2.payment||'Cash');
-          if(p2[3])p2[3].value=savedRow2.remarks||'';
-        },80);
+        var _d2=tr.querySelector('input[type="date"]');if(_d2)_d2.value=row.date||'';
+        restoreDraftDropdowns(tr,row.group||'',row.item||'');
+        var _qty2=tr.querySelector('input.qty');
+        var _price2=tr.querySelector('input.price');
+        var _rem2=tr.querySelector('input[placeholder="Remarks"]');
+        var _sels2=tr.querySelectorAll('select');
+        if(_qty2)_qty2.value=row.qty_sold||'';
+        if(_price2)_price2.value=row.selling_price||'';
+        if(_sels2[2])setS(_sels2[2],row.meal_period||'Breakfast');
+        if(_sels2[3])setS(_sels2[3],row.payment||'Cash');
+        if(_rem2)_rem2.value=row.remarks||'';
+        if(_qty2&&_price2)calcSalesRow(tr,'restaurant');
       } else if(tabName==='bar-stock'||tabName==='stores'){
         if(sl[0]){setS(sl[0],row.group||'');sl[0].dispatchEvent(new Event('change'));}
         if(sl[1])setS(sl[1],row.item||'');
