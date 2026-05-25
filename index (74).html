@@ -549,6 +549,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
     </div>
     <div class="header-right">
       <span id="user-email"></span>
+      <button id="my-drafts-btn" onclick="goToMyDrafts()" style="display:none;padding:7px 16px;background:var(--gold);color:var(--white);border:none;border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">📋 My Drafts</button>
       <button class="btn-logout" onclick="doLogout()">Sign Out</button>
     </div>
   </header>
@@ -1955,14 +1956,15 @@ async function openCurrentDraft(){
   if(admin) autoArchiveOldReports();
 
   // ── SHOW/HIDE UI ELEMENTS ────────────────────────────────────
-  // Tabs
+  // Tabs — supervisors see only Drafts tab on dashboard; admin/GM see all
   document.querySelectorAll('.dash-tab').forEach(t=>t.style.display='none');
   if(!sup){
     // Admin and GM see all lodge tabs
     document.querySelectorAll('.dash-tab').forEach(t=>t.style.display='block');
   }
-  // Admin-only tabs
+  // Drafts tab — always visible for supervisors and admin
   document.getElementById('drafts-tab').style.display=(admin||sup)?'block':'none';
+  // Admin-only tab
   document.getElementById('admin-tab').style.display=admin?'block':'none';
   // Analytics for admin and GM only
   document.getElementById('analytics-tab').style.display=(admin||gm)?'block':'none';
@@ -1971,9 +1973,20 @@ async function openCurrentDraft(){
   // Consolidated report - admin and GM only
   const cBtn=document.getElementById('consolidated-btn');
   if(cBtn) cBtn.style.display=(admin||gm)?'':'none';
-  // Week selector - hide for supervisors
+  // Week selector - hide for supervisors on dashboard
   const wkBar=document.querySelector('.week-bar');
   if(wkBar) wkBar.style.display=sup?'none':'';
+  // My Drafts button in header — show for supervisors only
+  const myDraftsBtn=document.getElementById('my-drafts-btn');
+  if(myDraftsBtn) myDraftsBtn.style.display=sup?'inline-block':'none';
+  // For supervisors: default to showing their own submitted reports, not drafts
+  if(sup){
+    // Show the All Lodges tab (their lodge) as active by default if not already on drafts
+    const allTab=document.querySelector('.dash-tab[onclick*="showDashTab"][onclick*="all"]');
+    if(allTab&&currentDashTab!=='drafts'){
+      allTab.style.display='block';
+    }
+  }
 
   // ── BUILD STAT CARDS HTML FIRST ─────────────────────────────
   const statsEl=document.getElementById('dash-stats');
@@ -2088,6 +2101,15 @@ async function openCurrentDraft(){
     tr.appendChild(actTd);
     tbody.appendChild(tr);
   });
+}
+
+// ── GO TO MY DRAFTS ──────────────────────────────────────────────────────────
+function goToMyDrafts(){
+  // Switch to dashboard tab, then activate Drafts sub-tab
+  const dashTabEl=document.querySelector('.tab[data-tab="dashboard"]');
+  if(dashTabEl) switchTab(dashTabEl);
+  const draftsTabEl=document.getElementById('drafts-tab');
+  if(draftsTabEl) showDashTab(draftsTabEl,'drafts');
 }
 
 // ── ARCHIVE & DELETE ──────────────────────────────────────────────────────────
@@ -2773,30 +2795,54 @@ function fillDraftTable(tabName, rows){
     }
     if(tabName==='bar-sales'){
       if(ip[0])ip[0].value=row.date||'';
-      if(sl[0]){setS(sl[0],row.group||'');sl[0].dispatchEvent(new Event('change'));}
+      // Tom Select: use setValue() on the TS instance so the UI updates correctly
       var sr=row,st=tr;
-      requestAnimationFrame(function(){
+      var gs0=st.querySelectorAll('select')[0];
+      if(gs0&&gs0.tomselect){
+        gs0.tomselect.setValue(sr.group||'',true); // silent=true to avoid triggering onChange yet
+        // Manually rebuild item options for this group
+        gs0.tomselect.trigger('change',sr.group||'');
+      } else if(gs0){setS(gs0,sr.group||'');gs0.dispatchEvent(new Event('change'));}
+      setTimeout(function(){
         var s2=st.querySelectorAll('select');var p2=st.querySelectorAll('input');
-        if(s2[1])setS(s2[1],sr.item||'');
+        // Item dropdown — use Tom Select setValue if available
+        if(s2[1]&&s2[1].tomselect){
+          // Add the saved item as an option if not already present, then select it
+          var itemVal=sr.item||'';
+          if(itemVal&&!s2[1].tomselect.getOption(itemVal)){
+            s2[1].tomselect.addOption({value:itemVal,text:itemVal});
+          }
+          s2[1].tomselect.setValue(itemVal);
+        } else if(s2[1]){setS(s2[1],sr.item||'');}
         if(p2[1])p2[1].value=sr.unit||'';
         if(p2[2])p2[2].value=sr.qty_sold||'';
         if(p2[3]){p2[3].value=sr.selling_price||'';p2[3].dispatchEvent(new Event('input'));}
         if(s2[2])setS(s2[2],sr.payment||'Cash');
         if(p2[4])p2[4].value=sr.remarks||'';
-      });
+      },80);
     } else if(tabName==='restaurant'){
       if(ip[0])ip[0].value=row.date||'';
-      if(sl[0]){setS(sl[0],row.group||'');sl[0].dispatchEvent(new Event('change'));}
       var sr2=row,st2=tr;
-      requestAnimationFrame(function(){
+      var gs2=st2.querySelectorAll('select')[0];
+      if(gs2&&gs2.tomselect){
+        gs2.tomselect.setValue(sr2.group||'',true);
+        gs2.tomselect.trigger('change',sr2.group||'');
+      } else if(gs2){setS(gs2,sr2.group||'');gs2.dispatchEvent(new Event('change'));}
+      setTimeout(function(){
         var s2=st2.querySelectorAll('select');var p2=st2.querySelectorAll('input');
-        if(s2[1])setS(s2[1],sr2.item||'');
+        if(s2[1]&&s2[1].tomselect){
+          var itemVal=sr2.item||'';
+          if(itemVal&&!s2[1].tomselect.getOption(itemVal)){
+            s2[1].tomselect.addOption({value:itemVal,text:itemVal});
+          }
+          s2[1].tomselect.setValue(itemVal);
+        } else if(s2[1]){setS(s2[1],sr2.item||'');}
         if(p2[1])p2[1].value=sr2.qty_sold||'';
         if(p2[2]){p2[2].value=sr2.selling_price||'';p2[2].dispatchEvent(new Event('input'));}
         if(s2[2])setS(s2[2],sr2.meal_period||'Breakfast');
         if(s2[3])setS(s2[3],sr2.payment||'Cash');
         if(p2[3])p2[3].value=sr2.remarks||'';
-      });
+      },80);
     } else if(tabName==='bar-stock'||tabName==='stores'){
       if(sl[0]){setS(sl[0],row.group||'');sl[0].dispatchEvent(new Event('change'));}
       if(sl[1])setS(sl[1],row.item||'');
@@ -3401,34 +3447,48 @@ async function loadDraft(){
       function setS(sel,val){if(sel&&val){for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===val){sel.selectedIndex=i;return;}}var o=document.createElement('option');o.value=val;o.textContent=val;sel.appendChild(o);sel.value=val;}}
       if(tabName==='bar-sales'){
         if(ip[0])ip[0].value=row.date||'';
-        // Set group then trigger change to load items
-        if(sl[0]){setS(sl[0],row.group||'');sl[0].dispatchEvent(new Event('change'));}
-        // Wait one frame for items to populate then set item and numbers
         var savedRow=row; var savedTr=tr;
-        requestAnimationFrame(function(){
+        var sg0=savedTr.querySelectorAll('select')[0];
+        if(sg0&&sg0.tomselect){
+          sg0.tomselect.setValue(savedRow.group||'',true);
+          sg0.tomselect.trigger('change',savedRow.group||'');
+        } else if(sg0){setS(sg0,savedRow.group||'');sg0.dispatchEvent(new Event('change'));}
+        setTimeout(function(){
           var s2=savedTr.querySelectorAll('select');
           var p2=savedTr.querySelectorAll('input');
-          if(s2[1]){setS(s2[1],savedRow.item||'');}
+          if(s2[1]&&s2[1].tomselect){
+            var iv=savedRow.item||'';
+            if(iv&&!s2[1].tomselect.getOption(iv))s2[1].tomselect.addOption({value:iv,text:iv});
+            s2[1].tomselect.setValue(iv);
+          } else if(s2[1]){setS(s2[1],savedRow.item||'');}
           if(p2[1])p2[1].value=savedRow.unit||'';
           if(p2[2])p2[2].value=savedRow.qty_sold||'';
           if(p2[3]){p2[3].value=savedRow.selling_price||'';p2[3].dispatchEvent(new Event('input'));}
           if(s2[2])setS(s2[2],savedRow.payment||'Cash');
           if(p2[4])p2[4].value=savedRow.remarks||'';
-        });
+        },80);
       } else if(tabName==='restaurant'){
         if(ip[0])ip[0].value=row.date||'';
-        if(sl[0]){setS(sl[0],row.group||'');sl[0].dispatchEvent(new Event('change'));}
         var savedRow2=row; var savedTr2=tr;
-        requestAnimationFrame(function(){
+        var sg2=savedTr2.querySelectorAll('select')[0];
+        if(sg2&&sg2.tomselect){
+          sg2.tomselect.setValue(savedRow2.group||'',true);
+          sg2.tomselect.trigger('change',savedRow2.group||'');
+        } else if(sg2){setS(sg2,savedRow2.group||'');sg2.dispatchEvent(new Event('change'));}
+        setTimeout(function(){
           var s2=savedTr2.querySelectorAll('select');
           var p2=savedTr2.querySelectorAll('input');
-          if(s2[1])setS(s2[1],savedRow2.item||'');
+          if(s2[1]&&s2[1].tomselect){
+            var iv=savedRow2.item||'';
+            if(iv&&!s2[1].tomselect.getOption(iv))s2[1].tomselect.addOption({value:iv,text:iv});
+            s2[1].tomselect.setValue(iv);
+          } else if(s2[1]){setS(s2[1],savedRow2.item||'');}
           if(p2[1])p2[1].value=savedRow2.qty_sold||'';
           if(p2[2]){p2[2].value=savedRow2.selling_price||'';p2[2].dispatchEvent(new Event('input'));}
           if(s2[2])setS(s2[2],savedRow2.meal_period||'Breakfast');
           if(s2[3])setS(s2[3],savedRow2.payment||'Cash');
           if(p2[3])p2[3].value=savedRow2.remarks||'';
-        });
+        },80);
       } else if(tabName==='bar-stock'||tabName==='stores'){
         if(sl[0]){setS(sl[0],row.group||'');sl[0].dispatchEvent(new Event('change'));}
         if(sl[1])setS(sl[1],row.item||'');
