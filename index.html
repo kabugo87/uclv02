@@ -1947,7 +1947,7 @@ async function loadDashboard(){
     document.querySelectorAll('.dash-tab').forEach(t=>t.style.display='block');
   }
   // Admin-only tabs
-  document.getElementById('drafts-tab').style.display=admin?'block':'none';
+  document.getElementById('drafts-tab').style.display=(admin||sup)?'block':'none';
   document.getElementById('admin-tab').style.display=admin?'block':'none';
   // Analytics for admin and GM only
   document.getElementById('analytics-tab').style.display=(admin||gm)?'block':'none';
