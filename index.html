@@ -1302,16 +1302,9 @@ function setDashboardTableMode(mode){
 
 function calcReportRevenue(r){
   let rev=0;
-  function rowAmt(s,totalField,qtyField,priceField,nightsField){
-    var tv=parseFloat((s[totalField]||'').replace(/[^0-9.-]/g,''))||0;
-    if(tv>0) return tv;
-    var qty=parseFloat(String(s[qtyField]||s[nightsField]||'0'))||0;
-    var price=parseFloat(String(s[priceField]||'0').replace(/[^0-9.-]/g,''))||0;
-    return qty*price;
-  }
-  (r.bar_sales||[]).forEach(s=>{rev+=rowAmt(s,'total_value','qty_sold','selling_price','');});
-  (r.restaurant_sales||[]).forEach(s=>{rev+=rowAmt(s,'total_value','qty_sold','selling_price','');});
-  (r.room_sales||[]).forEach(s=>{rev+=rowAmt(s,'total_value','nights','rate_per_night','nights');});
+  (r.bar_sales||[]).forEach(s=>{rev+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
+  (r.restaurant_sales||[]).forEach(s=>{rev+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
+  (r.room_sales||[]).forEach(s=>{rev+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
   return rev;
 }
 
@@ -1326,13 +1319,12 @@ function renderDraftManager(rows){
   }
   rows.slice().sort((a,b)=>new Date(b.last_saved_at||b.submitted_at||0)-new Date(a.last_saved_at||a.submitted_at||0)).forEach(r=>{
     const tr=document.createElement('tr');
-    const tdStyle='padding:12px 14px;vertical-align:middle;border-bottom:1px solid var(--border);';
     tr.innerHTML=
-      '<td style="'+tdStyle+'"><span class="badge badge-blue">'+(r.lodge||'Unknown')+'</span></td>'+
-      '<td style="'+tdStyle+'"><strong>'+fmtDate(r.week_of)+'</strong></td>'+
-      '<td style="'+tdStyle+';color:var(--muted);font-size:12px;">'+(r.last_saved_at?fmtDT(r.last_saved_at):fmtDT(r.submitted_at))+'</td>'+
-      '<td style="'+tdStyle+';font-size:12px;">'+((r.user_email||'').replace('@ugandaculturallodges.com',''))+'</td>'+
-      '<td style="'+tdStyle+'"><strong style="color:var(--forest)">'+fmtUGX(calcReportRevenue(r))+'</strong></td>';
+      '<td><span class="badge badge-blue">'+(r.lodge||'Unknown')+'</span></td>'+
+      '<td><strong>'+fmtDate(r.week_of)+'</strong></td>'+
+      '<td>'+(r.last_saved_at?fmtDT(r.last_saved_at):fmtDT(r.submitted_at))+'</td>'+
+      '<td>'+((r.user_email||'').replace('@ugandaculturallodges.com',''))+'</td>'+
+      '<td><strong>'+fmtUGX(calcReportRevenue(r))+'</strong></td>';
     const openTd=document.createElement('td');
     const openBtn=document.createElement('button');
     openBtn.textContent='Continue';
@@ -2918,7 +2910,8 @@ async function openDraftById(id, lodge, weekOf){
   fillDraftTable('training', r.training_log||[]);
   fillDraftTable('incidents', r.incidents||[]);
   switchTab(document.querySelector('.tab[data-tab="bar-sales"]'));
-  setTimeout(function(){calcTotals();calcStaffTotal();},200);
+  // Per-row setTimeouts(0) finish first, then we sum all totals
+  setTimeout(function(){calcTotals();calcStaffTotal();},50);
   setStatus('Draft loaded - '+fmtDate(weekOf)+'. Continue editing and Save Draft when done.','success');
 }
 
@@ -2941,28 +2934,39 @@ function fillDraftTable(tabName, rows){
       var o=document.createElement('option');o.value=val;o.textContent=val;sel.appendChild(o);sel.value=val;
     }
     if(tabName==='bar-sales'){
-      if(ip[0])ip[0].value=row.date||'';
-      // Tom Select: use setValue() on the TS instance so the UI updates correctly
+      var dateInp=tr.querySelector('input[type="date"]');
+      if(dateInp)dateInp.value=row.date||'';
       restoreDraftDropdowns(tr,row.group||'',row.item||'');
       setTimeout(function(){
-        var s2=tr.querySelectorAll('select');var p2=tr.querySelectorAll('input');
-        // Item dropdown — use Tom Select setValue if available
-        if(p2[1])p2[1].value=row.unit||'';
-        if(p2[2]){p2[2].value=row.qty_sold||'';p2[2].dispatchEvent(new Event('input'));}
-        if(p2[3]){p2[3].value=row.selling_price||'';p2[3].dispatchEvent(new Event('input'));}
+        var s2=tr.querySelectorAll('select');
+        var unitInp=tr.querySelector('input:not([type="date"]):not(.ts-input):not([type="search"])');
+        var qtyInp=tr.querySelector('.qty');
+        var priceInp=tr.querySelector('.price');
+        var remarksInp=tr.querySelector('input[placeholder="Remarks"]');
+        if(unitInp)unitInp.value=row.unit||'';
+        if(qtyInp)qtyInp.value=row.qty_sold||'';
+        if(priceInp)priceInp.value=row.selling_price||'';
         if(s2[2])setS(s2[2],row.payment||'Cash');
-        if(p2[4])p2[4].value=row.remarks||'';
+        if(remarksInp)remarksInp.value=row.remarks||'';
+        // Recalculate per-row total directly
+        if(qtyInp&&priceInp)calcSalesRow(tr,'bar-sales');
       },0);
     } else if(tabName==='restaurant'){
-      if(ip[0])ip[0].value=row.date||'';
+      var dateInp=tr.querySelector('input[type="date"]');
+      if(dateInp)dateInp.value=row.date||'';
       restoreDraftDropdowns(tr,row.group||'',row.item||'');
       setTimeout(function(){
-        var s2=tr.querySelectorAll('select');var p2=tr.querySelectorAll('input');
-        if(p2[1])p2[1].value=row.qty_sold||'';
-        if(p2[2]){p2[2].value=row.selling_price||'';p2[2].dispatchEvent(new Event('input'));}
+        var s2=tr.querySelectorAll('select');
+        var qtyInp=tr.querySelector('.qty');
+        var priceInp=tr.querySelector('.price');
+        var remarksInp=tr.querySelector('input[placeholder="Remarks"]');
+        if(qtyInp)qtyInp.value=row.qty_sold||'';
+        if(priceInp)priceInp.value=row.selling_price||'';
         if(s2[2])setS(s2[2],row.meal_period||'Breakfast');
         if(s2[3])setS(s2[3],row.payment||'Cash');
-        if(p2[3])p2[3].value=row.remarks||'';
+        if(remarksInp)remarksInp.value=row.remarks||'';
+        // Recalculate per-row total directly
+        if(qtyInp&&priceInp)calcSalesRow(tr,'restaurant');
       },0);
     } else if(tabName==='bar-stock'||tabName==='stores'){
       if(sl[0]){setS(sl[0],row.group||'');sl[0].dispatchEvent(new Event('change'));}
