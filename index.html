@@ -493,7 +493,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <button class="btn-preview" onclick="showPreview()">&#128065; Preview</button>
       <button style="padding:12px 24px;background:var(--white);color:var(--forest);border:2px solid var(--forest);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="saveDraft()">💾 Save Draft</button>
-      <button style="padding:12px 24px;background:var(--white);color:var(--amber);border:2px solid var(--amber);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="loadDraft()">📂 Open Draft</button>
+
       <button class="btn-submit" onclick="doSubmit()">✓ Submit Weekly Report</button>
     </div>
   </div>
@@ -803,7 +803,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <button class="btn-preview" onclick="showPreview()">&#128065; Preview</button>
       <button style="padding:12px 24px;background:var(--white);color:var(--forest);border:2px solid var(--forest);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="saveDraft()">💾 Save Draft</button>
-      <button style="padding:12px 24px;background:var(--white);color:var(--amber);border:2px solid var(--amber);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="loadDraft()">📂 Open Draft</button>
+
       <button class="btn-submit" onclick="doSubmit()">✓ Submit Weekly Report</button>
     </div>
   </div>
@@ -1061,14 +1061,12 @@ function styleSelect(s){
   s.style.cssText='width:100%;padding:6px 4px;border:1px solid transparent;border-radius:4px;font-family:Jost,sans-serif;font-size:12px;color:var(--dark);background:transparent;cursor:pointer;';
 }
 
-
-
 function wireDropdowns(groupTd, itemTd, unitInp, parInp, category){
   let itemData={};
+  let groupTS=null, itemTS=null;
 
-  // ── GROUP SELECT (plain - no Tom Select) ──────────────────────
+  // ── GROUP SELECT ──────────────────────────────────────────────
   const gSel=document.createElement('select');
-  gSel.style.cssText='width:100%;padding:5px 4px;border:1px solid transparent;border-radius:4px;font-family:Jost,sans-serif;font-size:12px;color:var(--dark);background:transparent;cursor:pointer;';
   const blankG=document.createElement('option');blankG.value='';blankG.textContent='Group...';gSel.appendChild(blankG);
   getGroups(category).forEach(g=>{
     const op=document.createElement('option');op.value=g;op.textContent=g;gSel.appendChild(op);
@@ -1076,57 +1074,60 @@ function wireDropdowns(groupTd, itemTd, unitInp, parInp, category){
   while(groupTd.firstChild)groupTd.removeChild(groupTd.firstChild);
   groupTd.appendChild(gSel);
 
-  // ── ITEM SELECT (plain - no Tom Select) ───────────────────────
+  // ── ITEM SELECT ───────────────────────────────────────────────
   const iSel=document.createElement('select');
-  iSel.style.cssText='width:100%;padding:5px 4px;border:1px solid transparent;border-radius:4px;font-family:Jost,sans-serif;font-size:12px;color:var(--dark);background:transparent;cursor:pointer;';
   const blankI=document.createElement('option');blankI.value='';blankI.textContent='Select group first...';iSel.appendChild(blankI);
   while(itemTd.firstChild)itemTd.removeChild(itemTd.firstChild);
   itemTd.appendChild(iSel);
 
-  // ── GROUP CHANGE ──────────────────────────────────────────────
-  gSel.onchange=function(){
-    const val=this.value;
-    while(iSel.firstChild)iSel.removeChild(iSel.firstChild);
-    itemData={};
-    if(!val){
-      const b=document.createElement('option');b.value='';b.textContent='Select group first...';iSel.appendChild(b);
-      return;
+  // ── INIT TOM SELECT ───────────────────────────────────────────
+  groupTS=new TomSelect(gSel,{
+    placeholder:'Group...',allowEmptyOption:true,
+    onInitialize:function(){this.control.style.cursor='pointer';},
+    onChange:function(val){
+      if(!val){itemTS&&itemTS.clear();itemTS&&itemTS.clearOptions();return;}
+      rebuildItemOptions(val);
     }
-    const b=document.createElement('option');b.value='';b.textContent='-- Select item --';iSel.appendChild(b);
-    getItems(category,val).forEach(item=>{
-      const op=document.createElement('option');
-      op.value=item.item_name;
-      op.textContent=item.item_name+(item.selling_price>0?' — UGX '+item.selling_price.toLocaleString():'');
-      iSel.appendChild(op);
+  });
+
+  itemTS=new TomSelect(iSel,{
+    placeholder:'Type to search or select...',allowEmptyOption:true,
+    create:false,
+    onChange:function(val){
+      const props=itemData[val]||{};
+      if(unitInp&&props.unit)unitInp.value=props.unit;
+      if(parInp&&props.par)parInp.value=props.par;
+      if(props.price&&props.price!==0){
+        const tr=gSel.closest('tr');
+        const priceInp=tr?tr.querySelector('.price'):null;
+        if(priceInp){priceInp.value=props.price;priceInp.dispatchEvent(new Event('input'));}
+      }
+      // Other
+      const existing=itemTd.querySelector('.other-inp');
+      if(val==='Other'){
+        if(!existing){
+          const inp=document.createElement('input');
+          inp.type='text';inp.placeholder='Type item name...';inp.className='other-inp';
+          inp.style.cssText='width:100%;margin-top:3px;padding:4px 6px;border:1px solid var(--border);border-radius:3px;font-size:12px;font-family:Jost,sans-serif';
+          itemTd.appendChild(inp);
+        }
+      } else {if(existing)existing.remove();}
+    }
+  });
+
+  function rebuildItemOptions(grp){
+    itemData={};
+    itemTS.clear();itemTS.clearOptions();
+    const opts=[];
+    getItems(category,grp).forEach(item=>{
+      const label=item.item_name+(item.selling_price>0?' — UGX '+item.selling_price.toLocaleString():'');
+      opts.push({value:item.item_name,text:label});
       itemData[item.item_name]={unit:item.unit,par:item.par_level,price:item.selling_price||0};
     });
-    const oth=document.createElement('option');oth.value='Other';oth.textContent='+ Other (specify)';iSel.appendChild(oth);
-  };
-
-  // ── ITEM CHANGE ───────────────────────────────────────────────
-  iSel.onchange=function(){
-    const val=this.value;
-    const props=itemData[val]||{};
-    if(unitInp&&props.unit)unitInp.value=props.unit;
-    if(parInp&&props.par)parInp.value=props.par;
-    if(props.price&&props.price!==0){
-      const tr=gSel.closest('tr');
-      const priceInp=tr?tr.querySelector('.price'):null;
-      if(priceInp){priceInp.value=props.price;priceInp.dispatchEvent(new Event('input'));}
-    }
-    // Other option
-    const existing=itemTd.querySelector('.other-inp');
-    if(val==='Other'){
-      if(!existing){
-        const inp=document.createElement('input');
-        inp.type='text';inp.placeholder='Type item name...';inp.className='other-inp';
-        inp.style.cssText='width:100%;margin-top:3px;padding:4px 6px;border:1px solid var(--border);border-radius:3px;font-size:12px;font-family:Jost,sans-serif';
-        itemTd.appendChild(inp);
-      }
-    } else {if(existing)existing.remove();}
-  };
+    opts.push({value:'Other',text:'+ Other (specify)'});
+    itemTS.addOptions(opts);
+  }
 }
-
 
 // ── LODGE SELECTOR ────────────────────────────────────────────────────────────
 async function showLodgeSelector(){
@@ -1933,213 +1934,7 @@ async function loadDashboard(){
   const gm=role==='gm';
 
   // ── LOAD DRAFT ────────────────────────────────────────────────────────────────
-async function loadDraft(){
-  const weekOf=document.getElementById('week-of').value;
-  if(!weekOf){setStatus('Please select the week first.','error');return;}
-  if(!currentLodge){setStatus('No lodge selected.','error');return;}
-  setStatus('Looking for draft...','');
-  const {data,error}=await sb.from('weekly_reports')
-    .select('*')
-    .eq('lodge',currentLodge)
-    .eq('week_of',weekOf)
-    .eq('is_draft',true)
-    .limit(1);
-  if(error||!data||!data.length){
-    setStatus('No draft found for this lodge and week.','error');
-    return;
-  }
-  const r=data[0];
-  // Populate bar sales
-  populateTable('bar-sales', r.bar_sales||[]);
-  populateTable('bar-stock', r.bar_stock||[]);
-  populateTable('restaurant', r.restaurant_sales||[]);
-  populateTable('room-sales', r.room_sales||[]);
-  populateTable('stores', r.stores_stock||[]);
-  populateTable('kitchen', r.kitchen||[]);
-  populateTable('rooms', r.room_inspections||[]);
-  populateTable('housekeeping', r.housekeeping_log||[]);
-  populateTable('security', r.security_log||[]);
-  populateTable('maintenance', r.maintenance_log||[]);
-  populateTable('staff-comp', r.staff_complimentary||[]);
-  populateTable('training', r.training_log||[]);
-  populateTable('incidents', r.incidents||[]);
-  setStatus('✓ Draft loaded for week of '+fmtDate(weekOf)+'. Continue editing.','success');
-}
 
-function populateTable(name, rows){
-  if(!rows||!rows.length) return;
-  const tbody=document.getElementById('body-'+name);
-  if(!tbody) return;
-  tbody.innerHTML='';
-
-  rows.forEach(function(row){
-    addRow(name);
-    const tr=tbody.lastElementChild;
-    if(!tr) return;
-    const ip=tr.querySelectorAll('input');
-    const sl=tr.querySelectorAll('select');
-
-    function setSel(sel, val){
-      if(!sel||!val) return;
-      for(var i=0;i<sel.options.length;i++){
-        if(sel.options[i].value===val){sel.selectedIndex=i;return;}
-      }
-      // Value not in options yet - add it then trigger change to load items
-      var op=document.createElement('option');op.value=val;op.textContent=val;sel.appendChild(op);
-      sel.value=val;
-    }
-
-    if(name==='bar-sales'){
-      // Date(0), Unit(1), Qty(2), Price(3), Remarks(4)
-      // Selects: Group(0), Item(1), Payment(2)
-      if(ip[0]) ip[0].value=row.date||'';
-      setSel(sl[0], row.group||'');
-      if(sl[0]) sl[0].dispatchEvent(new Event('change')); // loads item options
-      // Use requestAnimationFrame to wait for items to load
-      (function(savedRow, savedTr){
-        requestAnimationFrame(function(){
-          const s=savedTr.querySelectorAll('select');
-          const p=savedTr.querySelectorAll('input');
-          setSel(s[1], savedRow.item||'');
-          if(p[1]) p[1].value=savedRow.unit||'';
-          if(p[2]) p[2].value=savedRow.qty_sold||'';
-          if(p[3]){p[3].value=savedRow.selling_price||''; p[3].dispatchEvent(new Event('input'));}
-          setSel(s[2], savedRow.payment||'Cash');
-          if(p[4]) p[4].value=savedRow.remarks||'';
-        });
-      })(row, tr);
-
-    } else if(name==='restaurant'){
-      // Date(0), Qty(1), Price(2), Remarks(3)
-      // Selects: Group(0), Item(1), MealPeriod(2), Payment(3)
-      if(ip[0]) ip[0].value=row.date||'';
-      setSel(sl[0], row.group||'');
-      if(sl[0]) sl[0].dispatchEvent(new Event('change'));
-      (function(savedRow, savedTr){
-        requestAnimationFrame(function(){
-          const s=savedTr.querySelectorAll('select');
-          const p=savedTr.querySelectorAll('input');
-          setSel(s[1], savedRow.item||'');
-          if(p[1]) p[1].value=savedRow.qty_sold||'';
-          if(p[2]){p[2].value=savedRow.selling_price||''; p[2].dispatchEvent(new Event('input'));}
-          setSel(s[2], savedRow.meal_period||'Breakfast');
-          setSel(s[3], savedRow.payment||'Cash');
-          if(p[3]) p[3].value=savedRow.remarks||'';
-        });
-      })(row, tr);
-
-    } else if(name==='bar-stock'||name==='stores'){
-      setSel(sl[0], row.group||'');
-      if(sl[0]) sl[0].dispatchEvent(new Event('change'));
-      requestAnimationFrame(function(){
-        const s=tr.querySelectorAll('select');
-        const p=tr.querySelectorAll('input');
-        setSel(s[1], row.item||'');
-        if(p[0]) p[0].value=row.unit||'';
-        if(p[1]) p[1].value=row.par_level||'';
-        if(p[2]) p[2].value=row.unit_cost||'';
-        if(p[3]) p[3].value=row.opening||'';
-        if(p[4]) p[4].value=row.received||'';
-        if(p[5]) p[5].value=row.issued||'';
-        if(p[6]){p[6].value=row.actual_closing||''; p[6].dispatchEvent(new Event('input'));}
-      });
-
-    } else if(name==='kitchen'){
-      setSel(sl[0], row.group||'');
-      if(sl[0]) sl[0].dispatchEvent(new Event('change'));
-      requestAnimationFrame(function(){
-        const s=tr.querySelectorAll('select');
-        const p=tr.querySelectorAll('input');
-        setSel(s[1], row.item||'');
-        if(p[0]) p[0].value=row.unit||'';
-        if(p[1]) p[1].value=row.par_level||'';
-        if(p[2]) p[2].value=row.unit_cost||'';
-        if(p[3]) p[3].value=row.qty_purchased||'';
-        if(p[4]) p[4].value=row.qty_used||'';
-        if(p[5]){p[5].value=row.qty_wasted||''; p[5].dispatchEvent(new Event('input'));}
-        if(p[6]) p[6].value=row.remarks||'';
-      });
-
-    } else if(name==='room-sales'){
-      if(ip[0]) ip[0].value=row.date||'';
-      if(ip[1]) ip[1].value=row.room_no||'';
-      if(ip[2]) ip[2].value=row.guest_name||'';
-      setSel(sl[0], row.room_type||'');
-      if(ip[3]) ip[3].value=row.nights||'';
-      if(ip[4]){ip[4].value=row.rate_per_night||''; ip[4].dispatchEvent(new Event('input'));}
-      setSel(sl[1], row.payment||'Cash');
-      if(ip[5]) ip[5].value=row.remarks||'';
-
-    } else if(name==='rooms'){
-      if(ip[0]) ip[0].value=row.room||'';
-      if(ip[1]) ip[1].value=row.date||'';
-      if(ip[2]) ip[2].value=row.inspector||'';
-      if(ip[3]) ip[3].value=row.deficiency||'';
-      if(ip[4]) ip[4].value=row.action||'';
-      setSel(sl[0], row.resolved||'');
-      if(ip[5]) ip[5].value=row.remarks||'';
-
-    } else if(name==='housekeeping'){
-      if(ip[0]) ip[0].value=row.date||'';
-      setSel(sl[0], row.area||'');
-      setSel(sl[1], row.standard_met||'');
-      if(ip[1]) ip[1].value=row.issue||'';
-      if(ip[2]) ip[2].value=row.action||'';
-      setSel(sl[2], row.resolved||'');
-      if(ip[3]) ip[3].value=row.inspector||'';
-
-    } else if(name==='security'){
-      if(ip[0]) ip[0].value=row.date||'';
-      setSel(sl[0], row.type||'');
-      if(ip[1]) ip[1].value=row.conductor||'';
-      if(ip[2]) ip[2].value=row.time||'';
-      if(ip[3]) ip[3].value=row.findings||'';
-      if(ip[4]) ip[4].value=row.action||'';
-      if(ip[5]) ip[5].value=row.signoff||'';
-
-    } else if(name==='maintenance'){
-      if(ip[0]) ip[0].value=row.date||'';
-      setSel(sl[0], row.category||'');
-      if(ip[1]) ip[1].value=row.item||'';
-      if(ip[2]) ip[2].value=row.issue||'';
-      if(ip[3]) ip[3].value=row.reported_by||'';
-      if(ip[4]) ip[4].value=row.action||'';
-      setSel(sl[1], row.status||'');
-      if(ip[5]) ip[5].value=row.remarks||'';
-
-    } else if(name==='staff-comp'){
-      if(ip[0]) ip[0].value=row.date||'';
-      if(ip[1]) ip[1].value=row.person_name||'';
-      setSel(sl[0], row.category||'');
-      if(ip[2]) ip[2].value=row.item||'';
-      if(ip[3]) ip[3].value=row.quantity||'';
-      if(ip[4]) ip[4].value=row.standard_price||'';
-      if(ip[5]){ip[5].value=row.amount_paid||''; ip[5].dispatchEvent(new Event('input'));}
-      if(ip[6]) ip[6].value=row.authorised_by||'';
-      if(ip[7]) ip[7].value=row.remarks||'';
-
-    } else if(name==='training'){
-      if(ip[0]) ip[0].value=row.date||'';
-      if(ip[1]) ip[1].value=row.topic||'';
-      if(ip[2]) ip[2].value=row.trainer||'';
-      if(ip[3]) ip[3].value=row.duration_hours||'';
-      if(ip[4]) ip[4].value=row.attendees||'';
-      if(ip[5]) ip[5].value=row.attendee_count||'';
-      if(ip[6]) ip[6].value=row.key_points||'';
-      setSel(sl[0], row.followup_required||'No');
-      if(ip[7]) ip[7].value=row.remarks||'';
-
-    } else if(name==='incidents'){
-      if(ip[0]) ip[0].value=row.date||'';
-      setSel(sl[0], row.category||'');
-      if(ip[1]) ip[1].value=row.description||'';
-      if(ip[2]) ip[2].value=row.persons||'';
-      if(ip[3]) ip[3].value=row.action||'';
-      setSel(sl[1], row.escalated||'No');
-      setSel(sl[2], row.status||'Open');
-    }
-  });
-}
 
 // ── AUTO ARCHIVE (admin only) ────────────────────────────────
   if(admin) autoArchiveOldReports();
@@ -2152,7 +1947,7 @@ function populateTable(name, rows){
     document.querySelectorAll('.dash-tab').forEach(t=>t.style.display='block');
   }
   // Admin-only tabs
-  document.getElementById('drafts-tab').style.display=(admin||isSup)?'block':'none';
+  document.getElementById('drafts-tab').style.display=admin?'block':'none';
   document.getElementById('admin-tab').style.display=admin?'block':'none';
   // Analytics for admin and GM only
   document.getElementById('analytics-tab').style.display=(admin||gm)?'block':'none';
@@ -2248,12 +2043,19 @@ function populateTable(name, rows){
     const openBtn=document.createElement('button');
     openBtn.textContent=r.is_draft?'Edit Draft':'Open';
     openBtn.style.cssText='padding:6px 14px;background:'+(r.is_draft?'var(--amber)':'var(--forest)')+';color:#fff;border:none;border-radius:4px;font-size:12px;cursor:pointer;font-family:Jost,sans-serif';
-    openBtn.onclick=()=>r.is_draft?openDraft(r):openReport(r);
+    openBtn.onclick=()=>r.is_draft?openDraftById(r.id,r.lodge,r.week_of):openReport(r);
     viewTd.appendChild(openBtn);
     tr.appendChild(viewTd);
-    // Actions (admin only)
+    // Actions
     const actTd=document.createElement('td');
-    if(admin){
+    if(r.is_draft){
+      // Draft actions - edit and delete for owner or admin
+      const delDraftBtn=document.createElement('button');
+      delDraftBtn.textContent='Delete Draft';
+      delDraftBtn.style.cssText='padding:5px 12px;background:var(--error);color:#fff;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-family:Jost,sans-serif';
+      delDraftBtn.onclick=()=>promptDelete(r.id);
+      actTd.appendChild(delDraftBtn);
+    } else if(admin){
       const archBtn=document.createElement('button');
       archBtn.textContent='Archive';
       archBtn.className='btn-action';
@@ -2892,17 +2694,185 @@ async function generateConsolidated(){
 
 // ── OPEN DRAFT ───────────────────────────────────────────────────────────────
 function openDraft(r){
-  // Switch to lodge and load draft data
-  currentLodge=r.lodge;
+  openDraftById(r.id, r.lodge, r.week_of);
+}
+
+async function openDraftById(id, lodge, weekOf){
+  // Fetch full draft data
+  const {data,error}=await sb.from('weekly_reports').select('*').eq('id',id).limit(1);
+  if(error||!data||!data.length){alert('Could not load draft.');return;}
+  const r=data[0];
+  // Switch to reporting view
+  currentLodge=lodge;
+  await loadItemMaster();
   document.getElementById('lodge-screen').style.display='none';
+  document.getElementById('dashboard-screen')?document.getElementById('dashboard-screen').style.display='none':'';
   document.getElementById('app-screen').style.display='block';
   document.getElementById('user-email').textContent=currentUser.email;
-  document.getElementById('lodge-name-header').textContent=r.lodge;
-  document.getElementById('week-of').value=r.week_of;
+  document.getElementById('lodge-name-header').textContent=lodge;
+  document.getElementById('week-of').value=weekOf;
   updateWeekLabel();
+  // Reset all rows first
+  const rowCounts={'bar-sales':10,'bar-stock':10,'restaurant':10,'room-sales':5,'stores':8,'kitchen':8,'rooms':5,'housekeeping':5,'security':3,'maintenance':3,'staff-comp':5,'training':3,'incidents':3};
+  Object.entries(rowCounts).forEach(([t,count])=>{
+    const tb=document.getElementById('body-'+t);
+    if(tb) tb.innerHTML='';
+    for(let i=0;i<count;i++) addRow(t);
+  });
+  // Populate all tabs with saved data
+  fillDraftTable('bar-sales', r.bar_sales||[]);
+  fillDraftTable('bar-stock', r.bar_stock||[]);
+  fillDraftTable('restaurant', r.restaurant_sales||[]);
+  fillDraftTable('room-sales', r.room_sales||[]);
+  fillDraftTable('stores', r.stores_stock||[]);
+  fillDraftTable('kitchen', r.kitchen||[]);
+  fillDraftTable('rooms', r.room_inspections||[]);
+  fillDraftTable('housekeeping', r.housekeeping_log||[]);
+  fillDraftTable('security', r.security_log||[]);
+  fillDraftTable('maintenance', r.maintenance_log||[]);
+  fillDraftTable('staff-comp', r.staff_complimentary||[]);
+  fillDraftTable('training', r.training_log||[]);
+  fillDraftTable('incidents', r.incidents||[]);
   switchTab(document.querySelector('.tab[data-tab="bar-sales"]'));
-  setStatus('Draft loaded for '+r.lodge+' — '+fmtDate(r.week_of)+'. Continue editing and submit when ready.','success');
-  // Note: full draft data population would require pre-filling forms — for now user sees the draft exists
+  setStatus('✓ Draft loaded — '+fmtDate(weekOf)+'. Continue editing and Save Draft when done.','success');
+}
+
+function fillDraftTable(tabName, rows){
+  if(!rows||!rows.length) return;
+  const tbody=document.getElementById('body-'+tabName);
+  if(!tbody) return;
+  tbody.innerHTML='';
+  rows.forEach(function(row){
+    addRow(tabName);
+    const tr=tbody.lastElementChild;
+    if(!tr) return;
+    const ip=tr.querySelectorAll('input');
+    const sl=tr.querySelectorAll('select');
+    function setS(sel,val){
+      if(!sel||!val) return;
+      for(var i=0;i<sel.options.length;i++){
+        if(sel.options[i].value===val){sel.selectedIndex=i;return;}
+      }
+      var o=document.createElement('option');o.value=val;o.textContent=val;sel.appendChild(o);sel.value=val;
+    }
+    if(tabName==='bar-sales'){
+      if(ip[0])ip[0].value=row.date||'';
+      if(sl[0]){setS(sl[0],row.group||'');sl[0].dispatchEvent(new Event('change'));}
+      var sr=row,st=tr;
+      requestAnimationFrame(function(){
+        var s2=st.querySelectorAll('select');var p2=st.querySelectorAll('input');
+        if(s2[1])setS(s2[1],sr.item||'');
+        if(p2[1])p2[1].value=sr.unit||'';
+        if(p2[2])p2[2].value=sr.qty_sold||'';
+        if(p2[3]){p2[3].value=sr.selling_price||'';p2[3].dispatchEvent(new Event('input'));}
+        if(s2[2])setS(s2[2],sr.payment||'Cash');
+        if(p2[4])p2[4].value=sr.remarks||'';
+      });
+    } else if(tabName==='restaurant'){
+      if(ip[0])ip[0].value=row.date||'';
+      if(sl[0]){setS(sl[0],row.group||'');sl[0].dispatchEvent(new Event('change'));}
+      var sr2=row,st2=tr;
+      requestAnimationFrame(function(){
+        var s2=st2.querySelectorAll('select');var p2=st2.querySelectorAll('input');
+        if(s2[1])setS(s2[1],sr2.item||'');
+        if(p2[1])p2[1].value=sr2.qty_sold||'';
+        if(p2[2]){p2[2].value=sr2.selling_price||'';p2[2].dispatchEvent(new Event('input'));}
+        if(s2[2])setS(s2[2],sr2.meal_period||'Breakfast');
+        if(s2[3])setS(s2[3],sr2.payment||'Cash');
+        if(p2[3])p2[3].value=sr2.remarks||'';
+      });
+    } else if(tabName==='bar-stock'||tabName==='stores'){
+      if(sl[0]){setS(sl[0],row.group||'');sl[0].dispatchEvent(new Event('change'));}
+      if(sl[1])setS(sl[1],row.item||'');
+      if(ip[0])ip[0].value=row.unit||'';
+      if(ip[1])ip[1].value=row.par_level||'';
+      if(ip[2])ip[2].value=row.unit_cost||'';
+      if(ip[3])ip[3].value=row.opening||'';
+      if(ip[4])ip[4].value=row.received||'';
+      if(ip[5])ip[5].value=row.issued||'';
+      if(ip[6]){ip[6].value=row.actual_closing||'';ip[6].dispatchEvent(new Event('input'));}
+    } else if(tabName==='kitchen'){
+      if(sl[0]){setS(sl[0],row.group||'');sl[0].dispatchEvent(new Event('change'));}
+      if(sl[1])setS(sl[1],row.item||'');
+      if(ip[0])ip[0].value=row.unit||'';
+      if(ip[1])ip[1].value=row.par_level||'';
+      if(ip[2])ip[2].value=row.unit_cost||'';
+      if(ip[3])ip[3].value=row.qty_purchased||'';
+      if(ip[4])ip[4].value=row.qty_used||'';
+      if(ip[5]){ip[5].value=row.qty_wasted||'';ip[5].dispatchEvent(new Event('input'));}
+      if(ip[6])ip[6].value=row.remarks||'';
+    } else if(tabName==='room-sales'){
+      if(ip[0])ip[0].value=row.date||'';
+      if(ip[1])ip[1].value=row.room_no||'';
+      if(ip[2])ip[2].value=row.guest_name||'';
+      if(sl[0])setS(sl[0],row.room_type||'');
+      if(ip[3])ip[3].value=row.nights||'';
+      if(ip[4]){ip[4].value=row.rate_per_night||'';ip[4].dispatchEvent(new Event('input'));}
+      if(sl[1])setS(sl[1],row.payment||'Cash');
+      if(ip[5])ip[5].value=row.remarks||'';
+    } else if(tabName==='rooms'){
+      if(ip[0])ip[0].value=row.room||'';
+      if(ip[1])ip[1].value=row.date||'';
+      if(ip[2])ip[2].value=row.inspector||'';
+      if(ip[3])ip[3].value=row.deficiency||'';
+      if(ip[4])ip[4].value=row.action||'';
+      if(sl[0])setS(sl[0],row.resolved||'');
+      if(ip[5])ip[5].value=row.remarks||'';
+    } else if(tabName==='housekeeping'){
+      if(ip[0])ip[0].value=row.date||'';
+      if(sl[0])setS(sl[0],row.area||'');
+      if(sl[1])setS(sl[1],row.standard_met||'');
+      if(ip[1])ip[1].value=row.issue||'';
+      if(ip[2])ip[2].value=row.action||'';
+      if(sl[2])setS(sl[2],row.resolved||'');
+      if(ip[3])ip[3].value=row.inspector||'';
+    } else if(tabName==='security'){
+      if(ip[0])ip[0].value=row.date||'';
+      if(sl[0])setS(sl[0],row.type||'');
+      if(ip[1])ip[1].value=row.conductor||'';
+      if(ip[2])ip[2].value=row.time||'';
+      if(ip[3])ip[3].value=row.findings||'';
+      if(ip[4])ip[4].value=row.action||'';
+      if(ip[5])ip[5].value=row.signoff||'';
+    } else if(tabName==='maintenance'){
+      if(ip[0])ip[0].value=row.date||'';
+      if(sl[0])setS(sl[0],row.category||'');
+      if(ip[1])ip[1].value=row.item||'';
+      if(ip[2])ip[2].value=row.issue||'';
+      if(ip[3])ip[3].value=row.reported_by||'';
+      if(ip[4])ip[4].value=row.action||'';
+      if(sl[1])setS(sl[1],row.status||'');
+      if(ip[5])ip[5].value=row.remarks||'';
+    } else if(tabName==='staff-comp'){
+      if(ip[0])ip[0].value=row.date||'';
+      if(ip[1])ip[1].value=row.person_name||'';
+      if(sl[0])setS(sl[0],row.category||'');
+      if(ip[2])ip[2].value=row.item||'';
+      if(ip[3])ip[3].value=row.quantity||'';
+      if(ip[4])ip[4].value=row.standard_price||'';
+      if(ip[5]){ip[5].value=row.amount_paid||'';ip[5].dispatchEvent(new Event('input'));}
+      if(ip[6])ip[6].value=row.authorised_by||'';
+      if(ip[7])ip[7].value=row.remarks||'';
+    } else if(tabName==='training'){
+      if(ip[0])ip[0].value=row.date||'';
+      if(ip[1])ip[1].value=row.topic||'';
+      if(ip[2])ip[2].value=row.trainer||'';
+      if(ip[3])ip[3].value=row.duration_hours||'';
+      if(ip[4])ip[4].value=row.attendees||'';
+      if(ip[5])ip[5].value=row.attendee_count||'';
+      if(ip[6])ip[6].value=row.key_points||'';
+      if(sl[0])setS(sl[0],row.followup_required||'No');
+      if(ip[7])ip[7].value=row.remarks||'';
+    } else if(tabName==='incidents'){
+      if(ip[0])ip[0].value=row.date||'';
+      if(sl[0])setS(sl[0],row.category||'');
+      if(ip[1])ip[1].value=row.description||'';
+      if(ip[2])ip[2].value=row.persons||'';
+      if(ip[3])ip[3].value=row.action||'';
+      if(sl[1])setS(sl[1],row.escalated||'No');
+      if(sl[2])setS(sl[2],row.status||'Open');
+    }
+  });
 }
 
 // ── DUPLICATE CHECK ───────────────────────────────────────────────────────────
@@ -3392,222 +3362,164 @@ async function loadDraft(){
   const weekOf=document.getElementById('week-of').value;
   if(!weekOf){setStatus('Please select the week first.','error');return;}
   if(!currentLodge){setStatus('No lodge selected.','error');return;}
-  setStatus('Looking for draft...','');
+  setStatus('Looking for saved draft...','');
   const {data,error}=await sb.from('weekly_reports')
-    .select('*')
-    .eq('lodge',currentLodge)
-    .eq('week_of',weekOf)
-    .eq('is_draft',true)
-    .limit(1);
+    .select('*').eq('lodge',currentLodge).eq('week_of',weekOf).eq('is_draft',true).limit(1);
   if(error||!data||!data.length){
     setStatus('No draft found for this lodge and week.','error');
     return;
   }
   const r=data[0];
-  // Populate bar sales
-  populateTable('bar-sales', r.bar_sales||[]);
-  populateTable('bar-stock', r.bar_stock||[]);
-  populateTable('restaurant', r.restaurant_sales||[]);
-  populateTable('room-sales', r.room_sales||[]);
-  populateTable('stores', r.stores_stock||[]);
-  populateTable('kitchen', r.kitchen||[]);
-  populateTable('rooms', r.room_inspections||[]);
-  populateTable('housekeeping', r.housekeeping_log||[]);
-  populateTable('security', r.security_log||[]);
-  populateTable('maintenance', r.maintenance_log||[]);
-  populateTable('staff-comp', r.staff_complimentary||[]);
-  populateTable('training', r.training_log||[]);
-  populateTable('incidents', r.incidents||[]);
-  setStatus('✓ Draft loaded for week of '+fmtDate(weekOf)+'. Continue editing.','success');
-}
-
-function setTomSelect(sel, value){
-  // Set value on a Tom Select enhanced dropdown
-  if(!sel||!value) return;
-  if(sel.tomselect){
-    sel.tomselect.setValue(value, true);
-  } else {
-    sel.value=value;
-    sel.dispatchEvent(new Event('change'));
+  // Restore all tab data using direct input population
+  function fillTable(tabName, rows){
+    if(!rows||!rows.length) return;
+    const tbody=document.getElementById('body-'+tabName);
+    if(!tbody) return;
+    tbody.innerHTML='';
+    rows.forEach(function(row){
+      addRow(tabName);
+      const tr=tbody.lastElementChild;
+      if(!tr) return;
+      const ip=tr.querySelectorAll('input');
+      const sl=tr.querySelectorAll('select');
+      function setS(sel,val){if(sel&&val){for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===val){sel.selectedIndex=i;return;}}var o=document.createElement('option');o.value=val;o.textContent=val;sel.appendChild(o);sel.value=val;}}
+      if(tabName==='bar-sales'){
+        if(ip[0])ip[0].value=row.date||'';
+        // Set group then trigger change to load items
+        if(sl[0]){setS(sl[0],row.group||'');sl[0].dispatchEvent(new Event('change'));}
+        // Wait one frame for items to populate then set item and numbers
+        var savedRow=row; var savedTr=tr;
+        requestAnimationFrame(function(){
+          var s2=savedTr.querySelectorAll('select');
+          var p2=savedTr.querySelectorAll('input');
+          if(s2[1]){setS(s2[1],savedRow.item||'');}
+          if(p2[1])p2[1].value=savedRow.unit||'';
+          if(p2[2])p2[2].value=savedRow.qty_sold||'';
+          if(p2[3]){p2[3].value=savedRow.selling_price||'';p2[3].dispatchEvent(new Event('input'));}
+          if(s2[2])setS(s2[2],savedRow.payment||'Cash');
+          if(p2[4])p2[4].value=savedRow.remarks||'';
+        });
+      } else if(tabName==='restaurant'){
+        if(ip[0])ip[0].value=row.date||'';
+        if(sl[0]){setS(sl[0],row.group||'');sl[0].dispatchEvent(new Event('change'));}
+        var savedRow2=row; var savedTr2=tr;
+        requestAnimationFrame(function(){
+          var s2=savedTr2.querySelectorAll('select');
+          var p2=savedTr2.querySelectorAll('input');
+          if(s2[1])setS(s2[1],savedRow2.item||'');
+          if(p2[1])p2[1].value=savedRow2.qty_sold||'';
+          if(p2[2]){p2[2].value=savedRow2.selling_price||'';p2[2].dispatchEvent(new Event('input'));}
+          if(s2[2])setS(s2[2],savedRow2.meal_period||'Breakfast');
+          if(s2[3])setS(s2[3],savedRow2.payment||'Cash');
+          if(p2[3])p2[3].value=savedRow2.remarks||'';
+        });
+      } else if(tabName==='bar-stock'||tabName==='stores'){
+        if(sl[0]){setS(sl[0],row.group||'');sl[0].dispatchEvent(new Event('change'));}
+        if(sl[1])setS(sl[1],row.item||'');
+        if(ip[0])ip[0].value=row.unit||'';
+        if(ip[1])ip[1].value=row.par_level||'';
+        if(ip[2])ip[2].value=row.unit_cost||'';
+        if(ip[3])ip[3].value=row.opening||'';
+        if(ip[4])ip[4].value=row.received||'';
+        if(ip[5])ip[5].value=row.issued||'';
+        if(ip[6]){ip[6].value=row.actual_closing||'';ip[6].dispatchEvent(new Event('input'));}
+      } else if(tabName==='kitchen'){
+        if(sl[0]){setS(sl[0],row.group||'');sl[0].dispatchEvent(new Event('change'));}
+        if(sl[1])setS(sl[1],row.item||'');
+        if(ip[0])ip[0].value=row.unit||'';
+        if(ip[1])ip[1].value=row.par_level||'';
+        if(ip[2])ip[2].value=row.unit_cost||'';
+        if(ip[3])ip[3].value=row.qty_purchased||'';
+        if(ip[4])ip[4].value=row.qty_used||'';
+        if(ip[5]){ip[5].value=row.qty_wasted||'';ip[5].dispatchEvent(new Event('input'));}
+        if(ip[6])ip[6].value=row.remarks||'';
+      } else if(tabName==='room-sales'){
+        if(ip[0])ip[0].value=row.date||'';
+        if(ip[1])ip[1].value=row.room_no||'';
+        if(ip[2])ip[2].value=row.guest_name||'';
+        if(sl[0])setS(sl[0],row.room_type||'');
+        if(ip[3])ip[3].value=row.nights||'';
+        if(ip[4]){ip[4].value=row.rate_per_night||'';ip[4].dispatchEvent(new Event('input'));}
+        if(sl[1])setS(sl[1],row.payment||'Cash');
+        if(ip[5])ip[5].value=row.remarks||'';
+      } else if(tabName==='rooms'){
+        if(ip[0])ip[0].value=row.room||'';
+        if(ip[1])ip[1].value=row.date||'';
+        if(ip[2])ip[2].value=row.inspector||'';
+        if(ip[3])ip[3].value=row.deficiency||'';
+        if(ip[4])ip[4].value=row.action||'';
+        if(sl[0])setS(sl[0],row.resolved||'');
+        if(ip[5])ip[5].value=row.remarks||'';
+      } else if(tabName==='housekeeping'){
+        if(ip[0])ip[0].value=row.date||'';
+        if(sl[0])setS(sl[0],row.area||'');
+        if(sl[1])setS(sl[1],row.standard_met||'');
+        if(ip[1])ip[1].value=row.issue||'';
+        if(ip[2])ip[2].value=row.action||'';
+        if(sl[2])setS(sl[2],row.resolved||'');
+        if(ip[3])ip[3].value=row.inspector||'';
+      } else if(tabName==='security'){
+        if(ip[0])ip[0].value=row.date||'';
+        if(sl[0])setS(sl[0],row.type||'');
+        if(ip[1])ip[1].value=row.conductor||'';
+        if(ip[2])ip[2].value=row.time||'';
+        if(ip[3])ip[3].value=row.findings||'';
+        if(ip[4])ip[4].value=row.action||'';
+        if(ip[5])ip[5].value=row.signoff||'';
+      } else if(tabName==='maintenance'){
+        if(ip[0])ip[0].value=row.date||'';
+        if(sl[0])setS(sl[0],row.category||'');
+        if(ip[1])ip[1].value=row.item||'';
+        if(ip[2])ip[2].value=row.issue||'';
+        if(ip[3])ip[3].value=row.reported_by||'';
+        if(ip[4])ip[4].value=row.action||'';
+        if(sl[1])setS(sl[1],row.status||'');
+        if(ip[5])ip[5].value=row.remarks||'';
+      } else if(tabName==='staff-comp'){
+        if(ip[0])ip[0].value=row.date||'';
+        if(ip[1])ip[1].value=row.person_name||'';
+        if(sl[0])setS(sl[0],row.category||'');
+        if(ip[2])ip[2].value=row.item||'';
+        if(ip[3])ip[3].value=row.quantity||'';
+        if(ip[4])ip[4].value=row.standard_price||'';
+        if(ip[5]){ip[5].value=row.amount_paid||'';ip[5].dispatchEvent(new Event('input'));}
+        if(ip[6])ip[6].value=row.authorised_by||'';
+        if(ip[7])ip[7].value=row.remarks||'';
+      } else if(tabName==='training'){
+        if(ip[0])ip[0].value=row.date||'';
+        if(ip[1])ip[1].value=row.topic||'';
+        if(ip[2])ip[2].value=row.trainer||'';
+        if(ip[3])ip[3].value=row.duration_hours||'';
+        if(ip[4])ip[4].value=row.attendees||'';
+        if(ip[5])ip[5].value=row.attendee_count||'';
+        if(ip[6])ip[6].value=row.key_points||'';
+        if(sl[0])setS(sl[0],row.followup_required||'No');
+        if(ip[7])ip[7].value=row.remarks||'';
+      } else if(tabName==='incidents'){
+        if(ip[0])ip[0].value=row.date||'';
+        if(sl[0])setS(sl[0],row.category||'');
+        if(ip[1])ip[1].value=row.description||'';
+        if(ip[2])ip[2].value=row.persons||'';
+        if(ip[3])ip[3].value=row.action||'';
+        if(sl[1])setS(sl[1],row.escalated||'No');
+        if(sl[2])setS(sl[2],row.status||'Open');
+      }
+    });
   }
-}
-
-function populateTable(name, rows){
-  if(!rows||!rows.length) return;
-  const tbody=document.getElementById('body-'+name);
-  if(!tbody) return;
-  tbody.innerHTML='';
-
-  rows.forEach(function(row, rowIdx){
-    addRow(name);
-    const tr=tbody.lastElementChild;
-    if(!tr) return;
-
-    if(name==='bar-sales'){
-      const allInps=tr.querySelectorAll('input');
-      const allSels=tr.querySelectorAll('select');
-      if(allInps[0]) allInps[0].value=row.date||'';
-      // Set group via Tom Select, wait, then set item
-      setTomSelect(allSels[0], row.group||'');
-      setTimeout(function(){
-        const sels=tr.querySelectorAll('select');
-        setTomSelect(sels[1], row.item||'');
-        setTimeout(function(){
-          const inps=tr.querySelectorAll('input');
-          if(inps[2]) inps[2].value=row.qty_sold||'';
-          if(inps[3]){inps[3].value=row.selling_price||'';inps[3].dispatchEvent(new Event('input'));}
-          const sels2=tr.querySelectorAll('select');
-          if(sels2[2]) setTomSelect(sels2[2], row.payment||'Cash');
-          if(inps[4]) inps[4].value=row.remarks||'';
-        },150);
-      },150);
-
-    } else if(name==='restaurant'){
-      const groupTd2=tr.cells[1];
-      const itemTd2=tr.cells[2];
-      wireDropdownsStatic(groupTd2, itemTd2, null, null, 'Restaurant', row.group||'', row.item||'', row.selling_price||0);
-      const ip2=tr.querySelectorAll('input');
-      if(ip2[0]) ip2[0].value=row.date||'';
-      if(ip2[1]) ip2[1].value=row.qty_sold||'';
-      if(ip2[2]){ip2[2].value=row.selling_price||''; ip2[2].dispatchEvent(new Event('input'));}
-      if(ip2[3]) ip2[3].value=row.remarks||'';
-      const rs=tr.querySelectorAll('select:not(.ts-hidden-accessible)');
-      rs.forEach(function(s,i){
-        if(s.closest('td')!==groupTd2&&s.closest('td')!==itemTd2){
-          if(i===0||rs[i].options.length<=5) s.value=row.meal_period||'Breakfast';
-          else s.value=row.payment||'Cash';
-        }
-      });
-
-    } else if(name==='bar-stock'||name==='stores'){
-      const allInps=tr.querySelectorAll('input');
-      const allSels=tr.querySelectorAll('select');
-      setTomSelect(allSels[0], row.group||'');
-      setTimeout(function(){
-        const sels=tr.querySelectorAll('select');
-        setTomSelect(sels[1], row.item||'');
-        const inps=tr.querySelectorAll('input');
-        if(inps[0]) inps[0].value=row.unit||'';
-        if(inps[1]) inps[1].value=row.par_level||'';
-        if(inps[2]) inps[2].value=row.unit_cost||'';
-        if(inps[3]) inps[3].value=row.opening||'';
-        if(inps[4]) inps[4].value=row.received||'';
-        if(inps[5]) inps[5].value=row.issued||'';
-        if(inps[6]){inps[6].value=row.actual_closing||'';inps[6].dispatchEvent(new Event('input'));}
-      },150);
-
-    } else if(name==='kitchen'){
-      const allInps=tr.querySelectorAll('input');
-      const allSels=tr.querySelectorAll('select');
-      setTomSelect(allSels[0], row.group||'');
-      setTimeout(function(){
-        const sels=tr.querySelectorAll('select');
-        setTomSelect(sels[1], row.item||'');
-        const inps=tr.querySelectorAll('input');
-        if(inps[0]) inps[0].value=row.unit||'';
-        if(inps[1]) inps[1].value=row.par_level||'';
-        if(inps[2]) inps[2].value=row.unit_cost||'';
-        if(inps[3]) inps[3].value=row.qty_purchased||'';
-        if(inps[4]) inps[4].value=row.qty_used||'';
-        if(inps[5]){inps[5].value=row.qty_wasted||'';inps[5].dispatchEvent(new Event('input'));}
-        if(inps[6]) inps[6].value=row.remarks||'';
-      },150);
-
-    } else if(name==='room-sales'){
-      const allInps=tr.querySelectorAll('input');
-      const allSels=tr.querySelectorAll('select');
-      if(allInps[0]) allInps[0].value=row.date||'';
-      if(allInps[1]) allInps[1].value=row.room_no||'';
-      if(allInps[2]) allInps[2].value=row.guest_name||'';
-      setTomSelect(allSels[0], row.room_type||'');
-      if(allInps[3]) allInps[3].value=row.nights||'';
-      if(allInps[4]){allInps[4].value=row.rate_per_night||'';allInps[4].dispatchEvent(new Event('input'));}
-      setTomSelect(allSels[1], row.payment||'Cash');
-      if(allInps[5]) allInps[5].value=row.remarks||'';
-
-    } else if(name==='rooms'){
-      const allInps=tr.querySelectorAll('input');
-      const allSels=tr.querySelectorAll('select');
-      if(allInps[0]) allInps[0].value=row.room||'';
-      if(allInps[1]) allInps[1].value=row.date||'';
-      if(allInps[2]) allInps[2].value=row.inspector||'';
-      if(allInps[3]) allInps[3].value=row.deficiency||'';
-      if(allInps[4]) allInps[4].value=row.action||'';
-      setTomSelect(allSels[0], row.resolved||'');
-      if(allInps[5]) allInps[5].value=row.remarks||'';
-
-    } else if(name==='housekeeping'){
-      const allInps=tr.querySelectorAll('input');
-      const allSels=tr.querySelectorAll('select');
-      if(allInps[0]) allInps[0].value=row.date||'';
-      setTomSelect(allSels[0], row.area||'');
-      setTomSelect(allSels[1], row.standard_met||'');
-      if(allInps[1]) allInps[1].value=row.issue||'';
-      if(allInps[2]) allInps[2].value=row.action||'';
-      setTomSelect(allSels[2], row.resolved||'');
-      if(allInps[3]) allInps[3].value=row.inspector||'';
-
-    } else if(name==='security'){
-      const allInps=tr.querySelectorAll('input');
-      const allSels=tr.querySelectorAll('select');
-      if(allInps[0]) allInps[0].value=row.date||'';
-      setTomSelect(allSels[0], row.type||'');
-      if(allInps[1]) allInps[1].value=row.conductor||'';
-      if(allInps[2]) allInps[2].value=row.time||'';
-      if(allInps[3]) allInps[3].value=row.findings||'';
-      if(allInps[4]) allInps[4].value=row.action||'';
-      if(allInps[5]) allInps[5].value=row.signoff||'';
-
-    } else if(name==='maintenance'){
-      const allInps=tr.querySelectorAll('input');
-      const allSels=tr.querySelectorAll('select');
-      if(allInps[0]) allInps[0].value=row.date||'';
-      setTomSelect(allSels[0], row.category||'');
-      if(allInps[1]) allInps[1].value=row.item||'';
-      if(allInps[2]) allInps[2].value=row.issue||'';
-      if(allInps[3]) allInps[3].value=row.reported_by||'';
-      if(allInps[4]) allInps[4].value=row.action||'';
-      setTomSelect(allSels[1], row.status||'');
-      if(allInps[5]) allInps[5].value=row.remarks||'';
-
-    } else if(name==='staff-comp'){
-      const allInps=tr.querySelectorAll('input');
-      const allSels=tr.querySelectorAll('select');
-      if(allInps[0]) allInps[0].value=row.date||'';
-      if(allInps[1]) allInps[1].value=row.person_name||'';
-      setTomSelect(allSels[0], row.category||'');
-      if(allInps[2]) allInps[2].value=row.item||'';
-      if(allInps[3]) allInps[3].value=row.quantity||'';
-      if(allInps[4]) allInps[4].value=row.standard_price||'';
-      if(allInps[5]){allInps[5].value=row.amount_paid||'';allInps[5].dispatchEvent(new Event('input'));}
-      if(allInps[6]) allInps[6].value=row.authorised_by||'';
-      if(allInps[7]) allInps[7].value=row.remarks||'';
-
-    } else if(name==='training'){
-      const allInps=tr.querySelectorAll('input');
-      const allSels=tr.querySelectorAll('select');
-      if(allInps[0]) allInps[0].value=row.date||'';
-      if(allInps[1]) allInps[1].value=row.topic||'';
-      if(allInps[2]) allInps[2].value=row.trainer||'';
-      if(allInps[3]) allInps[3].value=row.duration_hours||'';
-      if(allInps[4]) allInps[4].value=row.attendees||'';
-      if(allInps[5]) allInps[5].value=row.attendee_count||'';
-      if(allInps[6]) allInps[6].value=row.key_points||'';
-      setTomSelect(allSels[0], row.followup_required||'');
-      if(allInps[7]) allInps[7].value=row.remarks||'';
-
-    } else if(name==='incidents'){
-      const allInps=tr.querySelectorAll('input');
-      const allSels=tr.querySelectorAll('select');
-      if(allInps[0]) allInps[0].value=row.date||'';
-      setTomSelect(allSels[0], row.category||'');
-      if(allInps[1]) allInps[1].value=row.description||'';
-      if(allInps[2]) allInps[2].value=row.persons||'';
-      if(allInps[3]) allInps[3].value=row.action||'';
-      setTomSelect(allSels[1], row.escalated||'');
-      setTomSelect(allSels[2], row.status||'');
-    }
-  });
+  fillTable('bar-sales', r.bar_sales||[]);
+  fillTable('bar-stock', r.bar_stock||[]);
+  fillTable('restaurant', r.restaurant_sales||[]);
+  fillTable('room-sales', r.room_sales||[]);
+  fillTable('stores', r.stores_stock||[]);
+  fillTable('kitchen', r.kitchen||[]);
+  fillTable('rooms', r.room_inspections||[]);
+  fillTable('housekeeping', r.housekeeping_log||[]);
+  fillTable('security', r.security_log||[]);
+  fillTable('maintenance', r.maintenance_log||[]);
+  fillTable('staff-comp', r.staff_complimentary||[]);
+  fillTable('training', r.training_log||[]);
+  fillTable('incidents', r.incidents||[]);
+  setStatus('✓ Draft loaded for week of '+fmtDate(weekOf)+'. Continue editing and save draft again when done.','success');
 }
 
 // ── AUTO ARCHIVE ──────────────────────────────────────────────────────────────
