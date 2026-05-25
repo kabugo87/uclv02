@@ -2058,7 +2058,7 @@ async function loadDashboard(){
       archBtn.textContent='Archive';
       archBtn.className='btn-action';
       archBtn.style.cssText='padding:5px 12px;background:var(--gold);color:#fff;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-family:Jost,sans-serif;margin-right:4px';
-      archBtn.onclick=()=>archiveReport(r.id);
+      archBtn.onclick=()=>archiveReport(r.id,true);
       const dBtn=document.createElement('button');
       dBtn.textContent='Delete';
       dBtn.className='btn-action btn-danger';
@@ -2074,23 +2074,16 @@ async function loadDashboard(){
 
 // ── ARCHIVE & DELETE ──────────────────────────────────────────────────────────
 async function archiveReport(id,val){
+  const confirmed=val?confirm('Archive this report? It will be hidden from the main dashboard.'):confirm('Unarchive this report?');
+  if(!confirmed) return;
   const {error}=await sb.from('weekly_reports').update({archived:val}).eq('id',id);
   if(error){alert('Archive failed: '+error.message);return;}
   loadDashboard();
 }
 function promptDelete(id){
-  currentReport={id};
-  const box=document.getElementById('confirm-delete');
-  if(box){
-    box.style.display='block';
-    box.style.visibility='visible';
-    box.style.opacity='1';
-    box.scrollIntoView({behavior:'smooth'});
-  } else {
-    // Fallback - use browser confirm
-    if(confirm('Are you sure you want to permanently delete this report? This cannot be undone.')){
-      confirmDelete();
-    }
+  if(confirm('Are you sure you want to permanently delete this report? This cannot be undone.')){
+    currentReport={id};
+    confirmDelete();
   }
 }
 function cancelDelete(){currentReport=null;document.getElementById('confirm-delete').style.display='none';}
