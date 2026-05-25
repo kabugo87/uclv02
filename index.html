@@ -2793,7 +2793,7 @@ async function generateMonthly(){
 
   // Revenue per lodge per week
   const lodgeData={};
-  LODGES.forEach(l=>{lodgeData[l]={weeks:{},totalBar:0,totalRest:0,totalRoom:0,total:0,incidents:0,openMaint:0};});
+  displayLodges.forEach(l=>{lodgeData[l]={weeks:{},totalBar:0,totalRest:0,totalRoom:0,total:0,incidents:0,openMaint:0};});
 
   data.forEach(r=>{
     const l=r.lodge;
@@ -2809,7 +2809,7 @@ async function generateMonthly(){
     lodgeData[l].openMaint+=(r.maintenance_log||[]).filter(m=>m.status==='Open'||m.status==='In Progress').length;
   });
 
-  const grandTotal=LODGES.reduce((s,l)=>s+lodgeData[l].total,0);
+  const grandTotal=displayLodges.reduce((s,l)=>s+lodgeData[l].total,0);
 
   let html=`
     <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-bottom:20px;">
@@ -2824,7 +2824,7 @@ async function generateMonthly(){
         <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--forest)">${fmtUGX(grandTotal)}</div>
         <div style="font-size:12px;color:var(--muted)">All lodges — ${monthName}</div>
       </div>
-      ${LODGES.map(l=>`
+      ${displayLodges.map(l=>`
       <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px;">
         <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">${l.split(' ')[0]}</div>
         <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--forest)">${fmtUGX(lodgeData[l].total)}</div>
@@ -2843,7 +2843,7 @@ async function generateMonthly(){
         <th style="padding:10px 14px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Incidents</th>
       </tr></thead>
       <tbody>
-        ${LODGES.map(l=>`<tr>
+        ${displayLodges.map(l=>`<tr>
           <td style="padding:10px 14px;border-bottom:1px solid #ede9e0;font-weight:600">${l}</td>
           <td style="padding:10px 14px;border-bottom:1px solid #ede9e0;text-align:right">${fmtUGX(lodgeData[l].totalBar)}</td>
           <td style="padding:10px 14px;border-bottom:1px solid #ede9e0;text-align:right">${fmtUGX(lodgeData[l].totalRest)}</td>
@@ -2853,11 +2853,11 @@ async function generateMonthly(){
         </tr>`).join('')}
         <tr style="background:#f0ede6;font-weight:700;">
           <td style="padding:10px 14px;">TOTAL</td>
-          <td style="padding:10px 14px;text-align:right">${fmtUGX(LODGES.reduce((s,l)=>s+lodgeData[l].totalBar,0))}</td>
-          <td style="padding:10px 14px;text-align:right">${fmtUGX(LODGES.reduce((s,l)=>s+lodgeData[l].totalRest,0))}</td>
-          <td style="padding:10px 14px;text-align:right">${fmtUGX(LODGES.reduce((s,l)=>s+lodgeData[l].totalRoom,0))}</td>
+          <td style="padding:10px 14px;text-align:right">${fmtUGX(displayLodges.reduce((s,l)=>s+lodgeData[l].totalBar,0))}</td>
+          <td style="padding:10px 14px;text-align:right">${fmtUGX(displayLodges.reduce((s,l)=>s+lodgeData[l].totalRest,0))}</td>
+          <td style="padding:10px 14px;text-align:right">${fmtUGX(displayLodges.reduce((s,l)=>s+lodgeData[l].totalRoom,0))}</td>
           <td style="padding:10px 14px;text-align:right;font-size:16px">${fmtUGX(grandTotal)}</td>
-          <td style="padding:10px 14px;text-align:right">${LODGES.reduce((s,l)=>s+lodgeData[l].incidents,0)}</td>
+          <td style="padding:10px 14px;text-align:right">${displayLodges.reduce((s,l)=>s+lodgeData[l].incidents,0)}</td>
         </tr>
       </tbody>
     </table>
@@ -2866,12 +2866,12 @@ async function generateMonthly(){
     <table style="width:100%;border-collapse:collapse;font-size:13px;background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:24px;">
       <thead><tr style="background:#f0ede6;">
         <th style="padding:9px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Week Of</th>
-        ${LODGES.map(l=>`<th style="padding:9px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">${l.split(' ')[0]}</th>`).join('')}
+        ${displayLodges.map(l=>`<th style="padding:9px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">${l.split(' ')[0]}</th>`).join('')}
         <th style="padding:9px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Combined</th>
       </tr></thead>
       <tbody>
         ${weeks.map(w=>{
-          const weekRevs=LODGES.map(l=>lodgeData[l].weeks[w]?lodgeData[l].weeks[w].total:0);
+          const weekRevs=displayLodges.map(l=>lodgeData[l].weeks[w]?lodgeData[l].weeks[w].total:0);
           const weekTotal=weekRevs.reduce((s,v)=>s+v,0);
           return`<tr>
             <td style="padding:9px 12px;border-bottom:1px solid #ede9e0;font-weight:600">${fmtDate(w)}</td>
