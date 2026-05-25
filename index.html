@@ -3135,32 +3135,6 @@ async function loadAnalytics(){
   insHtml+='<td style="padding:10px 14px;text-align:right">100%</td>';
   insHtml+='<td style="padding:10px 14px"></td></tr>';
   insHtml+='</tbody></table></div>';
-
-  // ── KEY INSIGHTS NARRATION ────────────────────────────────────
-  insHtml+='<div style="margin-top:24px">';
-  insHtml+='<div style="font-family:\'Cormorant Garamond\',serif;font-size:18px;font-weight:700;color:var(--forest);margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid var(--border)">Key Insights</div>';
-  var nItems=[];
-  if(prevWkRev>0){
-    var wkPct=((lastWkRev-prevWkRev)/prevWkRev*100).toFixed(1);
-    nItems.push(wkUp
-      ?'📈 <strong>Revenue is growing.</strong> Most recent week: '+fmtUGX(lastWkRev)+', up '+Math.abs(wkPct)+'% vs previous week ('+fmtUGX(prevWkRev)+').'
-      :'📉 <strong>Revenue declined this week.</strong> Most recent week: '+fmtUGX(lastWkRev)+', down '+Math.abs(wkPct)+'% vs previous week ('+fmtUGX(prevWkRev)+').');
-  }
-  var tLodge=LODGES.slice().sort(function(a,b){return (lodgeRevenue[b]||0)-(lodgeRevenue[a]||0);})[0];
-  var tLPct=grandTotal>0?((lodgeRevenue[tLodge]||0)/grandTotal*100).toFixed(1):0;
-  nItems.push('🏆 <strong>'+tLodge.split(' ')[0]+' leads group revenue</strong> — '+fmtUGX(lodgeRevenue[tLodge]||0)+' ('+tLPct+'% of total).');
-  var bPct=grandTotal>0?(totalBar/grandTotal*100).toFixed(1):0;
-  var rPct=grandTotal>0?(totalRest/grandTotal*100).toFixed(1):0;
-  var roPct=grandTotal>0?(totalRoom/grandTotal*100).toFixed(1):0;
-  var tStream=totalBar>totalRest&&totalBar>totalRoom?'Bar':totalRest>totalRoom?'Restaurant':'Rooms';
-  nItems.push('💰 <strong>'+tStream+' is the strongest revenue stream.</strong> Bar: '+bPct+'% | Restaurant: '+rPct+'% | Rooms: '+roPct+'%.');
-  if(topItems[0]) nItems.push('⭐ <strong>Best seller: '+topItems[0][0]+'</strong> — '+topItems[0][1]+' units sold.'+(topItems[1]?' Runner-up: '+topItems[1][0]+' ('+topItems[1][1]+' units).':''));
-  nItems.push('📊 Based on <strong>'+data.length+' reports</strong> across <strong>'+weeks.length+' week'+(weeks.length!==1?'s':'')+'</strong>.');
-  nItems.forEach(function(item){
-    insHtml+='<div style="padding:10px 16px;border-left:3px solid var(--forest);margin-bottom:8px;background:#f8f6f0;border-radius:0 6px 6px 0;font-size:13px;line-height:1.6;color:var(--dark)">'+item+'</div>';
-  });
-  insHtml+='</div>';
-
   insights.innerHTML=insHtml;
           
 
