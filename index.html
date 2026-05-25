@@ -1061,6 +1061,76 @@ function styleSelect(s){
   s.style.cssText='width:100%;padding:6px 4px;border:1px solid transparent;border-radius:4px;font-family:Jost,sans-serif;font-size:12px;color:var(--dark);background:transparent;cursor:pointer;';
 }
 
+// ── STATIC WIRE (for draft loading - no Tom Select) ──────────────────────────
+function wireDropdownsStatic(groupTd, itemTd, unitInp, parInp, category, savedGroup, savedItem, savedPrice){
+  // Build plain group select
+  const gSel=document.createElement('select');
+  gSel.style.cssText='width:100%;padding:5px 4px;border:1px solid transparent;border-radius:4px;font-family:Jost,sans-serif;font-size:12px;color:var(--dark);background:transparent;';
+  // Add blank option plus all groups
+  const blankG=document.createElement('option');blankG.value='';blankG.textContent='Group...';gSel.appendChild(blankG);
+  getGroups(category).forEach(function(g){
+    const op=document.createElement('option');op.value=g;op.textContent=g;
+    if(g===savedGroup) op.selected=true;
+    gSel.appendChild(op);
+  });
+
+  // Build plain item select with items for the saved group
+  const iSel=document.createElement('select');
+  iSel.style.cssText='width:100%;padding:5px 4px;border:1px solid transparent;border-radius:4px;font-family:Jost,sans-serif;font-size:12px;color:var(--dark);background:transparent;';
+  const blankI=document.createElement('option');blankI.value='';blankI.textContent='-- Item --';iSel.appendChild(blankI);
+  if(savedGroup){
+    getItems(category, savedGroup).forEach(function(item){
+      const op=document.createElement('option');
+      op.value=item.item_name;
+      op.textContent=item.item_name+(item.selling_price>0?' — UGX '+item.selling_price.toLocaleString():'');
+      op.dataset.unit=item.unit;
+      op.dataset.price=item.selling_price||0;
+      if(item.item_name===savedItem) op.selected=true;
+      iSel.appendChild(op);
+    });
+    // Add Other option
+    const oth=document.createElement('option');oth.value='Other';oth.textContent='+ Other (specify)';iSel.appendChild(oth);
+  }
+
+  // Wire item change to fill unit and price
+  iSel.onchange=function(){
+    const sel=this.options[this.selectedIndex];
+    if(unitInp&&sel&&sel.dataset.unit) unitInp.value=sel.dataset.unit;
+    if(sel&&sel.dataset.price&&sel.dataset.price!=='0'){
+      const priceInp=iSel.closest('tr')?iSel.closest('tr').querySelector('.price'):null;
+      if(priceInp){priceInp.value=sel.dataset.price; priceInp.dispatchEvent(new Event('input'));}
+    }
+  };
+
+  // Wire group change to reload items
+  gSel.onchange=function(){
+    while(iSel.firstChild) iSel.removeChild(iSel.firstChild);
+    const b=document.createElement('option');b.value='';b.textContent='-- Item --';iSel.appendChild(b);
+    if(!this.value) return;
+    getItems(category, this.value).forEach(function(item){
+      const op=document.createElement('option');
+      op.value=item.item_name;
+      op.textContent=item.item_name+(item.selling_price>0?' — UGX '+item.selling_price.toLocaleString():'');
+      op.dataset.unit=item.unit;
+      op.dataset.price=item.selling_price||0;
+      iSel.appendChild(op);
+    });
+    const oth=document.createElement('option');oth.value='Other';oth.textContent='+ Other (specify)';iSel.appendChild(oth);
+  };
+
+  // Set unit from saved item
+  if(savedGroup && savedItem){
+    const items=getItems(category, savedGroup);
+    const found=items.find(function(i){return i.item_name===savedItem;});
+    if(found && unitInp) unitInp.value=found.unit||'';
+  }
+
+  while(groupTd.firstChild) groupTd.removeChild(groupTd.firstChild);
+  groupTd.appendChild(gSel);
+  while(itemTd.firstChild) itemTd.removeChild(itemTd.firstChild);
+  itemTd.appendChild(iSel);
+}
+
 function wireDropdowns(groupTd, itemTd, unitInp, parInp, category){
   let itemData={};
   let groupTS=null, itemTS=null;
@@ -3491,24 +3561,21 @@ function populateTable(name, rows){
       },150);
 
     } else if(name==='restaurant'){
-      const allInps=tr.querySelectorAll('input');
-      const allSels=tr.querySelectorAll('select');
-      if(allInps[0]) allInps[0].value=row.date||'';
-      setTomSelect(allSels[0], row.group||'');
-      setTimeout(function(){
-        const sels=tr.querySelectorAll('select');
-        setTomSelect(sels[1], row.item||'');
-        setTimeout(function(){
-          const inps=tr.querySelectorAll('input');
-          if(inps[1]) inps[1].value=row.qty_sold||'';
-          if(inps[2]){inps[2].value=row.selling_price||'';inps[2].dispatchEvent(new Event('input'));}
-          const sels2=tr.querySelectorAll('select');
-          if(sels2[2]) setTomSelect(sels2[2], row.meal_period||'Breakfast');
-          if(sels2[3]) setTomSelect(sels2[3], row.payment||'Cash');
-          if(inps[3]) inps[3].value=row.remarks||'';
-          if(inps[1]) inps[1].dispatchEvent(new Event('input'));
-        },400);
-      },400);
+      const groupTd2=tr.cells[1];
+      const itemTd2=tr.cells[2];
+      wireDropdownsStatic(groupTd2, itemTd2, null, null, 'Restaurant', row.group||'', row.item||'', row.selling_price||0);
+      const ip2=tr.querySelectorAll('input');
+      if(ip2[0]) ip2[0].value=row.date||'';
+      if(ip2[1]) ip2[1].value=row.qty_sold||'';
+      if(ip2[2]){ip2[2].value=row.selling_price||''; ip2[2].dispatchEvent(new Event('input'));}
+      if(ip2[3]) ip2[3].value=row.remarks||'';
+      const rs=tr.querySelectorAll('select:not(.ts-hidden-accessible)');
+      rs.forEach(function(s,i){
+        if(s.closest('td')!==groupTd2&&s.closest('td')!==itemTd2){
+          if(i===0||rs[i].options.length<=5) s.value=row.meal_period||'Breakfast';
+          else s.value=row.payment||'Cash';
+        }
+      });
 
     } else if(name==='bar-stock'||name==='stores'){
       const allInps=tr.querySelectorAll('input');
