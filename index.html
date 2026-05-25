@@ -493,6 +493,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <button class="btn-preview" onclick="showPreview()">&#128065; Preview</button>
       <button style="padding:12px 24px;background:var(--white);color:var(--forest);border:2px solid var(--forest);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="saveDraft()">💾 Save Draft</button>
+      <button style="padding:12px 24px;background:var(--white);color:var(--amber);border:2px solid var(--amber);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="loadDraft()">📂 Open Draft</button>
       <button class="btn-submit" onclick="doSubmit()">✓ Submit Weekly Report</button>
     </div>
   </div>
@@ -802,6 +803,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <button class="btn-preview" onclick="showPreview()">&#128065; Preview</button>
       <button style="padding:12px 24px;background:var(--white);color:var(--forest);border:2px solid var(--forest);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="saveDraft()">💾 Save Draft</button>
+      <button style="padding:12px 24px;background:var(--white);color:var(--amber);border:2px solid var(--amber);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onclick="loadDraft()">📂 Open Draft</button>
       <button class="btn-submit" onclick="doSubmit()">✓ Submit Weekly Report</button>
     </div>
   </div>
@@ -1776,31 +1778,17 @@ function extractTable(name){
       row.status=allSels[1]?allSels[1].value:'';
       row.remarks=allInps[5]?allInps[5].value:'';
     } else if(name==='booked-guests'){
-    const PSTATUS=['Paid at HQ','Complimentary','Partial Payment'];
-    const bgQtyInp=makeInp('number','1','bg-qty');
-    const bgBarInp=makeInp('number','0','bg-bar-val');
-    const bgFoodInp=makeInp('number','0','bg-food-val');
-    const bgStoreInp=makeInp('number','0','bg-store-val');
-    const bgCalc=()=>{
-      const total=n(bgBarInp.value)+n(bgFoodInp.value)+n(bgStoreInp.value);
-      const totTd=tr.querySelector('.bg-total');
-      if(totTd)totTd.textContent=fmtUGX(total);
-    };
-    [bgBarInp,bgFoodInp,bgStoreInp].forEach(i=>i.oninput=bgCalc);
-    tr.append(
-      tdEl(makeInp('date',''),'sm'),
-      tdEl(makeInp('text','Guest name / booking ref'),'wide'),
-      tdEl(bgQtyInp,'sm'),
-      tdEl(makeSel(PSTATUS)),
-      tdEl(makeInp('text','HQ booking ref'),'med'),
-      tdEl(bgBarInp,'med'),
-      tdEl(bgFoodInp,'med'),
-      tdEl(bgStoreInp,'med'),
-      calcTd('bg-total'),
-      tdEl(makeInp('text','Remarks'),'wide'),
-      delTd
-    );
-  } else if(name==='staff-comp'){
+      row.date=allInps[0]?allInps[0].value:'';
+      row.guest_name=allInps[1]?allInps[1].value:'';
+      row.num_guests=allInps[2]?allInps[2].value:'';
+      row.payment_status=allSels[0]?allSels[0].value:'';
+      row.booking_ref=allInps[3]?allInps[3].value:'';
+      row.bar_value=allInps[4]?allInps[4].value:'';
+      row.food_value=allInps[5]?allInps[5].value:'';
+      row.store_value=allInps[6]?allInps[6].value:'';
+      row.total_value=tr.querySelector('.bg-total')?tr.querySelector('.bg-total').textContent:'';
+      row.remarks=allInps[7]?allInps[7].value:'';
+    } else if(name==='staff-comp'){
       row.date=allInps[0]?allInps[0].value:'';
       row.person_name=allInps[1]?allInps[1].value:'';
       row.category=allSels[0]?allSels[0].value:'';
@@ -1915,7 +1903,6 @@ async function doSubmit(){
       housekeeping_log:extractTable('housekeeping'),
       security_log:extractTable('security'),
       maintenance_log:extractTable('maintenance'),
-      booked_guests:extractTable('booked-guests'),
       staff_complimentary:extractTable('staff-comp'),
       training_log:extractTable('training'),
       incidents:extractTable('incidents'),
@@ -1946,7 +1933,79 @@ async function loadDashboard(){
   const admin=role==='admin';
   const gm=role==='gm';
 
-  // ── AUTO ARCHIVE (admin only) ────────────────────────────────
+  // ── LOAD DRAFT ────────────────────────────────────────────────────────────────
+async function loadDraft(){
+  const weekOf=document.getElementById('week-of').value;
+  if(!weekOf){setStatus('Please select the week first.','error');return;}
+  if(!currentLodge){setStatus('No lodge selected.','error');return;}
+  setStatus('Looking for draft...','');
+  const {data,error}=await sb.from('weekly_reports')
+    .select('*')
+    .eq('lodge',currentLodge)
+    .eq('week_of',weekOf)
+    .eq('is_draft',true)
+    .limit(1);
+  if(error||!data||!data.length){
+    setStatus('No draft found for this lodge and week.','error');
+    return;
+  }
+  const r=data[0];
+  // Populate bar sales
+  populateTable('bar-sales', r.bar_sales||[]);
+  populateTable('bar-stock', r.bar_stock||[]);
+  populateTable('restaurant', r.restaurant_sales||[]);
+  populateTable('room-sales', r.room_sales||[]);
+  populateTable('stores', r.stores_stock||[]);
+  populateTable('kitchen', r.kitchen||[]);
+  populateTable('rooms', r.room_inspections||[]);
+  populateTable('housekeeping', r.housekeeping_log||[]);
+  populateTable('security', r.security_log||[]);
+  populateTable('maintenance', r.maintenance_log||[]);
+  populateTable('staff-comp', r.staff_complimentary||[]);
+  populateTable('training', r.training_log||[]);
+  populateTable('incidents', r.incidents||[]);
+  setStatus('✓ Draft loaded for week of '+fmtDate(weekOf)+'. Continue editing.','success');
+}
+
+function populateTable(name, rows){
+  if(!rows||!rows.length) return;
+  const tbody=document.getElementById('body-'+name);
+  if(!tbody) return;
+  // Clear existing rows and rebuild
+  tbody.innerHTML='';
+  rows.forEach(function(row){
+    addRow(name);
+    const tr=tbody.lastElementChild;
+    if(!tr) return;
+    const allInps=tr.querySelectorAll('input');
+    const allSels=tr.querySelectorAll('select');
+    if(name==='bar-sales'||name==='restaurant'){
+      if(allInps[0]) allInps[0].value=row.date||'';
+      if(allSels[0]) allSels[0].value=row.group||'';
+      // Trigger group change to load items
+      if(allSels[0]) allSels[0].dispatchEvent(new Event('change'));
+      setTimeout(function(){
+        const allSels2=tr.querySelectorAll('select');
+        if(allSels2[1]) allSels2[1].value=row.item||'';
+        allSels2[1] && allSels2[1].dispatchEvent(new Event('change'));
+        if(allInps[2]) allInps[2].value=row.qty_sold||'';
+        if(allInps[3]) allInps[3].value=row.selling_price||'';
+        if(allInps[3]) allInps[3].dispatchEvent(new Event('input'));
+        const payIdx=name==='bar-sales'?2:3;
+        if(allSels2[payIdx]) allSels2[payIdx].value=row.payment||'';
+        const remIdx=name==='bar-sales'?4:3;
+        if(allInps[remIdx]) allInps[remIdx].value=row.remarks||'';
+      },100);
+    } else {
+      // For other tabs, fill inputs sequentially
+      const vals=Object.values(row).filter(v=>typeof v==='string');
+      allInps.forEach(function(inp,i){ if(vals[i+1]!==undefined) inp.value=vals[i+1]; });
+      allSels.forEach(function(sel,i){ if(vals[i]!==undefined) sel.value=vals[i]; });
+    }
+  });
+}
+
+// ── AUTO ARCHIVE (admin only) ────────────────────────────────
   if(admin) autoArchiveOldReports();
 
   // ── SHOW/HIDE UI ELEMENTS ────────────────────────────────────
@@ -1957,7 +2016,7 @@ async function loadDashboard(){
     document.querySelectorAll('.dash-tab').forEach(t=>t.style.display='block');
   }
   // Admin-only tabs
-  document.getElementById('drafts-tab').style.display=admin?'block':'none';
+  document.getElementById('drafts-tab').style.display=(admin||isSup)?'block':'none';
   document.getElementById('admin-tab').style.display=admin?'block':'none';
   // Analytics for admin and GM only
   document.getElementById('analytics-tab').style.display=(admin||gm)?'block':'none';
@@ -2006,7 +2065,11 @@ async function loadDashboard(){
     .order('submitted_at',{ascending:false}).limit(100);
 
   if(sup&&myLodge){
-    q=q.eq('lodge',myLodge).eq('archived',false).eq('is_draft',false);
+    if(currentDashTab==='drafts'){
+      q=q.eq('lodge',myLodge).eq('is_draft',true);
+    } else {
+      q=q.eq('lodge',myLodge).eq('archived',false).eq('is_draft',false);
+    }
   } else if(currentDashTab==='archived'){
     q=q.eq('archived',true).eq('is_draft',false);
   } else if(currentDashTab==='drafts'){
@@ -2738,7 +2801,6 @@ async function saveDraft(){
       stores_stock:extractTable('stores'),kitchen:extractTable('kitchen'),
       room_inspections:extractTable('rooms'),housekeeping_log:extractTable('housekeeping'),
       security_log:extractTable('security'),maintenance_log:extractTable('maintenance'),
-      booked_guests:extractTable('booked-guests'),
       staff_complimentary:extractTable('staff-comp'),
       training_log:extractTable('training'),
       incidents:extractTable('incidents'),
@@ -3187,6 +3249,78 @@ async function carryForwardStock(){
   window._prevBarStock=prev.bar_stock||[];
   window._prevStoreStock=prev.stores_stock||[];
   console.log('Previous stock loaded:',window._prevBarStock.length,'bar items,',window._prevStoreStock.length,'store items');
+}
+
+// ── LOAD DRAFT ────────────────────────────────────────────────────────────────
+async function loadDraft(){
+  const weekOf=document.getElementById('week-of').value;
+  if(!weekOf){setStatus('Please select the week first.','error');return;}
+  if(!currentLodge){setStatus('No lodge selected.','error');return;}
+  setStatus('Looking for draft...','');
+  const {data,error}=await sb.from('weekly_reports')
+    .select('*')
+    .eq('lodge',currentLodge)
+    .eq('week_of',weekOf)
+    .eq('is_draft',true)
+    .limit(1);
+  if(error||!data||!data.length){
+    setStatus('No draft found for this lodge and week.','error');
+    return;
+  }
+  const r=data[0];
+  // Populate bar sales
+  populateTable('bar-sales', r.bar_sales||[]);
+  populateTable('bar-stock', r.bar_stock||[]);
+  populateTable('restaurant', r.restaurant_sales||[]);
+  populateTable('room-sales', r.room_sales||[]);
+  populateTable('stores', r.stores_stock||[]);
+  populateTable('kitchen', r.kitchen||[]);
+  populateTable('rooms', r.room_inspections||[]);
+  populateTable('housekeeping', r.housekeeping_log||[]);
+  populateTable('security', r.security_log||[]);
+  populateTable('maintenance', r.maintenance_log||[]);
+  populateTable('staff-comp', r.staff_complimentary||[]);
+  populateTable('training', r.training_log||[]);
+  populateTable('incidents', r.incidents||[]);
+  setStatus('✓ Draft loaded for week of '+fmtDate(weekOf)+'. Continue editing.','success');
+}
+
+function populateTable(name, rows){
+  if(!rows||!rows.length) return;
+  const tbody=document.getElementById('body-'+name);
+  if(!tbody) return;
+  // Clear existing rows and rebuild
+  tbody.innerHTML='';
+  rows.forEach(function(row){
+    addRow(name);
+    const tr=tbody.lastElementChild;
+    if(!tr) return;
+    const allInps=tr.querySelectorAll('input');
+    const allSels=tr.querySelectorAll('select');
+    if(name==='bar-sales'||name==='restaurant'){
+      if(allInps[0]) allInps[0].value=row.date||'';
+      if(allSels[0]) allSels[0].value=row.group||'';
+      // Trigger group change to load items
+      if(allSels[0]) allSels[0].dispatchEvent(new Event('change'));
+      setTimeout(function(){
+        const allSels2=tr.querySelectorAll('select');
+        if(allSels2[1]) allSels2[1].value=row.item||'';
+        allSels2[1] && allSels2[1].dispatchEvent(new Event('change'));
+        if(allInps[2]) allInps[2].value=row.qty_sold||'';
+        if(allInps[3]) allInps[3].value=row.selling_price||'';
+        if(allInps[3]) allInps[3].dispatchEvent(new Event('input'));
+        const payIdx=name==='bar-sales'?2:3;
+        if(allSels2[payIdx]) allSels2[payIdx].value=row.payment||'';
+        const remIdx=name==='bar-sales'?4:3;
+        if(allInps[remIdx]) allInps[remIdx].value=row.remarks||'';
+      },100);
+    } else {
+      // For other tabs, fill inputs sequentially
+      const vals=Object.values(row).filter(v=>typeof v==='string');
+      allInps.forEach(function(inp,i){ if(vals[i+1]!==undefined) inp.value=vals[i+1]; });
+      allSels.forEach(function(sel,i){ if(vals[i]!==undefined) sel.value=vals[i]; });
+    }
+  });
 }
 
 // ── AUTO ARCHIVE ──────────────────────────────────────────────────────────────
