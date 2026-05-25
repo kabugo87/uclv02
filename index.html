@@ -1061,82 +1061,14 @@ function styleSelect(s){
   s.style.cssText='width:100%;padding:6px 4px;border:1px solid transparent;border-radius:4px;font-family:Jost,sans-serif;font-size:12px;color:var(--dark);background:transparent;cursor:pointer;';
 }
 
-// ── STATIC WIRE (for draft loading - no Tom Select) ──────────────────────────
-function wireDropdownsStatic(groupTd, itemTd, unitInp, parInp, category, savedGroup, savedItem, savedPrice){
-  // Build plain group select
-  const gSel=document.createElement('select');
-  gSel.style.cssText='width:100%;padding:5px 4px;border:1px solid transparent;border-radius:4px;font-family:Jost,sans-serif;font-size:12px;color:var(--dark);background:transparent;';
-  // Add blank option plus all groups
-  const blankG=document.createElement('option');blankG.value='';blankG.textContent='Group...';gSel.appendChild(blankG);
-  getGroups(category).forEach(function(g){
-    const op=document.createElement('option');op.value=g;op.textContent=g;
-    if(g===savedGroup) op.selected=true;
-    gSel.appendChild(op);
-  });
 
-  // Build plain item select with items for the saved group
-  const iSel=document.createElement('select');
-  iSel.style.cssText='width:100%;padding:5px 4px;border:1px solid transparent;border-radius:4px;font-family:Jost,sans-serif;font-size:12px;color:var(--dark);background:transparent;';
-  const blankI=document.createElement('option');blankI.value='';blankI.textContent='-- Item --';iSel.appendChild(blankI);
-  if(savedGroup){
-    getItems(category, savedGroup).forEach(function(item){
-      const op=document.createElement('option');
-      op.value=item.item_name;
-      op.textContent=item.item_name+(item.selling_price>0?' — UGX '+item.selling_price.toLocaleString():'');
-      op.dataset.unit=item.unit;
-      op.dataset.price=item.selling_price||0;
-      if(item.item_name===savedItem) op.selected=true;
-      iSel.appendChild(op);
-    });
-    // Add Other option
-    const oth=document.createElement('option');oth.value='Other';oth.textContent='+ Other (specify)';iSel.appendChild(oth);
-  }
-
-  // Wire item change to fill unit and price
-  iSel.onchange=function(){
-    const sel=this.options[this.selectedIndex];
-    if(unitInp&&sel&&sel.dataset.unit) unitInp.value=sel.dataset.unit;
-    if(sel&&sel.dataset.price&&sel.dataset.price!=='0'){
-      const priceInp=iSel.closest('tr')?iSel.closest('tr').querySelector('.price'):null;
-      if(priceInp){priceInp.value=sel.dataset.price; priceInp.dispatchEvent(new Event('input'));}
-    }
-  };
-
-  // Wire group change to reload items
-  gSel.onchange=function(){
-    while(iSel.firstChild) iSel.removeChild(iSel.firstChild);
-    const b=document.createElement('option');b.value='';b.textContent='-- Item --';iSel.appendChild(b);
-    if(!this.value) return;
-    getItems(category, this.value).forEach(function(item){
-      const op=document.createElement('option');
-      op.value=item.item_name;
-      op.textContent=item.item_name+(item.selling_price>0?' — UGX '+item.selling_price.toLocaleString():'');
-      op.dataset.unit=item.unit;
-      op.dataset.price=item.selling_price||0;
-      iSel.appendChild(op);
-    });
-    const oth=document.createElement('option');oth.value='Other';oth.textContent='+ Other (specify)';iSel.appendChild(oth);
-  };
-
-  // Set unit from saved item
-  if(savedGroup && savedItem){
-    const items=getItems(category, savedGroup);
-    const found=items.find(function(i){return i.item_name===savedItem;});
-    if(found && unitInp) unitInp.value=found.unit||'';
-  }
-
-  while(groupTd.firstChild) groupTd.removeChild(groupTd.firstChild);
-  groupTd.appendChild(gSel);
-  while(itemTd.firstChild) itemTd.removeChild(itemTd.firstChild);
-  itemTd.appendChild(iSel);
-}
 
 function wireDropdowns(groupTd, itemTd, unitInp, parInp, category){
   let itemData={};
-  let groupTS=null, itemTS=null;
 
-  // ── GROUP SELECT ──────────────────────────────────────────────
+  // ── GROUP SELECT (plain - no Tom Select) ──────────────────────
   const gSel=document.createElement('select');
+  gSel.style.cssText='width:100%;padding:5px 4px;border:1px solid transparent;border-radius:4px;font-family:Jost,sans-serif;font-size:12px;color:var(--dark);background:transparent;cursor:pointer;';
   const blankG=document.createElement('option');blankG.value='';blankG.textContent='Group...';gSel.appendChild(blankG);
   getGroups(category).forEach(g=>{
     const op=document.createElement('option');op.value=g;op.textContent=g;gSel.appendChild(op);
@@ -1144,60 +1076,57 @@ function wireDropdowns(groupTd, itemTd, unitInp, parInp, category){
   while(groupTd.firstChild)groupTd.removeChild(groupTd.firstChild);
   groupTd.appendChild(gSel);
 
-  // ── ITEM SELECT ───────────────────────────────────────────────
+  // ── ITEM SELECT (plain - no Tom Select) ───────────────────────
   const iSel=document.createElement('select');
+  iSel.style.cssText='width:100%;padding:5px 4px;border:1px solid transparent;border-radius:4px;font-family:Jost,sans-serif;font-size:12px;color:var(--dark);background:transparent;cursor:pointer;';
   const blankI=document.createElement('option');blankI.value='';blankI.textContent='Select group first...';iSel.appendChild(blankI);
   while(itemTd.firstChild)itemTd.removeChild(itemTd.firstChild);
   itemTd.appendChild(iSel);
 
-  // ── INIT TOM SELECT ───────────────────────────────────────────
-  groupTS=new TomSelect(gSel,{
-    placeholder:'Group...',allowEmptyOption:true,
-    onInitialize:function(){this.control.style.cursor='pointer';},
-    onChange:function(val){
-      if(!val){itemTS&&itemTS.clear();itemTS&&itemTS.clearOptions();return;}
-      rebuildItemOptions(val);
-    }
-  });
-
-  itemTS=new TomSelect(iSel,{
-    placeholder:'Type to search or select...',allowEmptyOption:true,
-    create:false,
-    onChange:function(val){
-      const props=itemData[val]||{};
-      if(unitInp&&props.unit)unitInp.value=props.unit;
-      if(parInp&&props.par)parInp.value=props.par;
-      if(props.price&&props.price!==0){
-        const tr=gSel.closest('tr');
-        const priceInp=tr?tr.querySelector('.price'):null;
-        if(priceInp){priceInp.value=props.price;priceInp.dispatchEvent(new Event('input'));}
-      }
-      // Other
-      const existing=itemTd.querySelector('.other-inp');
-      if(val==='Other'){
-        if(!existing){
-          const inp=document.createElement('input');
-          inp.type='text';inp.placeholder='Type item name...';inp.className='other-inp';
-          inp.style.cssText='width:100%;margin-top:3px;padding:4px 6px;border:1px solid var(--border);border-radius:3px;font-size:12px;font-family:Jost,sans-serif';
-          itemTd.appendChild(inp);
-        }
-      } else {if(existing)existing.remove();}
-    }
-  });
-
-  function rebuildItemOptions(grp){
+  // ── GROUP CHANGE ──────────────────────────────────────────────
+  gSel.onchange=function(){
+    const val=this.value;
+    while(iSel.firstChild)iSel.removeChild(iSel.firstChild);
     itemData={};
-    itemTS.clear();itemTS.clearOptions();
-    const opts=[];
-    getItems(category,grp).forEach(item=>{
-      const label=item.item_name+(item.selling_price>0?' — UGX '+item.selling_price.toLocaleString():'');
-      opts.push({value:item.item_name,text:label});
+    if(!val){
+      const b=document.createElement('option');b.value='';b.textContent='Select group first...';iSel.appendChild(b);
+      return;
+    }
+    const b=document.createElement('option');b.value='';b.textContent='-- Select item --';iSel.appendChild(b);
+    getItems(category,val).forEach(item=>{
+      const op=document.createElement('option');
+      op.value=item.item_name;
+      op.textContent=item.item_name+(item.selling_price>0?' — UGX '+item.selling_price.toLocaleString():'');
+      iSel.appendChild(op);
       itemData[item.item_name]={unit:item.unit,par:item.par_level,price:item.selling_price||0};
     });
-    opts.push({value:'Other',text:'+ Other (specify)'});
-    itemTS.addOptions(opts);
-  }
+    const oth=document.createElement('option');oth.value='Other';oth.textContent='+ Other (specify)';iSel.appendChild(oth);
+  };
+
+  // ── ITEM CHANGE ───────────────────────────────────────────────
+  iSel.onchange=function(){
+    const val=this.value;
+    const props=itemData[val]||{};
+    if(unitInp&&props.unit)unitInp.value=props.unit;
+    if(parInp&&props.par)parInp.value=props.par;
+    if(props.price&&props.price!==0){
+      const tr=gSel.closest('tr');
+      const priceInp=tr?tr.querySelector('.price'):null;
+      if(priceInp){priceInp.value=props.price;priceInp.dispatchEvent(new Event('input'));}
+    }
+    // Other option
+    const existing=itemTd.querySelector('.other-inp');
+    if(val==='Other'){
+      if(!existing){
+        const inp=document.createElement('input');
+        inp.type='text';inp.placeholder='Type item name...';inp.className='other-inp';
+        inp.style.cssText='width:100%;margin-top:3px;padding:4px 6px;border:1px solid var(--border);border-radius:3px;font-size:12px;font-family:Jost,sans-serif';
+        itemTd.appendChild(inp);
+      }
+    } else {if(existing)existing.remove();}
+  };
 }
+
 
 // ── LODGE SELECTOR ────────────────────────────────────────────────────────────
 async function showLodgeSelector(){
@@ -2037,15 +1966,6 @@ async function loadDraft(){
   setStatus('✓ Draft loaded for week of '+fmtDate(weekOf)+'. Continue editing.','success');
 }
 
-function setTomSelect(sel, value){
-  if(!sel||!value) return;
-  if(sel.tomselect){
-    sel.tomselect.setValue(value, true);
-  } else {
-    sel.value=value;
-  }
-}
-
 function populateTable(name, rows){
   if(!rows||!rows.length) return;
   const tbody=document.getElementById('body-'+name);
@@ -2056,185 +1976,167 @@ function populateTable(name, rows){
     addRow(name);
     const tr=tbody.lastElementChild;
     if(!tr) return;
-    const inps=tr.querySelectorAll('input');
-    const sels=tr.querySelectorAll('select');
+    const ip=tr.querySelectorAll('input');
+    const sl=tr.querySelectorAll('select');
 
-    // Helper to set a native select value without Tom Select
-    function setNativeSel(sel, val){
+    function setSel(sel, val){
       if(!sel||!val) return;
-      // Try to find and select the matching option
       for(var i=0;i<sel.options.length;i++){
-        if(sel.options[i].value===val||sel.options[i].text===val){
-          sel.selectedIndex=i; return;
-        }
+        if(sel.options[i].value===val){sel.selectedIndex=i;return;}
       }
-      // If not found, add option and select it
-      var opt=document.createElement('option');
-      opt.value=val; opt.text=val; sel.add(opt);
+      // Value not in options yet - add it then trigger change to load items
+      var op=document.createElement('option');op.value=val;op.textContent=val;sel.appendChild(op);
       sel.value=val;
     }
 
     if(name==='bar-sales'){
-      if(inps[0]) inps[0].value=row.date||'';
-      // For group and item: set the underlying native select directly
-      // bypassing Tom Select visual, then show saved values as text hints
-      if(sels[0]) setNativeSel(sels[0], row.group||'');
-      // Trigger group change to load item options
-      if(sels[0]) sels[0].dispatchEvent(new Event('change'));
-      // Use requestAnimationFrame to wait for DOM update
-      requestAnimationFrame(function(){
+      // Date(0), Unit(1), Qty(2), Price(3), Remarks(4)
+      // Selects: Group(0), Item(1), Payment(2)
+      if(ip[0]) ip[0].value=row.date||'';
+      setSel(sl[0], row.group||'');
+      if(sl[0]) sl[0].dispatchEvent(new Event('change')); // loads item options
+      // Use requestAnimationFrame to wait for items to load
+      (function(savedRow, savedTr){
         requestAnimationFrame(function(){
-          const s=tr.querySelectorAll('select');
-          const ip=tr.querySelectorAll('input');
-          if(s[1]) setNativeSel(s[1], row.item||'');
-          if(s[1]) s[1].dispatchEvent(new Event('change'));
-          // Set numeric fields directly - these always work
-          if(ip[0]) ip[0].value=row.date||'';
-          if(ip[1]) ip[1].value=row.unit||'';
-          if(ip[2]) ip[2].value=row.qty_sold||'';
-          if(ip[3]) ip[3].value=row.selling_price||'';
-          if(ip[4]) ip[4].value=row.remarks||'';
-          if(s[2]) setNativeSel(s[2], row.payment||'Cash');
-          // Force total calculation
-          if(ip[3]) ip[3].dispatchEvent(new Event('input'));
-          if(ip[2]) ip[2].dispatchEvent(new Event('input'));
+          const s=savedTr.querySelectorAll('select');
+          const p=savedTr.querySelectorAll('input');
+          setSel(s[1], savedRow.item||'');
+          if(p[1]) p[1].value=savedRow.unit||'';
+          if(p[2]) p[2].value=savedRow.qty_sold||'';
+          if(p[3]){p[3].value=savedRow.selling_price||''; p[3].dispatchEvent(new Event('input'));}
+          setSel(s[2], savedRow.payment||'Cash');
+          if(p[4]) p[4].value=savedRow.remarks||'';
         });
-      });
+      })(row, tr);
 
     } else if(name==='restaurant'){
-      if(inps[0]) inps[0].value=row.date||'';
-      if(sels[0]) setNativeSel(sels[0], row.group||'');
-      if(sels[0]) sels[0].dispatchEvent(new Event('change'));
-      requestAnimationFrame(function(){
+      // Date(0), Qty(1), Price(2), Remarks(3)
+      // Selects: Group(0), Item(1), MealPeriod(2), Payment(3)
+      if(ip[0]) ip[0].value=row.date||'';
+      setSel(sl[0], row.group||'');
+      if(sl[0]) sl[0].dispatchEvent(new Event('change'));
+      (function(savedRow, savedTr){
         requestAnimationFrame(function(){
-          const s=tr.querySelectorAll('select');
-          const ip=tr.querySelectorAll('input');
-          if(s[1]) setNativeSel(s[1], row.item||'');
-          if(s[1]) s[1].dispatchEvent(new Event('change'));
-          if(ip[0]) ip[0].value=row.date||'';
-          if(ip[1]) ip[1].value=row.qty_sold||'';
-          if(ip[2]) ip[2].value=row.selling_price||'';
-          if(ip[3]) ip[3].value=row.remarks||'';
-          if(s[2]) setNativeSel(s[2], row.meal_period||'Breakfast');
-          if(s[3]) setNativeSel(s[3], row.payment||'Cash');
-          if(ip[2]) ip[2].dispatchEvent(new Event('input'));
-          if(ip[1]) ip[1].dispatchEvent(new Event('input'));
+          const s=savedTr.querySelectorAll('select');
+          const p=savedTr.querySelectorAll('input');
+          setSel(s[1], savedRow.item||'');
+          if(p[1]) p[1].value=savedRow.qty_sold||'';
+          if(p[2]){p[2].value=savedRow.selling_price||''; p[2].dispatchEvent(new Event('input'));}
+          setSel(s[2], savedRow.meal_period||'Breakfast');
+          setSel(s[3], savedRow.payment||'Cash');
+          if(p[3]) p[3].value=savedRow.remarks||'';
         });
-      });
+      })(row, tr);
 
     } else if(name==='bar-stock'||name==='stores'){
-      if(sels[0]) setNativeSel(sels[0], row.group||'');
-      if(sels[0]) sels[0].dispatchEvent(new Event('change'));
+      setSel(sl[0], row.group||'');
+      if(sl[0]) sl[0].dispatchEvent(new Event('change'));
       requestAnimationFrame(function(){
-        requestAnimationFrame(function(){
-          const s=tr.querySelectorAll('select');
-          const ip=tr.querySelectorAll('input');
-          if(s[1]) setNativeSel(s[1], row.item||'');
-          if(ip[0]) ip[0].value=row.unit||'';
-          if(ip[1]) ip[1].value=row.par_level||'';
-          if(ip[2]) ip[2].value=row.unit_cost||'';
-          if(ip[3]) ip[3].value=row.opening||'';
-          if(ip[4]) ip[4].value=row.received||'';
-          if(ip[5]) ip[5].value=row.issued||'';
-          if(ip[6]){ip[6].value=row.actual_closing||''; ip[6].dispatchEvent(new Event('input'));}
-        });
+        const s=tr.querySelectorAll('select');
+        const p=tr.querySelectorAll('input');
+        setSel(s[1], row.item||'');
+        if(p[0]) p[0].value=row.unit||'';
+        if(p[1]) p[1].value=row.par_level||'';
+        if(p[2]) p[2].value=row.unit_cost||'';
+        if(p[3]) p[3].value=row.opening||'';
+        if(p[4]) p[4].value=row.received||'';
+        if(p[5]) p[5].value=row.issued||'';
+        if(p[6]){p[6].value=row.actual_closing||''; p[6].dispatchEvent(new Event('input'));}
       });
 
     } else if(name==='kitchen'){
-      if(sels[0]) setNativeSel(sels[0], row.group||'');
-      if(sels[0]) sels[0].dispatchEvent(new Event('change'));
+      setSel(sl[0], row.group||'');
+      if(sl[0]) sl[0].dispatchEvent(new Event('change'));
       requestAnimationFrame(function(){
-        requestAnimationFrame(function(){
-          const s=tr.querySelectorAll('select');
-          const ip=tr.querySelectorAll('input');
-          if(s[1]) setNativeSel(s[1], row.item||'');
-          if(ip[0]) ip[0].value=row.unit||'';
-          if(ip[1]) ip[1].value=row.par_level||'';
-          if(ip[2]) ip[2].value=row.unit_cost||'';
-          if(ip[3]) ip[3].value=row.qty_purchased||'';
-          if(ip[4]) ip[4].value=row.qty_used||'';
-          if(ip[5]){ip[5].value=row.qty_wasted||''; ip[5].dispatchEvent(new Event('input'));}
-          if(ip[6]) ip[6].value=row.remarks||'';
-        });
+        const s=tr.querySelectorAll('select');
+        const p=tr.querySelectorAll('input');
+        setSel(s[1], row.item||'');
+        if(p[0]) p[0].value=row.unit||'';
+        if(p[1]) p[1].value=row.par_level||'';
+        if(p[2]) p[2].value=row.unit_cost||'';
+        if(p[3]) p[3].value=row.qty_purchased||'';
+        if(p[4]) p[4].value=row.qty_used||'';
+        if(p[5]){p[5].value=row.qty_wasted||''; p[5].dispatchEvent(new Event('input'));}
+        if(p[6]) p[6].value=row.remarks||'';
       });
 
     } else if(name==='room-sales'){
-      if(inps[0]) inps[0].value=row.date||'';
-      if(inps[1]) inps[1].value=row.room_no||'';
-      if(inps[2]) inps[2].value=row.guest_name||'';
-      if(sels[0]) setNativeSel(sels[0], row.room_type||'');
-      if(inps[3]) inps[3].value=row.nights||'';
-      if(inps[4]){inps[4].value=row.rate_per_night||''; inps[4].dispatchEvent(new Event('input'));}
-      if(sels[1]) setNativeSel(sels[1], row.payment||'Cash');
-      if(inps[5]) inps[5].value=row.remarks||'';
+      if(ip[0]) ip[0].value=row.date||'';
+      if(ip[1]) ip[1].value=row.room_no||'';
+      if(ip[2]) ip[2].value=row.guest_name||'';
+      setSel(sl[0], row.room_type||'');
+      if(ip[3]) ip[3].value=row.nights||'';
+      if(ip[4]){ip[4].value=row.rate_per_night||''; ip[4].dispatchEvent(new Event('input'));}
+      setSel(sl[1], row.payment||'Cash');
+      if(ip[5]) ip[5].value=row.remarks||'';
 
     } else if(name==='rooms'){
-      if(inps[0]) inps[0].value=row.room||'';
-      if(inps[1]) inps[1].value=row.date||'';
-      if(inps[2]) inps[2].value=row.inspector||'';
-      if(inps[3]) inps[3].value=row.deficiency||'';
-      if(inps[4]) inps[4].value=row.action||'';
-      if(sels[0]) setNativeSel(sels[0], row.resolved||'');
-      if(inps[5]) inps[5].value=row.remarks||'';
+      if(ip[0]) ip[0].value=row.room||'';
+      if(ip[1]) ip[1].value=row.date||'';
+      if(ip[2]) ip[2].value=row.inspector||'';
+      if(ip[3]) ip[3].value=row.deficiency||'';
+      if(ip[4]) ip[4].value=row.action||'';
+      setSel(sl[0], row.resolved||'');
+      if(ip[5]) ip[5].value=row.remarks||'';
 
     } else if(name==='housekeeping'){
-      if(inps[0]) inps[0].value=row.date||'';
-      if(sels[0]) setNativeSel(sels[0], row.area||'');
-      if(sels[1]) setNativeSel(sels[1], row.standard_met||'');
-      if(inps[1]) inps[1].value=row.issue||'';
-      if(inps[2]) inps[2].value=row.action||'';
-      if(sels[2]) setNativeSel(sels[2], row.resolved||'');
-      if(inps[3]) inps[3].value=row.inspector||'';
+      if(ip[0]) ip[0].value=row.date||'';
+      setSel(sl[0], row.area||'');
+      setSel(sl[1], row.standard_met||'');
+      if(ip[1]) ip[1].value=row.issue||'';
+      if(ip[2]) ip[2].value=row.action||'';
+      setSel(sl[2], row.resolved||'');
+      if(ip[3]) ip[3].value=row.inspector||'';
 
     } else if(name==='security'){
-      if(inps[0]) inps[0].value=row.date||'';
-      if(sels[0]) setNativeSel(sels[0], row.type||'');
-      if(inps[1]) inps[1].value=row.conductor||'';
-      if(inps[2]) inps[2].value=row.time||'';
-      if(inps[3]) inps[3].value=row.findings||'';
-      if(inps[4]) inps[4].value=row.action||'';
-      if(inps[5]) inps[5].value=row.signoff||'';
+      if(ip[0]) ip[0].value=row.date||'';
+      setSel(sl[0], row.type||'');
+      if(ip[1]) ip[1].value=row.conductor||'';
+      if(ip[2]) ip[2].value=row.time||'';
+      if(ip[3]) ip[3].value=row.findings||'';
+      if(ip[4]) ip[4].value=row.action||'';
+      if(ip[5]) ip[5].value=row.signoff||'';
 
     } else if(name==='maintenance'){
-      if(inps[0]) inps[0].value=row.date||'';
-      if(sels[0]) setNativeSel(sels[0], row.category||'');
-      if(inps[1]) inps[1].value=row.item||'';
-      if(inps[2]) inps[2].value=row.issue||'';
-      if(inps[3]) inps[3].value=row.reported_by||'';
-      if(inps[4]) inps[4].value=row.action||'';
-      if(sels[1]) setNativeSel(sels[1], row.status||'');
-      if(inps[5]) inps[5].value=row.remarks||'';
+      if(ip[0]) ip[0].value=row.date||'';
+      setSel(sl[0], row.category||'');
+      if(ip[1]) ip[1].value=row.item||'';
+      if(ip[2]) ip[2].value=row.issue||'';
+      if(ip[3]) ip[3].value=row.reported_by||'';
+      if(ip[4]) ip[4].value=row.action||'';
+      setSel(sl[1], row.status||'');
+      if(ip[5]) ip[5].value=row.remarks||'';
 
     } else if(name==='staff-comp'){
-      if(inps[0]) inps[0].value=row.date||'';
-      if(inps[1]) inps[1].value=row.person_name||'';
-      if(sels[0]) setNativeSel(sels[0], row.category||'');
-      if(inps[2]) inps[2].value=row.item||'';
-      if(inps[3]) inps[3].value=row.quantity||'';
-      if(inps[4]) inps[4].value=row.standard_price||'';
-      if(inps[5]){inps[5].value=row.amount_paid||''; inps[5].dispatchEvent(new Event('input'));}
-      if(inps[6]) inps[6].value=row.authorised_by||'';
-      if(inps[7]) inps[7].value=row.remarks||'';
+      if(ip[0]) ip[0].value=row.date||'';
+      if(ip[1]) ip[1].value=row.person_name||'';
+      setSel(sl[0], row.category||'');
+      if(ip[2]) ip[2].value=row.item||'';
+      if(ip[3]) ip[3].value=row.quantity||'';
+      if(ip[4]) ip[4].value=row.standard_price||'';
+      if(ip[5]){ip[5].value=row.amount_paid||''; ip[5].dispatchEvent(new Event('input'));}
+      if(ip[6]) ip[6].value=row.authorised_by||'';
+      if(ip[7]) ip[7].value=row.remarks||'';
 
     } else if(name==='training'){
-      if(inps[0]) inps[0].value=row.date||'';
-      if(inps[1]) inps[1].value=row.topic||'';
-      if(inps[2]) inps[2].value=row.trainer||'';
-      if(inps[3]) inps[3].value=row.duration_hours||'';
-      if(inps[4]) inps[4].value=row.attendees||'';
-      if(inps[5]) inps[5].value=row.attendee_count||'';
-      if(inps[6]) inps[6].value=row.key_points||'';
-      if(sels[0]) setNativeSel(sels[0], row.followup_required||'No');
-      if(inps[7]) inps[7].value=row.remarks||'';
+      if(ip[0]) ip[0].value=row.date||'';
+      if(ip[1]) ip[1].value=row.topic||'';
+      if(ip[2]) ip[2].value=row.trainer||'';
+      if(ip[3]) ip[3].value=row.duration_hours||'';
+      if(ip[4]) ip[4].value=row.attendees||'';
+      if(ip[5]) ip[5].value=row.attendee_count||'';
+      if(ip[6]) ip[6].value=row.key_points||'';
+      setSel(sl[0], row.followup_required||'No');
+      if(ip[7]) ip[7].value=row.remarks||'';
 
     } else if(name==='incidents'){
-      if(inps[0]) inps[0].value=row.date||'';
-      if(sels[0]) setNativeSel(sels[0], row.category||'');
-      if(inps[1]) inps[1].value=row.description||'';
-      if(inps[2]) inps[2].value=row.persons||'';
-      if(inps[3]) inps[3].value=row.action||'';
-      if(sels[1]) setNativeSel(sels[1], row.escalated||'No');
-      if(sels[2]) setNativeSel(sels[2], row.status||'Open');
+      if(ip[0]) ip[0].value=row.date||'';
+      setSel(sl[0], row.category||'');
+      if(ip[1]) ip[1].value=row.description||'';
+      if(ip[2]) ip[2].value=row.persons||'';
+      if(ip[3]) ip[3].value=row.action||'';
+      setSel(sl[1], row.escalated||'No');
+      setSel(sl[2], row.status||'Open');
     }
   });
 }
