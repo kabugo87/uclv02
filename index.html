@@ -1302,9 +1302,16 @@ function setDashboardTableMode(mode){
 
 function calcReportRevenue(r){
   let rev=0;
-  (r.bar_sales||[]).forEach(s=>{rev+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
-  (r.restaurant_sales||[]).forEach(s=>{rev+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
-  (r.room_sales||[]).forEach(s=>{rev+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
+  function rowAmt(s,totalField,qtyField,priceField,nightsField){
+    var tv=parseFloat((s[totalField]||'').replace(/[^0-9.-]/g,''))||0;
+    if(tv>0) return tv;
+    var qty=parseFloat(String(s[qtyField]||s[nightsField]||'0'))||0;
+    var price=parseFloat(String(s[priceField]||'0').replace(/[^0-9.-]/g,''))||0;
+    return qty*price;
+  }
+  (r.bar_sales||[]).forEach(s=>{rev+=rowAmt(s,'total_value','qty_sold','selling_price','');});
+  (r.restaurant_sales||[]).forEach(s=>{rev+=rowAmt(s,'total_value','qty_sold','selling_price','');});
+  (r.room_sales||[]).forEach(s=>{rev+=rowAmt(s,'total_value','nights','rate_per_night','nights');});
   return rev;
 }
 
@@ -1319,12 +1326,13 @@ function renderDraftManager(rows){
   }
   rows.slice().sort((a,b)=>new Date(b.last_saved_at||b.submitted_at||0)-new Date(a.last_saved_at||a.submitted_at||0)).forEach(r=>{
     const tr=document.createElement('tr');
+    const tdStyle='padding:12px 14px;vertical-align:middle;border-bottom:1px solid var(--border);';
     tr.innerHTML=
-      '<td><span class="badge badge-blue">'+(r.lodge||'Unknown')+'</span></td>'+
-      '<td><strong>'+fmtDate(r.week_of)+'</strong></td>'+
-      '<td>'+(r.last_saved_at?fmtDT(r.last_saved_at):fmtDT(r.submitted_at))+'</td>'+
-      '<td>'+((r.user_email||'').replace('@ugandaculturallodges.com',''))+'</td>'+
-      '<td><strong>'+fmtUGX(calcReportRevenue(r))+'</strong></td>';
+      '<td style="'+tdStyle+'"><span class="badge badge-blue">'+(r.lodge||'Unknown')+'</span></td>'+
+      '<td style="'+tdStyle+'"><strong>'+fmtDate(r.week_of)+'</strong></td>'+
+      '<td style="'+tdStyle+';color:var(--muted);font-size:12px;">'+(r.last_saved_at?fmtDT(r.last_saved_at):fmtDT(r.submitted_at))+'</td>'+
+      '<td style="'+tdStyle+';font-size:12px;">'+((r.user_email||'').replace('@ugandaculturallodges.com',''))+'</td>'+
+      '<td style="'+tdStyle+'"><strong style="color:var(--forest)">'+fmtUGX(calcReportRevenue(r))+'</strong></td>';
     const openTd=document.createElement('td');
     const openBtn=document.createElement('button');
     openBtn.textContent='Continue';
@@ -2910,6 +2918,7 @@ async function openDraftById(id, lodge, weekOf){
   fillDraftTable('training', r.training_log||[]);
   fillDraftTable('incidents', r.incidents||[]);
   switchTab(document.querySelector('.tab[data-tab="bar-sales"]'));
+  setTimeout(function(){calcTotals();calcStaffTotal();},200);
   setStatus('Draft loaded - '+fmtDate(weekOf)+'. Continue editing and Save Draft when done.','success');
 }
 
@@ -2939,7 +2948,7 @@ function fillDraftTable(tabName, rows){
         var s2=tr.querySelectorAll('select');var p2=tr.querySelectorAll('input');
         // Item dropdown — use Tom Select setValue if available
         if(p2[1])p2[1].value=row.unit||'';
-        if(p2[2])p2[2].value=row.qty_sold||'';
+        if(p2[2]){p2[2].value=row.qty_sold||'';p2[2].dispatchEvent(new Event('input'));}
         if(p2[3]){p2[3].value=row.selling_price||'';p2[3].dispatchEvent(new Event('input'));}
         if(s2[2])setS(s2[2],row.payment||'Cash');
         if(p2[4])p2[4].value=row.remarks||'';
