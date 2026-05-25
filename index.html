@@ -286,7 +286,22 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
           <label style="font-size:12px;font-weight:600;color:var(--muted)">Week of:</label>
           <input type="date" id="consolidated-week" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;"/>
           <button onclick="generateConsolidated()" id="consolidated-btn" style="padding:8px 18px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">📊 Consolidated Report</button>
-          
+          <span id="monthly-btn-wrap" style="display:none">
+            <select id="monthly-lodge" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;margin-left:8px;">
+              <option value="all">All Lodges</option>
+              <option value="Hoima Cultural Lodge">Hoima</option>
+              <option value="Lake Mulehe Gorilla Lodge">Lake Mulehe</option>
+              <option value="Kigarama Wilderness Lodge">Kigarama</option>
+            </select>
+            <select id="monthly-month" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;margin-left:8px;">
+              <option value="2026-04">April 2026</option>
+              <option value="2026-05">May 2026</option>
+              <option value="2026-06">June 2026</option>
+              <option value="2026-07">July 2026</option>
+              <option value="2026-08">August 2026</option>
+            </select>
+            <button onclick="generateMonthly()" style="padding:8px 18px;background:var(--gold);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-left:6px;">📅 Monthly Report</button>
+          </span>
         </div>
       </div>
       <div style="border-bottom:2px solid var(--border);margin-bottom:20px;"></div>
@@ -2044,7 +2059,7 @@ async function loadDashboard(){
       archBtn.textContent='Archive';
       archBtn.className='btn-action';
       archBtn.style.cssText='padding:5px 12px;background:var(--gold);color:#fff;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-family:Jost,sans-serif;margin-right:4px';
-      archBtn.onclick=()=>archiveReport(r.id,true);
+      archBtn.onclick=()=>archiveReport(r.id);
       const dBtn=document.createElement('button');
       dBtn.textContent='Delete';
       dBtn.className='btn-action btn-danger';
@@ -2060,16 +2075,23 @@ async function loadDashboard(){
 
 // ── ARCHIVE & DELETE ──────────────────────────────────────────────────────────
 async function archiveReport(id,val){
-  const confirmed=val?confirm('Archive this report? It will be hidden from the main dashboard.'):confirm('Unarchive this report?');
-  if(!confirmed) return;
   const {error}=await sb.from('weekly_reports').update({archived:val}).eq('id',id);
   if(error){alert('Archive failed: '+error.message);return;}
   loadDashboard();
 }
 function promptDelete(id){
-  if(confirm('Are you sure you want to permanently delete this report? This cannot be undone.')){
-    currentReport={id};
-    confirmDelete();
+  currentReport={id};
+  const box=document.getElementById('confirm-delete');
+  if(box){
+    box.style.display='block';
+    box.style.visibility='visible';
+    box.style.opacity='1';
+    box.scrollIntoView({behavior:'smooth'});
+  } else {
+    // Fallback - use browser confirm
+    if(confirm('Are you sure you want to permanently delete this report? This cannot be undone.')){
+      confirmDelete();
+    }
   }
 }
 function cancelDelete(){currentReport=null;document.getElementById('confirm-delete').style.display='none';}
