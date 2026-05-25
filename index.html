@@ -1302,9 +1302,20 @@ function setDashboardTableMode(mode){
 
 function calcReportRevenue(r){
   let rev=0;
-  (r.bar_sales||[]).forEach(s=>{rev+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
-  (r.restaurant_sales||[]).forEach(s=>{rev+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
-  (r.room_sales||[]).forEach(s=>{rev+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
+  function parseUGX(v){return parseFloat(String(v||'').replace(/[^0-9.-]/g,''))||0;}
+  // Skip blank rows. Fall back to qty*price if total_value absent/zero.
+  (r.bar_sales||[]).filter(s=>s.item&&String(s.item).trim()).forEach(s=>{
+    var tv=parseUGX(s.total_value);
+    rev+=tv>0?tv:parseFloat(s.qty_sold||0)*parseUGX(s.selling_price);
+  });
+  (r.restaurant_sales||[]).filter(s=>s.item&&String(s.item).trim()).forEach(s=>{
+    var tv=parseUGX(s.total_value);
+    rev+=tv>0?tv:parseFloat(s.qty_sold||0)*parseUGX(s.selling_price);
+  });
+  (r.room_sales||[]).filter(s=>s.guest_name&&String(s.guest_name).trim()||s.room_no&&String(s.room_no).trim()).forEach(s=>{
+    var tv=parseUGX(s.total_value);
+    rev+=tv>0?tv:parseFloat(s.nights||0)*parseUGX(s.rate_per_night);
+  });
   return rev;
 }
 
@@ -2910,7 +2921,7 @@ async function openDraftById(id, lodge, weekOf){
   fillDraftTable('training', r.training_log||[]);
   fillDraftTable('incidents', r.incidents||[]);
   switchTab(document.querySelector('.tab[data-tab="bar-sales"]'));
-  // Per-row setTimeouts(0) finish first, then we sum all totals
+  // Per-row setTimeout(0) handlers finish before this setTimeout(50) fires
   setTimeout(function(){calcTotals();calcStaffTotal();},50);
   setStatus('Draft loaded - '+fmtDate(weekOf)+'. Continue editing and Save Draft when done.','success');
 }
@@ -2934,39 +2945,40 @@ function fillDraftTable(tabName, rows){
       var o=document.createElement('option');o.value=val;o.textContent=val;sel.appendChild(o);sel.value=val;
     }
     if(tabName==='bar-sales'){
-      var dateInp=tr.querySelector('input[type="date"]');
-      if(dateInp)dateInp.value=row.date||'';
+      // Set date via type attribute — unaffected by TomSelect
+      var _dateInp=tr.querySelector('input[type="date"]');
+      if(_dateInp)_dateInp.value=row.date||'';
       restoreDraftDropdowns(tr,row.group||'',row.item||'');
       setTimeout(function(){
-        var s2=tr.querySelectorAll('select');
-        var unitInp=tr.querySelector('input:not([type="date"]):not(.ts-input):not([type="search"])');
-        var qtyInp=tr.querySelector('.qty');
-        var priceInp=tr.querySelector('.price');
-        var remarksInp=tr.querySelector('input[placeholder="Remarks"]');
-        if(unitInp)unitInp.value=row.unit||'';
-        if(qtyInp)qtyInp.value=row.qty_sold||'';
-        if(priceInp)priceInp.value=row.selling_price||'';
-        if(s2[2])setS(s2[2],row.payment||'Cash');
-        if(remarksInp)remarksInp.value=row.remarks||'';
-        // Recalculate per-row total directly
-        if(qtyInp&&priceInp)calcSalesRow(tr,'bar-sales');
+        // Use class/placeholder selectors — immune to TomSelect injecting extra inputs
+        var _unit=tr.querySelector('input[placeholder="Unit"]')||tr.querySelector('input.unit');
+        var _qty=tr.querySelector('input.qty');
+        var _price=tr.querySelector('input.price');
+        var _rem=tr.querySelector('input[placeholder="Remarks"]');
+        var _s2=tr.querySelectorAll('select');
+        if(_unit)_unit.value=row.unit||'';
+        if(_qty)_qty.value=row.qty_sold||'';
+        if(_price)_price.value=row.selling_price||'';
+        if(_s2[2])setS(_s2[2],row.payment||'Cash');
+        if(_rem)_rem.value=row.remarks||'';
+        // Compute per-row total directly
+        if(_qty&&_price)calcSalesRow(tr,'bar-sales');
       },0);
     } else if(tabName==='restaurant'){
-      var dateInp=tr.querySelector('input[type="date"]');
-      if(dateInp)dateInp.value=row.date||'';
+      var _dateInp2=tr.querySelector('input[type="date"]');
+      if(_dateInp2)_dateInp2.value=row.date||'';
       restoreDraftDropdowns(tr,row.group||'',row.item||'');
       setTimeout(function(){
-        var s2=tr.querySelectorAll('select');
-        var qtyInp=tr.querySelector('.qty');
-        var priceInp=tr.querySelector('.price');
-        var remarksInp=tr.querySelector('input[placeholder="Remarks"]');
-        if(qtyInp)qtyInp.value=row.qty_sold||'';
-        if(priceInp)priceInp.value=row.selling_price||'';
-        if(s2[2])setS(s2[2],row.meal_period||'Breakfast');
-        if(s2[3])setS(s2[3],row.payment||'Cash');
-        if(remarksInp)remarksInp.value=row.remarks||'';
-        // Recalculate per-row total directly
-        if(qtyInp&&priceInp)calcSalesRow(tr,'restaurant');
+        var _qty2=tr.querySelector('input.qty');
+        var _price2=tr.querySelector('input.price');
+        var _rem2=tr.querySelector('input[placeholder="Remarks"]');
+        var _s3=tr.querySelectorAll('select');
+        if(_qty2)_qty2.value=row.qty_sold||'';
+        if(_price2)_price2.value=row.selling_price||'';
+        if(_s3[2])setS(_s3[2],row.meal_period||'Breakfast');
+        if(_s3[3])setS(_s3[3],row.payment||'Cash');
+        if(_rem2)_rem2.value=row.remarks||'';
+        if(_qty2&&_price2)calcSalesRow(tr,'restaurant');
       },0);
     } else if(tabName==='bar-stock'||tabName==='stores'){
       if(sl[0]){setS(sl[0],row.group||'');sl[0].dispatchEvent(new Event('change'));}
