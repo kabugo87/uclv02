@@ -201,6 +201,13 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
 .ts-dropdown input{font-family:'Jost',sans-serif!important;font-size:12px!important;padding:6px 10px!important;border-bottom:1px solid var(--border)!important;}
 .ts-wrapper .ts-control .placeholder{color:var(--muted)!important;}
 .form-table .ts-wrapper{width:100%;}
+/* Drafts page row spacing */
+.draft-table td{padding:12px 14px;vertical-align:middle;border-bottom:1px solid var(--border);}
+.draft-table tr:last-child td{border-bottom:none;}
+.draft-table{border-collapse:collapse;width:100%;}
+
+/* Item name dropdown — constrain width so it does not overflow */
+#body-bar-sales select, #body-restaurant select{max-width:200px;overflow:hidden;text-overflow:ellipsis;}
 </style>
 </head>
 <body>
@@ -1268,7 +1275,7 @@ function showDashTab(el,tab){
 
 function dashboardTableHTML(mode){
   if(mode==='drafts'){
-    return '<table style="width:100%;border-collapse:collapse;font-size:13px">'+
+    return '<table class="draft-table" style="width:100%;border-collapse:collapse;font-size:13px">'+
       '<thead><tr style="background:#f0ede6">'+
       '<th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Lodge</th>'+
       '<th style="padding:10px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Week Of</th>'+
