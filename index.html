@@ -2127,11 +2127,11 @@ async function loadDashboard(){
     (r.restaurant_sales||[]).forEach(s=>{totalRev+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
     (r.room_sales||[]).forEach(s=>{totalRev+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
   });
-  document.getElementById('stat-active').textContent=allActive.length;
-  document.getElementById('stat-hoima').textContent=sup&&myLodge!=='Hoima Cultural Lodge'?'—':allActive.filter(r=>r.lodge==='Hoima Cultural Lodge').length;
-  document.getElementById('stat-mulehe').textContent=sup&&myLodge!=='Lake Mulehe Gorilla Lodge'?'—':allActive.filter(r=>r.lodge==='Lake Mulehe Gorilla Lodge').length;
-  document.getElementById('stat-kigarama').textContent=sup&&myLodge!=='Kigarama Wilderness Lodge'?'—':allActive.filter(r=>r.lodge==='Kigarama Wilderness Lodge').length;
-  document.getElementById('stat-revenue').textContent=fmtUGX(totalRev);
+  const _sa=document.getElementById('stat-active');if(_sa)_sa.textContent=allActive.length;
+  const _sh=document.getElementById('stat-hoima');if(_sh)_sh.textContent=sup&&myLodge!=='Hoima Cultural Lodge'?'-':allActive.filter(r=>r.lodge==='Hoima Cultural Lodge').length;
+  const _sm=document.getElementById('stat-mulehe');if(_sm)_sm.textContent=sup&&myLodge!=='Lake Mulehe Gorilla Lodge'?'-':allActive.filter(r=>r.lodge==='Lake Mulehe Gorilla Lodge').length;
+  const _sk=document.getElementById('stat-kigarama');if(_sk)_sk.textContent=sup&&myLodge!=='Kigarama Wilderness Lodge'?'-':allActive.filter(r=>r.lodge==='Kigarama Wilderness Lodge').length;
+  const _sr=document.getElementById('stat-revenue');if(_sr)_sr.textContent=fmtUGX(totalRev);
 
   // ── REPORTS QUERY ─────────────────────────────────────────────
   const isDraftsTab=(currentDashTab==='drafts');
