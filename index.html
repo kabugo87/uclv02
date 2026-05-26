@@ -2037,20 +2037,6 @@ async function doSubmit(){
 function setStatus(msg,type){const el=document.getElementById('submit-status');el.textContent=msg;el.className='submit-status '+type;}
 
 // ── DASHBOARD ─────────────────────────────────────────────────────────────────
-async function loadDashboard(){
-  if(!currentUser){console.log('loadDashboard: no currentUser');return;}
-
-  // ── DETERMINE ROLE ──────────────────────────────────────────
-  const role=getUserRole();
-  const myLodge=getUserLodge();
-  const sup=role==='supervisor';
-  const admin=role==='admin';
-  const gm=role==='gm';
-
-  // ── LOAD DRAFT ────────────────────────────────────────────────────────────────
-
-
-// ── OPEN CURRENT DRAFT ────────────────────────────────────────────────────────
 async function openCurrentDraft(){
   const weekOf=document.getElementById('week-of').value;
   if(!weekOf){setStatus('Please select the week first.','error');return;}
@@ -2065,7 +2051,17 @@ async function openCurrentDraft(){
   await openDraftById(data[0].id, data[0].lodge, data[0].week_of);
 }
 
-// ── AUTO ARCHIVE (admin only) ────────────────────────────────
+async function loadDashboard(){
+  if(!currentUser){console.log('loadDashboard: no currentUser');return;}
+
+  // ── DETERMINE ROLE ──────────────────────────────────────────
+  const role=getUserRole();
+  const myLodge=getUserLodge();
+  const sup=role==='supervisor';
+  const admin=role==='admin';
+  const gm=role==='gm';
+
+  // ── AUTO ARCHIVE (admin only) ────────────────────────────────
   if(admin) autoArchiveOldReports();
 
   // ── SHOW/HIDE UI ELEMENTS ────────────────────────────────────
@@ -3108,15 +3104,13 @@ async function saveDraft(forceNew){
       kitchen_sales_revenue:restTotal,room_revenue:roomTotal
     };
 
+    payload.submitted_at=new Date().toISOString();
     let error;
     if(!createNew&&(currentDraftId||(existing&&existing.length>0))){
       const draftId=currentDraftId||existing[0].id;
-      // Update existing draft
       ({error}=await sb.from('weekly_reports').update(payload).eq('id',draftId));
       currentDraftId=draftId;
     } else {
-      // Create new draft
-      payload.submitted_at=new Date().toISOString();
       const res=await sb.from('weekly_reports').insert([payload]).select('id').single();
       error=res.error;
       if(res.data&&res.data.id) currentDraftId=res.data.id;
