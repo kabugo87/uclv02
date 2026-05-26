@@ -1387,7 +1387,7 @@ function buildRow(tr,name){
   const RTYPE=['Single Room','Double Room','Twin Room','Family Room','Banda','Suite','Other'];
 
   const delBtn=document.createElement('button');
-  delBtn.textContent='âœ•';
+  delBtn.textContent='×';
   delBtn.style.cssText='background:none;border:none;color:var(--error);cursor:pointer;font-size:16px;padding:4px 8px';
   delBtn.onclick=function(){tr.remove();calcTotals();};
   const delTd=document.createElement('td');delTd.appendChild(delBtn);
@@ -2086,7 +2086,14 @@ async function openCurrentDraft(){
   // My Drafts button in header — show for supervisors only
   const myDraftsBtn=document.getElementById('my-drafts-btn');
   if(myDraftsBtn) myDraftsBtn.style.display=sup?'inline-block':'none';
-  // Supervisors only see the Drafts tab — no lodge tabs needed
+  // For supervisors: default to showing their own submitted reports, not drafts
+  if(sup){
+    // Show the All Lodges tab (their lodge) as active by default if not already on drafts
+    const allTab=document.querySelector('.dash-tab[onclick*="showDashTab"][onclick*="all"]');
+    if(allTab&&currentDashTab!=='drafts'){
+      allTab.style.display='block';
+    }
+  }
 
   // â”€â”€ BUILD STAT CARDS HTML FIRST â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   document.querySelectorAll('[id="dash-stats"]').forEach(el=>el.style.display=sup?'none':'');
@@ -2101,7 +2108,6 @@ async function openCurrentDraft(){
         '<div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value" id="stat-revenue">-</div></div>';
     }
   }
-
   // â”€â”€ STATS QUERY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   let statsQ=sb.from('weekly_reports')
     .select('id,lodge,bar_sales,restaurant_sales,room_sales')
@@ -2853,10 +2859,7 @@ function setSelectValue(sel,val){
 function restoreDraftDropdowns(tr,groupVal,itemVal){
   const groupSel=tr.querySelector('select.wd-group');
   const itemSel=tr.querySelector('select.wd-item');
-  if(groupSel){
-    setSelectValue(groupSel,groupVal);
-    groupSel.dispatchEvent(new Event('change'));
-  }
+  if(groupSel){setSelectValue(groupSel,groupVal);groupSel.dispatchEvent(new Event('change'));}
   if(itemSel) setSelectValue(itemSel,itemVal);
 }
 
