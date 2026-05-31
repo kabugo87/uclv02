@@ -255,7 +255,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
     <div onclick="selectLodge('Kigarama Wilderness Lodge')" style="cursor:pointer;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:12px;padding:32px 28px;width:274px;" onmouseover="this.style.background='rgba(255,255,255,0.11)';this.style.borderColor='rgba(200,146,42,0.7)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.12)';this.style.transform='translateY(0)'">
       <div style="font-size:34px;margin-bottom:14px;">🌿</div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--white);margin-bottom:5px;">Kigarama Wilderness Lodge</div>
-      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:22px;line-height:1.5;">Kanungu District · South-western Uganda</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:22px;line-height:1.5;">Lake Mburo · Central Uganda</div>
       <div style="display:inline-block;padding:9px 20px;background:var(--gold);color:var(--white);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;">Enter Lodge →</div>
     </div>
   </div>
@@ -1232,6 +1232,7 @@ function buildRow(tr,name){
   } else if(name==='room-sales'){
     // Fields: date | room-no | guest-name | room-type | nights | rate | total | payment | remarks
     const nightsInp=makeInp('number','1','nights');
+    nightsInp.value='1';
     const rateInp=makeInp('number','0','rate');
     const calc=()=>calcRoomSales(tr);
     nightsInp.oninput=calc;rateInp.oninput=calc;
