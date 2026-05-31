@@ -27,7 +27,7 @@ body{font-family:'Jost',sans-serif;background:var(--sand);color:var(--dark);min-
 .auth-error{background:#fdf0ef;border:1px solid #e8b4b0;border-radius:var(--radius);padding:10px 14px;font-size:13px;color:var(--error);margin-top:12px;display:none;}
 #app-screen{display:none;}
 header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.3);}
-.header-left{display:flex;align-items:center;gap:14px;}
+.header-left{display:flex;align-items:center;gap:14px;position:relative;}
 .header-left img{height:38px;}
 .header-left span{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--white);}
 .lodge-badge{background:var(--gold);color:var(--white);padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;}
@@ -219,13 +219,52 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
   </div>
 </div>
 
-<div id="lodge-screen" class="lodge-selector" style="display:none">
-  <div class="lodge-selector-card">
-    <img src="data:image/png;base64,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" alt="UCL"/>
-    <h2>Select a Lodge</h2>
-    <p>Choose the lodge you are reporting for this week.<br/><span id="lodge-user-email" style="font-size:12px;color:var(--muted)"></span></p>
-    <div id="lodge-buttons"></div>
-    <button onclick="doLogout()" style="margin-top:16px;background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:Jost,sans-serif;">Sign out</button>
+
+<div id="lodge-screen" style="display:none;min-height:100vh;background:linear-gradient(160deg,var(--forest) 0%,#0d2218 100%);">
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 40px;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <img src="data:image/png;base64,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" height="44" alt="UCL"/>
+      <div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--white);">Uganda Cultural Lodges</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.55);letter-spacing:0.08em;text-transform:uppercase;">Weekly Reporting System</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;">
+      <span id="lodge-user-email" style="font-size:12px;color:rgba(255,255,255,0.55);"></span>
+      <button onclick="doLogout()" style="padding:7px 18px;background:transparent;border:1.5px solid rgba(255,255,255,0.3);border-radius:var(--radius);color:rgba(255,255,255,0.8);font-family:Jost,sans-serif;font-size:12px;cursor:pointer;">Sign Out</button>
+    </div>
+  </div>
+  <div style="text-align:center;padding:40px 24px 28px;">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:12px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;">Welcome Back</div>
+    <h1 style="font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:700;color:var(--white);margin-bottom:8px;line-height:1.1;">Select a Lodge</h1>
+    <p style="font-size:13px;color:rgba(255,255,255,0.5);max-width:380px;margin:0 auto;">Choose the lodge you are entering reports for, or view the Group Dashboard.</p>
+  </div>
+  <div style="display:flex;justify-content:center;gap:20px;padding:0 40px 32px;flex-wrap:wrap;max-width:1060px;margin:0 auto;">
+    <div onclick="selectLodge('Hoima Cultural Lodge')" style="cursor:pointer;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:12px;padding:32px 28px;width:274px;" onmouseover="this.style.background='rgba(255,255,255,0.11)';this.style.borderColor='rgba(200,146,42,0.7)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.12)';this.style.transform='translateY(0)'">
+      <div style="font-size:34px;margin-bottom:14px;">🏡</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--white);margin-bottom:5px;">Hoima Cultural Lodge</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:22px;line-height:1.5;">Buliisa District · Western Uganda</div>
+      <div style="display:inline-block;padding:9px 20px;background:var(--gold);color:var(--white);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;">Enter Lodge →</div>
+    </div>
+    <div onclick="selectLodge('Lake Mulehe Gorilla Lodge')" style="cursor:pointer;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:12px;padding:32px 28px;width:274px;" onmouseover="this.style.background='rgba(255,255,255,0.11)';this.style.borderColor='rgba(200,146,42,0.7)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.12)';this.style.transform='translateY(0)'">
+      <div style="font-size:34px;margin-bottom:14px;">🦍</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--white);margin-bottom:5px;">Lake Mulehe Gorilla Lodge</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:22px;line-height:1.5;">Kisoro District · South-western Uganda</div>
+      <div style="display:inline-block;padding:9px 20px;background:var(--gold);color:var(--white);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;">Enter Lodge →</div>
+    </div>
+    <div onclick="selectLodge('Kigarama Wilderness Lodge')" style="cursor:pointer;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:12px;padding:32px 28px;width:274px;" onmouseover="this.style.background='rgba(255,255,255,0.11)';this.style.borderColor='rgba(200,146,42,0.7)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.12)';this.style.transform='translateY(0)'">
+      <div style="font-size:34px;margin-bottom:14px;">🌿</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--white);margin-bottom:5px;">Kigarama Wilderness Lodge</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:22px;line-height:1.5;">Kanungu District · South-western Uganda</div>
+      <div style="display:inline-block;padding:9px 20px;background:var(--gold);color:var(--white);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;">Enter Lodge →</div>
+    </div>
+  </div>
+  <div id="home-dashboard-btn" style="display:none;text-align:center;padding-bottom:44px;">
+    <div style="width:1px;height:28px;background:rgba(255,255,255,0.15);margin:0 auto 20px;"></div>
+    <button id="home-go-dashboard" style="padding:13px 36px;background:transparent;border:2px solid rgba(255,255,255,0.3);border-radius:var(--radius);color:var(--white);font-family:Jost,sans-serif;font-size:14px;font-weight:600;cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='transparent'">📊 &nbsp;View Group Dashboard — All Lodges</button>
+  </div>
+  <div style="text-align:center;padding:18px;border-top:1px solid rgba(255,255,255,0.08);">
+    <span style="font-size:11px;color:rgba(255,255,255,0.2);letter-spacing:0.06em;">UGANDA CULTURAL LODGES · WEEKLY REPORTING SYSTEM</span>
   </div>
 </div>
 
@@ -234,7 +273,19 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
     <div class="header-left">
       <img style="cursor:pointer" onclick="changeLodge()" src="data:image/png;base64,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" alt="UCL"/>
       <span style="cursor:pointer" onclick="changeLodge()">Uganda Cultural Lodges</span>
-      <span class="lodge-badge" onclick="changeLodge()" id="lodge-name-header"></span>
+      <span class="lodge-badge" onclick="toggleLodgeSwitcher(event)" id="lodge-name-header" style="position:relative;"></span>
+      <div id="lodge-switcher-menu" style="display:none;position:absolute;top:54px;left:50%;transform:translateX(-50%);background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:0 8px 24px rgba(0,0,0,0.18);z-index:200;min-width:220px;overflow:hidden;">
+        <div style="padding:8px 14px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);border-bottom:1px solid var(--border);">Switch Lodge</div>
+        <div onclick="switchToLodge('Hoima Cultural Lodge')" style="padding:10px 14px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='#f5f0e8'" onmouseout="this.style.background=''"><span>🏡</span> Hoima Cultural Lodge</div>
+        <div onclick="switchToLodge('Lake Mulehe Gorilla Lodge')" style="padding:10px 14px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='#f5f0e8'" onmouseout="this.style.background=''"><span>🦍</span> Lake Mulehe Gorilla Lodge</div>
+        <div onclick="switchToLodge('Kigarama Wilderness Lodge')" style="padding:10px 14px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px;" onmouseover="this.style.background='#f5f0e8'" onmouseout="this.style.background=''"><span>🌿</span> Kigarama Wilderness Lodge</div>
+        <div style="border-top:1px solid var(--border);">
+          <div onclick="switchToLodge('dashboard')" style="padding:10px 14px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px;color:var(--forest);font-weight:600;" onmouseover="this.style.background='#f5f0e8'" onmouseout="this.style.background=''"><span>📊</span> Group Dashboard</div>
+        </div>
+        <div style="border-top:1px solid var(--border);">
+          <div onclick="showLodgeSelector()" style="padding:10px 14px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px;color:var(--muted);" onmouseover="this.style.background='#f5f0e8'" onmouseout="this.style.background=''"><span>🏠</span> Home Screen</div>
+        </div>
+      </div>
     </div>
     <div class="header-right">
       <span id="user-email"></span>
@@ -614,7 +665,7 @@ async function doLogin(){
     // Admin or Group GM - show lodge selector
     document.getElementById('auth-screen').style.display='none';
     document.getElementById('app-screen').style.display='none';
-    document.getElementById('lodge-screen').style.display='flex';
+    document.getElementById('lodge-screen').style.display='block';
     document.getElementById('lodge-user-email').textContent=email2;
     const container=document.getElementById('lodge-buttons');
     container.innerHTML='';
@@ -686,7 +737,7 @@ async function checkSession(){
     // Admin or Group GM
     document.getElementById('auth-screen').style.display='none';
     document.getElementById('app-screen').style.display='none';
-    document.getElementById('lodge-screen').style.display='flex';
+    document.getElementById('lodge-screen').style.display='block';
     document.getElementById('lodge-user-email').textContent=email;
     const container=document.getElementById('lodge-buttons');
     container.innerHTML='';
@@ -840,47 +891,26 @@ function wireDropdowns(groupTd, itemTd, unitInp, parInp, category){
 
 // ── LODGE SELECTOR ────────────────────────────────────────────────────────────
 async function showLodgeSelector(){
-  console.log('showLodgeSelector called, currentUser:', currentUser?currentUser.email:'null');
-  // Supervisors skip lodge selector - go straight to their lodge
   const myLodge=getUserLodge();
-  console.log('myLodge:', myLodge);
-  if(myLodge){
-    console.log('Calling selectLodge for:', myLodge);
-    await selectLodge(myLodge);
-    console.log('selectLodge complete');
-    return;
-  }
+  if(myLodge){await selectLodge(myLodge);return;}
   document.getElementById('auth-screen').style.display='none';
   document.getElementById('app-screen').style.display='none';
-  document.getElementById('lodge-screen').style.display='flex';
+  document.getElementById('lodge-screen').style.display='block';
   document.getElementById('lodge-user-email').textContent=currentUser.email;
-  const container=document.getElementById('lodge-buttons');
-  container.innerHTML='';
-  LODGES.forEach(lodge=>{
-    const btn=document.createElement('button');
-    btn.className='lodge-btn';
-    btn.innerHTML='<span class="lodge-icon">'+LODGE_ICONS[lodge]+'</span>'+lodge;
-    btn.onclick=()=>selectLodge(lodge);
-    container.appendChild(btn);
-  });
-  if(isAdmin()){
-    const dashBtn=document.createElement('button');
-    dashBtn.className='lodge-btn';
-    dashBtn.style.cssText='border-color:var(--forest);color:var(--forest);font-weight:600;margin-top:8px;';
-    dashBtn.innerHTML='<span class="lodge-icon">📊</span> View Dashboard (All Lodges)';
-    dashBtn.onclick=async()=>{
-      document.getElementById('lodge-screen').style.display='none';
-      document.getElementById('app-screen').style.display='block';
-      document.getElementById('user-email').textContent=currentUser.email;
-      document.getElementById('lodge-name-header').textContent='All Lodges';
-      currentLodge=null;
-      currentDraftId=null;
-      await loadItemMaster();
-      switchTab(document.querySelector('.tab[data-tab="dashboard"]'));
-      loadDashboard();
-    };
-    container.appendChild(dashBtn);
-  }
+  // Show dashboard button for admin/GM
+  const dashBtn=document.getElementById('home-dashboard-btn');
+  if(dashBtn) dashBtn.style.display=(isAdmin()||isGroupGM())?'block':'none';
+  const goBtn=document.getElementById('home-go-dashboard');
+  if(goBtn) goBtn.onclick=async()=>{
+    document.getElementById('lodge-screen').style.display='none';
+    document.getElementById('app-screen').style.display='block';
+    document.getElementById('user-email').textContent=currentUser.email;
+    document.getElementById('lodge-name-header').textContent='All Lodges';
+    currentLodge=null;currentDraftId=null;
+    await loadItemMaster();
+    switchTab(document.querySelector('.tab[data-tab="dashboard"]'));
+    loadDashboard();
+  };
 }
 
 async function selectLodge(lodge){
@@ -919,6 +949,36 @@ async function selectLodge(lodge){
 }
 
 function changeLodge(){showLodgeSelector();}
+
+function toggleLodgeSwitcher(e){
+  e.stopPropagation();
+  const menu=document.getElementById('lodge-switcher-menu');
+  if(!menu)return;
+  const isOpen=menu.style.display==='block';
+  menu.style.display=isOpen?'none':'block';
+  if(!isOpen){
+    // Close on outside click
+    setTimeout(()=>{
+      document.addEventListener('click',function close(){
+        menu.style.display='none';
+        document.removeEventListener('click',close);
+      },{once:true});
+    },10);
+  }
+}
+
+async function switchToLodge(lodge){
+  document.getElementById('lodge-switcher-menu').style.display='none';
+  if(lodge==='dashboard'){
+    document.getElementById('lodge-name-header').textContent='All Lodges';
+    currentLodge=null;currentDraftId=null;
+    await loadItemMaster();
+    switchTab(document.querySelector('.tab[data-tab="dashboard"]'));
+    loadDashboard();
+  } else {
+    await selectLodge(lodge);
+  }
+}
 
 // ── TABS ──────────────────────────────────────────────────────────────────────
 function switchTab(el){
@@ -1960,7 +2020,7 @@ async function confirmDelete(){
 }
 
 // ── REPORT MODAL ──────────────────────────────────────────────────────────────
-function openReport(r){
+async function openReport(r){
   currentReport=r;
   document.getElementById('modal-title').textContent='Report — '+(r.lodge||'')+'  |  '+fmtDate(r.week_of);
   document.getElementById('modal-meta').textContent='Submitted by '+r.user_email+' on '+fmtDT(r.submitted_at);
@@ -1973,13 +2033,28 @@ function openReport(r){
     const aBtn=document.createElement('button');aBtn.className='btn-action btn-amber';aBtn.textContent=r.archived?'Unarchive':'Archive';aBtn.onclick=()=>{archiveReport(r.id,!r.archived);closeModal();};actEl.appendChild(aBtn);
     const dBtn=document.createElement('button');dBtn.className='btn-action btn-danger';dBtn.textContent='Delete';dBtn.onclick=()=>promptDelete(r.id);actEl.appendChild(dBtn);
   }
+  document.getElementById('modal-body').innerHTML='<div style="padding:32px;text-align:center;color:var(--muted);font-size:13px;">Loading report...</div>';
+  document.getElementById('report-modal').classList.add('open');
+  // Fetch analytics data for admin/GM
+  let analyticsData={trend:[],cross:[]};
+  if(isAdmin()||isGroupGM()){
+    try{
+      const weekDate=new Date(r.week_of+'T00:00:00');
+      const past4=[];
+      for(let i=1;i<=4;i++){const d=new Date(weekDate);d.setDate(d.getDate()-i*7);past4.push(d.toISOString().split('T')[0]);}
+      const [trendRes,crossRes]=await Promise.all([
+        sb.from('weekly_reports').select('week_of,bar_sales,restaurant_sales,room_sales,kitchen,kitchen_sales_revenue').eq('lodge',r.lodge).in('week_of',past4).eq('is_draft',false).eq('archived',false),
+        sb.from('weekly_reports').select('lodge,week_of,bar_sales,restaurant_sales,room_sales').eq('week_of',r.week_of).eq('is_draft',false).eq('archived',false)
+      ]);
+      analyticsData={trend:trendRes.data||[],cross:crossRes.data||[]};
+    }catch(e){console.warn('Analytics fetch failed:',e);}
+  }
   try{
-    document.getElementById('modal-body').innerHTML=buildReportHTML(r);
+    document.getElementById('modal-body').innerHTML=buildReportHTML(r,analyticsData);
   }catch(err){
     console.error('buildReportHTML error:',err);
     document.getElementById('modal-body').innerHTML='<div style="padding:20px;color:red;font-family:monospace">Error: '+err.message+'<br><br>'+err.stack+'</div>';
   }
-  document.getElementById('report-modal').classList.add('open');
 }
 function closeModal(){document.getElementById('report-modal').classList.remove('open');currentReport=null;}
 
@@ -1991,7 +2066,11 @@ function toggleDetail(id){
 }
 
 // ── REPORT HTML ───────────────────────────────────────────────────────────────
-function buildReportHTML(r){
+function buildReportHTML(r,analyticsData){
+  analyticsData=analyticsData||{trend:[],cross:[]};
+  const trendData=analyticsData.trend||[];
+  const crossData=analyticsData.cross||[];
+  const showAnalytics=(isAdmin()||isGroupGM())&&(trendData.length>0||crossData.length>0);
   console.log('buildReportHTML called with:', r?r.lodge:'null', r?r.week_of:'null');
   console.log('bar_sales:', r&&r.bar_sales?r.bar_sales.length:'missing');
   console.log('staff_complimentary:', r&&r.staff_complimentary?'present':'missing/null');
@@ -2119,12 +2198,119 @@ function buildReportHTML(r){
     '<td style="text-align:right;color:var(--error)">'+fmtUGX(v.value)+'</td></tr>'
   ).join('');
 
+  // ── ANALYTICS: 4-WEEK TREND ────────────────────────────────────────────────
+  function revFromReport(rep){
+    let b=0,rs=0,rm=0;
+    (rep.bar_sales||[]).forEach(s=>{b+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
+    (rep.restaurant_sales||[]).forEach(s=>{rs+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
+    (rep.room_sales||[]).forEach(s=>{rm+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;});
+    return{bar:b,rest:rs,room:rm,total:b+rs+rm};
+  }
+  const thisWeekRev={bar:totalBar,rest:totalRest,room:totalRoom,total:totalRev};
+  const trendRows=trendData.slice().sort((a,b)=>new Date(a.week_of)-new Date(b.week_of));
+  const prevWeek=trendRows[trendRows.length-1];
+  const prevRev=prevWeek?revFromReport(prevWeek):null;
+  const wkChange=prevRev&&prevRev.total>0?((totalRev-prevRev.total)/prevRev.total*100):null;
+
+  // Cross-lodge same week
+  const crossThisLodge=crossData.find(x=>x.lodge===r.lodge);
+  const otherLodges=crossData.filter(x=>x.lodge!==r.lodge);
+
+  let analyticsHTML='';
+  if(showAnalytics){
+    // 4-week trend table
+    let trendTableRows='';
+    trendRows.forEach(tr2=>{
+      const rv=revFromReport(tr2);
+      const chg=rv.total>0&&thisWeekRev.total>0?((thisWeekRev.total-rv.total)/rv.total*100):null;
+      trendTableRows+='<tr style="background:#faf8f4">'+
+        '<td style="padding:8px 12px;border-bottom:1px solid #ede9e0;color:var(--muted)">'+fmtDate(tr2.week_of)+'</td>'+
+        '<td style="padding:8px 12px;border-bottom:1px solid #ede9e0;text-align:right">'+fmtUGX(rv.bar)+'</td>'+
+        '<td style="padding:8px 12px;border-bottom:1px solid #ede9e0;text-align:right">'+fmtUGX(rv.rest)+'</td>'+
+        '<td style="padding:8px 12px;border-bottom:1px solid #ede9e0;text-align:right">'+fmtUGX(rv.room)+'</td>'+
+        '<td style="padding:8px 12px;border-bottom:1px solid #ede9e0;text-align:right;font-weight:600">'+fmtUGX(rv.total)+'</td>'+
+        '<td style="padding:8px 12px;border-bottom:1px solid #ede9e0;text-align:right;font-size:12px;color:var(--muted)">—</td>'+
+        '</tr>';
+    });
+    // This week row
+    trendTableRows+='<tr style="background:#e8f4ee">'+
+      '<td style="padding:8px 12px;border-bottom:1px solid #ede9e0;font-weight:700;color:var(--forest)">'+fmtDate(r.week_of)+' ← THIS WEEK</td>'+
+      '<td style="padding:8px 12px;border-bottom:1px solid #ede9e0;text-align:right;font-weight:600">'+fmtUGX(totalBar)+'</td>'+
+      '<td style="padding:8px 12px;border-bottom:1px solid #ede9e0;text-align:right;font-weight:600">'+fmtUGX(totalRest)+'</td>'+
+      '<td style="padding:8px 12px;border-bottom:1px solid #ede9e0;text-align:right;font-weight:600">'+fmtUGX(totalRoom)+'</td>'+
+      '<td style="padding:8px 12px;border-bottom:1px solid #ede9e0;text-align:right;font-weight:700;color:var(--forest)">'+fmtUGX(totalRev)+'</td>'+
+      '<td style="padding:8px 12px;border-bottom:1px solid #ede9e0;text-align:right;font-weight:600;color:'+(wkChange===null?'var(--muted)':wkChange>=0?'var(--success)':'var(--error)')+'">'+
+        (wkChange===null?'—':(wkChange>=0?'▲ ':'▼ ')+Math.abs(wkChange).toFixed(1)+'% vs prev wk')+'</td>'+
+      '</tr>';
+
+    // Cross-lodge comparison
+    let crossRows='';
+    LODGES.forEach(lodge=>{
+      const rep=crossData.find(x=>x.lodge===lodge);
+      if(rep){
+        const rv=revFromReport(rep);
+        const isThis=lodge===r.lodge;
+        crossRows+='<tr style="'+(isThis?'background:#e8f4ee':'')+'">'+
+          '<td style="padding:8px 12px;border-bottom:1px solid #ede9e0;font-weight:'+(isThis?'700':'400')+';color:'+(isThis?'var(--forest)':'var(--dark)')+'">'+lodge+(isThis?' ← THIS LODGE':'')+'</td>'+
+          '<td style="padding:8px 12px;border-bottom:1px solid #ede9e0;text-align:right">'+fmtUGX(rv.bar)+'</td>'+
+          '<td style="padding:8px 12px;border-bottom:1px solid #ede9e0;text-align:right">'+fmtUGX(rv.rest)+'</td>'+
+          '<td style="padding:8px 12px;border-bottom:1px solid #ede9e0;text-align:right">'+fmtUGX(rv.room)+'</td>'+
+          '<td style="padding:8px 12px;border-bottom:1px solid #ede9e0;text-align:right;font-weight:700">'+fmtUGX(rv.total)+'</td>'+
+          '</tr>';
+      } else {
+        crossRows+='<tr><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;color:var(--muted)">'+lodge+'</td>'+
+          '<td colspan="4" style="padding:8px 12px;border-bottom:1px solid #ede9e0;color:var(--muted);font-size:12px">No report submitted</td></tr>';
+      }
+    });
+    const combinedCross=crossData.reduce((s,x)=>s+revFromReport(x).total,0);
+    const thisLodgePct=combinedCross>0?(totalRev/combinedCross*100).toFixed(1):0;
+
+    analyticsHTML=`
+    <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:20px;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--forest);margin-bottom:4px;">📊 Analytics — Admin View</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">Trend and comparison data. Not visible to lodge supervisors.</div>
+
+      ${trendRows.length>0?`
+      <div style="font-size:13px;font-weight:600;color:var(--forest);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">4-Week Revenue Trend — ${r.lodge.split(' ')[0]}</div>
+      <div style="overflow-x:auto;margin-bottom:20px;">
+      <table style="width:100%;border-collapse:collapse;font-size:13px;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+        <thead><tr style="background:#f0ede6;">
+          <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Week</th>
+          <th style="padding:8px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Bar</th>
+          <th style="padding:8px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Restaurant</th>
+          <th style="padding:8px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Rooms</th>
+          <th style="padding:8px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Total</th>
+          <th style="padding:8px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">vs This Week</th>
+        </tr></thead>
+        <tbody>${trendTableRows}</tbody>
+      </table></div>`:'<div style="font-size:13px;color:var(--muted);margin-bottom:16px;">No previous weeks data available yet for trend comparison.</div>'}
+
+      ${crossData.length>0?`
+      <div style="font-size:13px;font-weight:600;color:var(--forest);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">Same-Week Cross-Lodge Comparison — ${fmtDate(r.week_of)}</div>
+      <div style="overflow-x:auto;margin-bottom:12px;">
+      <table style="width:100%;border-collapse:collapse;font-size:13px;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+        <thead><tr style="background:#f0ede6;">
+          <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Lodge</th>
+          <th style="padding:8px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Bar</th>
+          <th style="padding:8px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Restaurant</th>
+          <th style="padding:8px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Rooms</th>
+          <th style="padding:8px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Total</th>
+        </tr></thead>
+        <tbody>${crossRows}</tbody>
+      </table></div>
+      <div style="font-size:12px;color:var(--muted);">${r.lodge.split(' ')[0]} contributed <strong>${thisLodgePct}%</strong> of combined group revenue this week (${fmtUGX(combinedCross)} total).</div>
+      `:''}
+    </div>`;
+  }
+
   return`
     <!-- OVERALL STATUS -->
     <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:14px 20px;">
       <div><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:6px;">Overall Week Status</div>
       <span class="traffic-light tl-${overallStatus}">${overallLabel}</span></div>
     </div>
+
+    ${analyticsHTML}
 
     <!-- SUMMARY CARDS -->
     <div class="summary-grid">
@@ -2413,7 +2599,7 @@ async function saveEdits(){
   if(error){statusEl.textContent='Error: '+error.message;statusEl.className='save-status err';return;}
   statusEl.textContent='✓ Saved';statusEl.className='save-status ok';
   const {data}=await sb.from('weekly_reports').select('*').eq('id',currentReport.id).single();
-  if(data){currentReport=data;document.getElementById('modal-body').innerHTML=buildReportHTML(data);}
+  if(data){currentReport=data;document.getElementById('modal-body').innerHTML=buildReportHTML(data,{trend:[],cross:[]});}
   loadDashboard();
 }
 
@@ -2550,6 +2736,119 @@ async function generateConsolidated(){
   } else {
     html+='<div style="background:#f0faf4;border:1.5px solid #a8d5b5;border-radius:var(--radius);padding:12px 16px;font-size:13px;color:#2e7d52;margin-bottom:16px;">✓ No incidents recorded across any lodge this week.</div>';
   }
+
+  // ── OPERATIONS SUMMARY TABLE ──────────────────────────────────────────────
+  html+=`<div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--forest);margin:20px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--border);">Operations Summary</div>
+  <div style="overflow-x:auto;margin-bottom:20px;">
+  <table style="width:100%;border-collapse:collapse;font-size:12px;background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+    <thead><tr style="background:#f0ede6;">
+      <th style="padding:9px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Lodge</th>
+      <th style="padding:9px 12px;text-align:center;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Food Cost %</th>
+      <th style="padding:9px 12px;text-align:center;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Stock Shortages</th>
+      <th style="padding:9px 12px;text-align:center;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Open Maintenance</th>
+      <th style="padding:9px 12px;text-align:center;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Security Checks</th>
+      <th style="padding:9px 12px;text-align:center;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">HK Issues</th>
+      <th style="padding:9px 12px;text-align:center;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Open Incidents</th>
+      <th style="padding:9px 12px;text-align:center;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Training Sessions</th>
+      <th style="padding:9px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Comp. Value</th>
+      <th style="padding:9px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Comp. % Rev</th>
+    </tr></thead>
+    <tbody>`;
+
+  function ragBadge(val,goodFn,badFn,label){
+    const col=badFn(val)?'#fde8e8;color:#c0392b':goodFn(val)?'#e3f2e8;color:#2e7d52':'#fff3cd;color:#856404';
+    return'<span style="display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;background:'+col+'">'+label+'</span>';
+  }
+
+  LODGES.forEach(lodge=>{
+    const r2=data.find(x=>x.lodge===lodge);
+    if(!r2){
+      html+='<tr><td style="padding:9px 12px;border-bottom:1px solid #ede9e0;font-weight:600">'+lodge+'</td><td colspan="9" style="padding:9px 12px;border-bottom:1px solid #ede9e0;color:var(--muted);font-size:12px;">No report submitted</td></tr>';
+      return;
+    }
+    const lRev=lodgeRevs[lodge]||{rest:0,total:0};
+    let kitchenUsed2=0;
+    (r2.kitchen||[]).forEach(row=>{kitchenUsed2+=parseFloat((row.cost_used||'0').replace('UGX','').replace(/,/g,''))||0;});
+    const restRev2=n(r2.kitchen_sales_revenue)||lRev.rest;
+    const fcPct2=restRev2>0?(kitchenUsed2/restRev2*100):0;
+    const stockShort=[...(r2.bar_stock||[]),...(r2.stores_stock||[])].filter(s=>parseFloat((s.variance||'').replace('+',''))||0 <0).length;
+    const openMaint2=(r2.maintenance_log||[]).filter(m=>m.status==='Open'||m.status==='In Progress').length;
+    const secChecks=(r2.security_log||[]).filter(s=>s.date||s.findings).length;
+    const hkIssues=(r2.housekeeping_log||[]).filter(h=>h.standard_met&&h.standard_met.includes('Not')).length;
+    const openInc2=(r2.incidents||[]).filter(i=>(i.status||'').toLowerCase()==='open').length;
+    const trainSessions=(r2.training_log||[]).filter(t=>t&&t.topic).length;
+    let compVal=0;
+    (r2.staff_complimentary||[]).forEach(s=>{compVal+=parseFloat((s.standard_total||'0').replace('UGX','').replace(/,/g,''))||0;});
+    const compPct=lRev.total>0?(compVal/lRev.total*100).toFixed(1):0;
+
+    html+='<tr>'+
+      '<td style="padding:9px 12px;border-bottom:1px solid #ede9e0;font-weight:600">'+lodge.split(' ')[0]+'</td>'+
+      '<td style="padding:9px 12px;border-bottom:1px solid #ede9e0;text-align:center">'+
+        (fcPct2>0?ragBadge(fcPct2,v=>v>=28&&v<=35,v=>v>35,fcPct2.toFixed(1)+'%'):'<span style="color:var(--muted);font-size:11px">No data</span>')+
+      '</td>'+
+      '<td style="padding:9px 12px;border-bottom:1px solid #ede9e0;text-align:center">'+
+        ragBadge(stockShort,v=>v===0,v=>v>2,stockShort===0?'None':stockShort+' items')+
+      '</td>'+
+      '<td style="padding:9px 12px;border-bottom:1px solid #ede9e0;text-align:center">'+
+        ragBadge(openMaint2,v=>v===0,v=>v>3,openMaint2===0?'None':openMaint2+' open')+
+      '</td>'+
+      '<td style="padding:9px 12px;border-bottom:1px solid #ede9e0;text-align:center">'+
+        ragBadge(secChecks,v=>v>=3,v=>v===0,secChecks+' entries')+
+      '</td>'+
+      '<td style="padding:9px 12px;border-bottom:1px solid #ede9e0;text-align:center">'+
+        ragBadge(hkIssues,v=>v===0,v=>v>2,hkIssues===0?'None':hkIssues+' issues')+
+      '</td>'+
+      '<td style="padding:9px 12px;border-bottom:1px solid #ede9e0;text-align:center">'+
+        ragBadge(openInc2,v=>v===0,v=>v>0,openInc2===0?'None':openInc2+' open')+
+      '</td>'+
+      '<td style="padding:9px 12px;border-bottom:1px solid #ede9e0;text-align:center">'+
+        ragBadge(trainSessions,v=>v>0,v=>v===0,trainSessions===0?'None':trainSessions+' session'+(trainSessions>1?'s':''))+
+      '</td>'+
+      '<td style="padding:9px 12px;border-bottom:1px solid #ede9e0;text-align:right;font-size:12px">'+fmtUGX(compVal)+'</td>'+
+      '<td style="padding:9px 12px;border-bottom:1px solid #ede9e0;text-align:right;font-size:12px;color:'+(parseFloat(compPct)>10?'var(--error)':'var(--dark)')+'">'+compPct+'%</td>'+
+      '</tr>';
+  });
+  html+='</tbody></table></div>';
+
+  // ── PER-LODGE MINI SUMMARIES ─────────────────────────────────────────────
+  html+=`<div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--forest);margin:20px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--border);">Lodge Highlights</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:20px;">`;
+
+  LODGES.forEach(lodge=>{
+    const r3=data.find(x=>x.lodge===lodge);
+    if(!r3){
+      html+='<div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px;"><div style="font-size:13px;font-weight:700;color:var(--forest);margin-bottom:8px;">'+lodge.split(' ')[0]+'</div><div style="font-size:12px;color:var(--muted);">No report submitted</div></div>';
+      return;
+    }
+    // Top bar item
+    const barItemSales={};
+    (r3.bar_sales||[]).filter(s=>s.item&&s.item!=='Other'&&s.item!=='').forEach(s=>{
+      const v=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;
+      barItemSales[s.item]=(barItemSales[s.item]||0)+v;
+    });
+    const topBar=Object.entries(barItemSales).sort((a,b)=>b[1]-a[1])[0];
+    // Top restaurant item
+    const restItemSales={};
+    (r3.restaurant_sales||[]).filter(s=>s.item&&s.item!=='Other'&&s.item!=='').forEach(s=>{
+      const v=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;
+      restItemSales[s.item]=(restItemSales[s.item]||0)+v;
+    });
+    const topRest=Object.entries(restItemSales).sort((a,b)=>b[1]-a[1])[0];
+    // Stock variance items
+    const shortItems=[...(r3.bar_stock||[]),...(r3.stores_stock||[])].filter(s=>{
+      const v=parseFloat((s.variance||'').replace('+',''))||0;return v<0;
+    }).map(s=>s.item||'Unknown');
+
+    const lRevH=lodgeRevs[lodge]||{total:0};
+    html+='<div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px;border-top:4px solid '+(lodgeStatus[lodge]==='red'?'var(--error)':lodgeStatus[lodge]==='amber'?'var(--amber)':'var(--success)')+';">'+
+      '<div style="font-size:13px;font-weight:700;color:var(--forest);margin-bottom:10px;">'+lodge.split(' ')[0]+'<span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:8px;">'+fmtUGX(lRevH.total)+'</span></div>'+
+      '<div style="font-size:12px;color:var(--muted);margin-bottom:4px;">🍺 Top bar item: <strong style="color:var(--dark)">'+(topBar?topBar[0]+' ('+fmtUGX(topBar[1])+')':'No bar sales')+'</strong></div>'+
+      '<div style="font-size:12px;color:var(--muted);margin-bottom:4px;">🍽 Top restaurant item: <strong style="color:var(--dark)">'+(topRest?topRest[0]+' ('+fmtUGX(topRest[1])+')':'No restaurant sales')+'</strong></div>'+
+      (shortItems.length>0?'<div style="font-size:12px;color:var(--error);margin-top:6px;">⚠ Stock short: '+shortItems.slice(0,3).join(', ')+(shortItems.length>3?' +more':'')+'</div>':'<div style="font-size:12px;color:var(--success);margin-top:6px;">✓ No stock shortages</div>')+
+      '</div>';
+  });
+  html+='</div>';
+
   html+='<div style="margin-top:8px;display:flex;gap:12px;"><button onclick="window.print()" style="padding:9px 20px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">⬇ Print / Download</button></div>';
   html+='</div>';
   document.getElementById('modal-title').textContent='Consolidated Report — Week of '+fmtDate(weekOf);
