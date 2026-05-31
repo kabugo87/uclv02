@@ -255,7 +255,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
     <div onclick="selectLodge('Kigarama Wilderness Lodge')" style="cursor:pointer;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:12px;padding:32px 28px;width:274px;" onmouseover="this.style.background='rgba(255,255,255,0.11)';this.style.borderColor='rgba(200,146,42,0.7)';this.style.transform='translateY(-3px)'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.12)';this.style.transform='translateY(0)'">
       <div style="font-size:34px;margin-bottom:14px;">🌿</div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--white);margin-bottom:5px;">Kigarama Wilderness Lodge</div>
-      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:22px;line-height:1.5;">Lake Mburo · Central Uganda</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:22px;line-height:1.5;">Lake Mburo · South-western Uganda</div>
       <div style="display:inline-block;padding:9px 20px;background:var(--gold);color:var(--white);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;">Enter Lodge →</div>
     </div>
   </div>
@@ -1461,8 +1461,10 @@ function calcSalesRow(tr,tname){
 }
 
 function calcRoomSales(tr){
-  const nights=n(tr.querySelector('.nights').value);
-  const rate=n(tr.querySelector('.rate').value);
+  const nightsEl=tr.querySelector('.nights');
+  const rateEl=tr.querySelector('.rate');
+  const nights=n(nightsEl&&nightsEl.value?nightsEl.value:'1');
+  const rate=n(rateEl?rateEl.value:'0');
   tr.querySelector('.room-total').textContent=fmtUGX(nights*rate);
   calcRoomTotal();
 }
@@ -3006,7 +3008,7 @@ function fillDraftTable(tabName, rows){
       if(ip[1])ip[1].value=row.room_no||'';
       if(ip[2])ip[2].value=row.guest_name||'';
       if(sl[0])setS(sl[0],row.room_type||'');
-      if(ip[3])ip[3].value=row.nights||'';
+      if(ip[3])ip[3].value=row.nights||'1';
       if(ip[4]){ip[4].value=row.rate_per_night||'';ip[4].dispatchEvent(new Event('input'));}
       if(sl[1])setS(sl[1],row.payment||'Cash');
       if(ip[5])ip[5].value=row.remarks||'';
@@ -3646,7 +3648,7 @@ async function loadDraft(){
         if(ip[1])ip[1].value=row.room_no||'';
         if(ip[2])ip[2].value=row.guest_name||'';
         if(sl[0])setS(sl[0],row.room_type||'');
-        if(ip[3])ip[3].value=row.nights||'';
+        if(ip[3])ip[3].value=row.nights||'1';
         if(ip[4]){ip[4].value=row.rate_per_night||'';ip[4].dispatchEvent(new Event('input'));}
         if(sl[1])setS(sl[1],row.payment||'Cash');
         if(ip[5])ip[5].value=row.remarks||'';
