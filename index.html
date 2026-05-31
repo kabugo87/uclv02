@@ -2615,6 +2615,7 @@ async function generateConsolidated(){
   const {data,error}=await sb.from('weekly_reports')
     .select('*')
     .eq('week_of',weekOf)
+    .eq('is_draft',false)
     .eq('archived',false);
   
   if(error||!data||!data.length){
