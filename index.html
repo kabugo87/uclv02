@@ -12,7 +12,7 @@
 :root{--forest:#1a3a2a;--gold:#c8922a;--sand:#f5f0e8;--white:#ffffff;--dark:#111a14;--muted:#6b7c6e;--border:#d4cfc5;--error:#c0392b;--success:#2e7d52;--amber:#d4820a;--radius:6px;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Jost',sans-serif;background:var(--sand);color:var(--dark);min-height:100vh;}
-#auth-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,var(--forest) 0%,#0d2218 100%);padding:24px;}
+#auth-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#1c1c1e 0%,#2a2a2e 100%);padding:24px;}
 .auth-card{background:var(--white);border-radius:12px;padding:48px 40px;width:100%;max-width:420px;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,0.4);}
 .auth-card img{height:90px;margin-bottom:20px;}
 .auth-card h1{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--forest);margin-bottom:4px;}
@@ -141,7 +141,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
 .confirm-box{background:#fdf5f5;border:1.5px solid #e8b4b0;border-radius:var(--radius);padding:16px 20px;margin-bottom:16px;display:none;}
 .confirm-box p{font-size:13px;color:var(--error);margin-bottom:12px;font-weight:500;}
 .confirm-box .btn-row{display:flex;gap:10px;}
-.lodge-selector{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,var(--forest) 0%,#0d2218 100%);padding:24px;}
+.lodge-selector{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#1c1c1e 0%,#2a2a2e 100%);padding:24px;}
 .lodge-selector-card{background:var(--white);border-radius:12px;padding:48px 40px;width:100%;max-width:480px;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,0.4);}
 .lodge-selector-card img{height:80px;margin-bottom:16px;}
 .lodge-selector-card h2{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--forest);margin-bottom:6px;}
@@ -168,16 +168,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
 .save-status{font-size:13px;color:var(--muted);}
 .save-status.ok{color:var(--success);font-weight:500;}
 .save-status.err{color:var(--error);font-weight:500;}
-@media print{
-  header,.tab-bar,.modal-actions,.modal-close,#submit-bar,.edit-section,.confirm-box,.section-title .toggle,
-  .btn-add-row,button,.dash-tabs,.week-bar{display:none!important;}
-  .modal-overlay{position:relative;padding:0;display:block;}
-  .modal{box-shadow:none;padding:0;}
-  .detail-section{display:block!important;}
-  .detail-section>div{display:block!important;}
-  .print-header{display:block!important;}
-  body{background:white;}
-}
+@media print{body{display:none;}}
 .print-header{display:none;border-bottom:3px solid var(--forest);padding-bottom:16px;margin-bottom:24px;}
 .print-header img{height:60px;vertical-align:middle;margin-right:16px;}
 .print-header-title{display:inline-block;vertical-align:middle;}
@@ -220,7 +211,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
 </div>
 
 
-<div id="lodge-screen" style="display:none;min-height:100vh;background:linear-gradient(160deg,var(--forest) 0%,#0d2218 100%);">
+<div id="lodge-screen" style="display:none;min-height:100vh;background:linear-gradient(160deg,#1c1c1e 0%,#2a2a2e 100%);">
   <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 40px;">
     <div style="display:flex;align-items:center;gap:12px;">
       <img src="data:image/png;base64,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" height="44" alt="UCL"/>
@@ -662,37 +653,7 @@ async function doLogin(){
     switchTab(document.querySelector('.tab[data-tab="bar-sales"]'));
     loadDashboard();
   } else {
-    // Admin or Group GM - show lodge selector
-    document.getElementById('auth-screen').style.display='none';
-    document.getElementById('app-screen').style.display='none';
-    document.getElementById('lodge-screen').style.display='block';
-    document.getElementById('lodge-user-email').textContent=email2;
-    const container=document.getElementById('lodge-buttons');
-    container.innerHTML='';
-    LODGES.forEach(lodge=>{
-      const btn2=document.createElement('button');
-      btn2.className='lodge-btn';
-      btn2.innerHTML='<span class="lodge-icon">'+LODGE_ICONS[lodge]+'</span>'+lodge;
-      btn2.onclick=()=>selectLodge(lodge);
-      container.appendChild(btn2);
-    });
-    if(isAdmin()||isGroupGM()){
-      const dashBtn=document.createElement('button');
-      dashBtn.className='lodge-btn';
-      dashBtn.style.cssText='border-color:var(--forest);color:var(--forest);font-weight:600;margin-top:8px;';
-      dashBtn.innerHTML='<span class="lodge-icon">📊</span> View Dashboard (All Lodges)';
-      dashBtn.onclick=async()=>{
-        document.getElementById('lodge-screen').style.display='none';
-        document.getElementById('app-screen').style.display='block';
-        document.getElementById('user-email').textContent=email2;
-        document.getElementById('lodge-name-header').textContent='All Lodges';
-        currentLodge=null;
-        await loadItemMaster();
-        switchTab(document.querySelector('.tab[data-tab="dashboard"]'));
-        loadDashboard();
-      };
-      container.appendChild(dashBtn);
-    }
+    await showLodgeSelector();
   }
 }
 document.getElementById('auth-password').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
@@ -734,37 +695,7 @@ async function checkSession(){
     switchTab(document.querySelector('.tab[data-tab="bar-sales"]'));
     loadDashboard();
   } else {
-    // Admin or Group GM
-    document.getElementById('auth-screen').style.display='none';
-    document.getElementById('app-screen').style.display='none';
-    document.getElementById('lodge-screen').style.display='block';
-    document.getElementById('lodge-user-email').textContent=email;
-    const container=document.getElementById('lodge-buttons');
-    container.innerHTML='';
-    LODGES.forEach(lodge=>{
-      const btn=document.createElement('button');
-      btn.className='lodge-btn';
-      btn.innerHTML='<span class="lodge-icon">'+LODGE_ICONS[lodge]+'</span>'+lodge;
-      btn.onclick=()=>selectLodge(lodge);
-      container.appendChild(btn);
-    });
-    if(isAdmin()||isGroupGM()){
-      const dashBtn=document.createElement('button');
-      dashBtn.className='lodge-btn';
-      dashBtn.style.cssText='border-color:var(--forest);color:var(--forest);font-weight:600;margin-top:8px;';
-      dashBtn.innerHTML='<span class="lodge-icon">📊</span> View Dashboard (All Lodges)';
-      dashBtn.onclick=async()=>{
-        document.getElementById('lodge-screen').style.display='none';
-        document.getElementById('app-screen').style.display='block';
-        document.getElementById('user-email').textContent=email;
-        document.getElementById('lodge-name-header').textContent='All Lodges';
-        currentLodge=null;
-        await loadItemMaster();
-        switchTab(document.querySelector('.tab[data-tab="dashboard"]'));
-        loadDashboard();
-      };
-      container.appendChild(dashBtn);
-    }
+    await showLodgeSelector();
   }
 }
 // Roles defined in PERMISSIONS object above
@@ -2030,7 +1961,7 @@ async function openReport(r){
   document.getElementById('confirm-delete').style.display='none';
   document.getElementById('edit-section').style.display='none';
   const actEl=document.getElementById('modal-actions');actEl.innerHTML='';
-  const pBtn=document.createElement('button');pBtn.className='btn-action btn-forest';pBtn.textContent='⬇ Print / Download';pBtn.onclick=()=>window.print();actEl.appendChild(pBtn);
+  const pBtn=document.createElement('button');pBtn.className='btn-action btn-forest';pBtn.textContent='⬇ Print / Download';pBtn.onclick=()=>printReport();actEl.appendChild(pBtn);
   if(isAdmin()){
     const eBtn=document.createElement('button');eBtn.className='btn-action btn-amber';eBtn.textContent='✏ Edit';eBtn.onclick=()=>showEditSection(r);actEl.appendChild(eBtn);
     const aBtn=document.createElement('button');aBtn.className='btn-action btn-amber';aBtn.textContent=r.archived?'Unarchive':'Archive';aBtn.onclick=()=>{archiveReport(r.id,!r.archived);closeModal();};actEl.appendChild(aBtn);
@@ -2546,6 +2477,109 @@ function buildReportHTML(r,analyticsData){
   `;
 }
 
+// ── PRINT REPORT ─────────────────────────────────────────────────────────────
+function printReport(){
+  const title=document.getElementById('modal-title').textContent||'Report';
+  const meta=document.getElementById('modal-meta').textContent||'';
+  const bodyHTML=document.getElementById('modal-body').innerHTML;
+
+  // Expand all hidden detail sections in a clone
+  const div=document.createElement('div');
+  div.innerHTML=bodyHTML;
+  div.querySelectorAll('[id^="d-"]').forEach(el=>el.style.display='block');
+  div.querySelectorAll('.toggle').forEach(el=>el.style.display='none');
+  div.querySelectorAll('[id^="toggle-d-"]').forEach(el=>el.style.display='none');
+
+  // Get logo
+  const logoEl=document.querySelector('header .header-left img');
+  const logoSrc=logoEl?logoEl.src:'';
+
+  const printWin=window.open('','_blank','width=900,height=700');
+  if(!printWin){alert('Please allow popups to print.');return;}
+
+  printWin.document.write(`<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<title>${title}</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--forest:#1a3a2a;--gold:#c8922a;--sand:#f5f0e8;--white:#ffffff;--dark:#111a14;--muted:#6b7c6e;--border:#d4cfc5;--error:#c0392b;--success:#2e7d52;--amber:#d4820a;--radius:6px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Jost',sans-serif;color:var(--dark);background:white;padding:24px 32px;font-size:13px;}
+.print-top{display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--forest);padding-bottom:14px;margin-bottom:20px;}
+.print-top-left{display:flex;align-items:center;gap:12px;}
+.print-top-left img{height:52px;}
+.print-org{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--forest);}
+.print-sub{font-size:11px;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;}
+.print-date{font-size:11px;color:var(--muted);text-align:right;}
+h2.report-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--forest);margin-bottom:3px;}
+.report-meta{font-size:12px;color:var(--muted);margin-bottom:20px;}
+.traffic-light{display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border-radius:20px;font-size:12px;font-weight:700;text-transform:uppercase;}
+.tl-green{background:#e3f2e8;color:#2e7d52;}
+.tl-amber{background:#fff3cd;color:#856404;}
+.tl-red{background:#fde8e8;color:#c0392b;}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:18px;}
+.summary-card{border-radius:6px;padding:12px 14px;border-left:4px solid var(--forest);}
+.summary-card.red{border-left-color:var(--error);background:#fdf5f5;}
+.summary-card.amber{border-left-color:var(--amber);background:#fffbf0;}
+.summary-card.green{border-left-color:var(--success);background:#f0faf4;}
+.sc-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:4px;}
+.sc-value{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;}
+.sc-note{font-size:11px;color:var(--muted);margin-top:2px;}
+.summary-card.red .sc-value{color:var(--error);}
+.summary-card.amber .sc-value{color:var(--amber);}
+.summary-card.green .sc-value{color:var(--success);}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--forest);margin:16px 0 8px;padding-bottom:5px;border-bottom:2px solid var(--border);}
+.recon-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:8px;}
+.recon-table th{background:#f0ede6;padding:7px 10px;text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);}
+.recon-table td{padding:7px 10px;border-bottom:1px solid #ede9e0;}
+.recon-table tfoot td{background:#f0ede6;font-weight:700;padding:7px 10px;}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:600;}
+.badge-green{background:#e3f2e8;color:#2e7d52;}
+.badge-amber{background:#fff3cd;color:#856404;}
+.badge-red{background:#fde8e8;color:#c0392b;}
+.badge-grey{background:#f0f0f0;color:#666;}
+.notice{padding:10px 14px;font-size:12px;border-radius:6px;margin-bottom:12px;}
+.notice.green{background:#f0faf4;border:1px solid #a8d5b5;color:#2e7d52;}
+.notice.red{background:#fdf5f5;border:1px solid #e8b4b0;color:var(--error);}
+/* Hide analytics admin section in print */
+.analytics-section{display:none!important;}
+@media print{
+  body{padding:16px 20px;}
+  .summary-grid{grid-template-columns:repeat(4,1fr);}
+  @page{margin:15mm;size:A4;}
+}
+</style>
+</head>
+<body>
+<div class="print-top">
+  <div class="print-top-left">
+    <img src="${logoSrc}" alt="UCL"/>
+    <div>
+      <div class="print-org">Uganda Cultural Lodges</div>
+      <div class="print-sub">Weekly Reporting System</div>
+    </div>
+  </div>
+  <div class="print-date">Printed: ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})}</div>
+</div>
+<h2 class="report-title">${title}</h2>
+<div class="report-meta">${meta}</div>
+<div class="report-content">${div.innerHTML}</div>
+<script>
+// Hide the analytics admin section in print
+document.querySelectorAll('[style*="analytics"]').forEach(el=>el.style.display='none');
+// Expand all sections
+document.querySelectorAll('[id^="d-"]').forEach(el=>el.style.display='block');
+// Auto-print
+window.onload=function(){
+  setTimeout(function(){window.print();},600);
+};
+<\/script>
+</body></html>`);
+  printWin.document.close();
+}
+
 // ── EDIT SECTION ──────────────────────────────────────────────────────────────
 function showEditSection(r){
   const es=document.getElementById('edit-section');
@@ -2853,7 +2887,7 @@ async function generateConsolidated(){
   });
   html+='</div>';
 
-  html+='<div style="margin-top:8px;display:flex;gap:12px;"><button onclick="window.print()" style="padding:9px 20px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">⬇ Print / Download</button></div>';
+  html+='<div style="margin-top:8px;display:flex;gap:12px;"><button onclick="printReport()" style="padding:9px 20px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">⬇ Print / Download</button></div>';
   html+='</div>';
   document.getElementById('modal-title').textContent='Consolidated Report — Week of '+fmtDate(weekOf);
   document.getElementById('modal-meta').textContent='All Lodges | Generated '+fmtDT(new Date().toISOString());
@@ -3261,7 +3295,7 @@ async function generateMonthly(){
       </tbody>
     </table>
     <div style="margin-top:8px;display:flex;gap:12px;">
-      <button onclick="window.print()" style="padding:9px 20px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">⬇ Print / Download</button>
+      <button onclick="printReport()" style="padding:9px 20px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">⬇ Print / Download</button>
     </div>`;
 
   
@@ -3304,7 +3338,7 @@ async function generateMonthly(){
   ${allTrainM.length>0?`<div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--forest);margin:16px 0 8px;border-bottom:1px solid var(--border);padding-bottom:4px">Training Log This Month</div><table style="width:100%;border-collapse:collapse;font-size:13px;background:var(--white);border:1.5px solid var(--border);border-radius:6px;margin-bottom:16px;"><thead><tr style="background:#f0ede6"><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Date</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Lodge</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Topic</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Trainer</th><th style="padding:8px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Attended</th></tr></thead><tbody>${allTrainM.map(t=>'<tr><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+t.date+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;font-weight:600">'+t.lodge+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+t.topic+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+t.trainer+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;text-align:right">'+(t.attendee_count||0)+'</td></tr>').join('')}</tbody><tfoot><tr style="background:#f0ede6;font-weight:700"><td colspan="4" style="padding:8px 12px">TOTAL STAFF TRAINED</td><td style="padding:8px 12px;text-align:right">${totalTrainedM}</td></tr></tfoot></table>`:'<div style="background:#fff8ed;border:1.5px solid #e8c87a;border-radius:6px;padding:10px 14px;font-size:13px;color:#7a5a10;margin-bottom:16px">⚠ No training sessions recorded this month.</div>'}
   ${openMaintM.length>0?`<div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--forest);margin:16px 0 8px;border-bottom:1px solid var(--border);padding-bottom:4px">Open Maintenance Items</div><table style="width:100%;border-collapse:collapse;font-size:13px;background:var(--white);border:1.5px solid var(--border);border-radius:6px;margin-bottom:16px;"><thead><tr style="background:#f0ede6"><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Lodge</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Item</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Issue</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Status</th></tr></thead><tbody>${openMaintM.map(m=>'<tr><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;font-weight:600">'+m.lodge+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+m.item+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+m.issue+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0"><span style="padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;background:'+(m.status==='Open'?'#fde8e8;color:#c0392b':'#fff3cd;color:#856404')+'">'+m.status+'</span></td></tr>').join('')}</tbody></table>`:''}
   ${allCompM.length>0?`<div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--forest);margin:16px 0 8px;border-bottom:1px solid var(--border);padding-bottom:4px">Staff &amp; Complimentary This Month</div><table style="width:100%;border-collapse:collapse;font-size:13px;background:var(--white);border:1.5px solid var(--border);border-radius:6px;margin-bottom:16px;"><thead><tr style="background:#f0ede6"><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Lodge</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Name</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Category</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Item</th><th style="padding:8px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Std Value</th><th style="padding:8px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Paid</th><th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border)">Authorised</th></tr></thead><tbody>${allCompM.map(s=>'<tr><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;font-weight:600">'+s.lodge+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+(s.person_name||'')+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+(s.category||'')+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+(s.item||'')+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;text-align:right">'+(s.standard_total||'—')+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;text-align:right">'+fmtUGX(n(s.amount_paid||0))+'</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0">'+(s.authorised_by||'—')+'</td></tr>').join('')}</tbody><tfoot><tr style="background:#f0ede6;font-weight:700"><td colspan="4" style="padding:8px 12px">TOTAL</td><td style="padding:8px 12px;text-align:right">${fmtUGX(totCompVal)}</td><td style="padding:8px 12px;text-align:right">${fmtUGX(totCompColl)}</td><td></td></tr></tfoot></table>`:''}
-  <div style="margin-top:8px;display:flex;gap:12px;"><button onclick="window.print()" style="padding:9px 20px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">⬇ Print / Download</button></div>`;
+  <div style="margin-top:8px;display:flex;gap:12px;"><button onclick="printReport()" style="padding:9px 20px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">⬇ Print / Download</button></div>`;
 
 document.getElementById('modal-title').textContent='Monthly Report — Uganda Cultural Lodges | '+monthName;
   document.getElementById('modal-meta').textContent='Administrator view only | Generated '+fmtDT(new Date().toISOString());
