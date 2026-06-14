@@ -307,7 +307,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
   <div class="content">
     <div class="week-bar" id="week-bar" style="display:none">
       <label>Week of:</label>
-      <input type="date" id="week-of" onchange="updateWeekLabel()"/>
+      <input type="date" id="week-of" onchange="onWeekOfChange()"/>
       <span style="font-size:13px;color:var(--muted)" id="week-label"></span>
     </div>
 
@@ -860,12 +860,25 @@ async function selectLodge(lodge){
   document.getElementById('user-email').textContent=currentUser.email;
   document.getElementById('lodge-name-header').textContent=lodge;
   await loadItemMaster();
-  const today=new Date('2026-05-22');
+  const today=new Date();
   const day=today.getDay();
   const diff=today.getDate()-day+(day===0?-6:1);
   const mon=new Date(today);mon.setDate(diff);
-  document.getElementById('week-of').value=mon.toISOString().split('T')[0];
-  updateWeekLabel();
+  const weekOf=mon.toISOString().split('T')[0];
+
+  // Check for an existing draft for this lodge + current week BEFORE building a blank form.
+  // This prevents a blank form from later overwriting real saved data.
+  try{
+    const {data,error}=await sb.from('weekly_reports')
+      .select('id').eq('lodge',lodge).eq('week_of',weekOf).eq('is_draft',true).eq('archived',false)
+      .order('last_saved_at',{ascending:false}).limit(1);
+    if(!error&&data&&data.length){
+      await openDraftById(data[0].id, lodge, weekOf);
+      return;
+    }
+  }catch(e){console.warn('Draft check failed:',e);}
+
+  setWeekOf(weekOf);
   const rowCounts={
     'bar-sales':10,'bar-stock':10,'restaurant':10,'room-sales':5,
     'stores':8,'kitchen':8,'rooms':5,'housekeeping':5,
@@ -1059,6 +1072,59 @@ function updateWeekLabel(){
   const val=document.getElementById('week-of').value;if(!val)return;
   const d=new Date(val+'T00:00:00');
   document.getElementById('week-label').textContent='Week starting '+d.toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+}
+
+// Set the week-of input AND remember it as the "last known good" value,
+// so onWeekOfChange can detect real user-driven changes vs programmatic ones.
+function setWeekOf(val){
+  const input=document.getElementById('week-of');
+  input.value=val;
+  input.dataset.prev=val;
+  updateWeekLabel();
+}
+
+// Fires when the user manually changes the Week Of date.
+// Loads the existing draft for that week if one exists, or resets to a
+// blank form for that week. This prevents the previous bug where switching
+// weeks left the OLD week's data in the form, which then got saved under
+// the NEW week_of (or overwrote the new week's existing draft with stale data).
+async function onWeekOfChange(){
+  const input=document.getElementById('week-of');
+  const newVal=input.value;
+  const prevVal=input.dataset.prev||newVal;
+  if(!currentLodge){input.dataset.prev=newVal;updateWeekLabel();return;}
+  if(newVal===prevVal){updateWeekLabel();return;}
+  if(!newVal){input.value=prevVal;updateWeekLabel();return;}
+  const ok=confirm('Switching the Week Of date will load that week\'s saved data (or start a blank form if none exists).\n\nAny UNSAVED changes for the current week will be lost.\n\nIf you want to keep your current entries, click Cancel, then click "Save Draft" first.\n\nContinue and switch weeks?');
+  if(!ok){
+    input.value=prevVal;
+    updateWeekLabel();
+    return;
+  }
+  input.dataset.prev=newVal;
+  updateWeekLabel();
+  try{
+    const {data,error}=await sb.from('weekly_reports')
+      .select('id').eq('lodge',currentLodge).eq('week_of',newVal).eq('is_draft',true).eq('archived',false)
+      .order('last_saved_at',{ascending:false}).limit(1);
+    if(!error&&data&&data.length){
+      await openDraftById(data[0].id, currentLodge, newVal);
+      return;
+    }
+  }catch(e){console.warn('Draft check failed:',e);}
+  // No existing draft for this week - reset to a blank form
+  currentDraftId=null;
+  const rowCounts={
+    'bar-sales':10,'bar-stock':10,'restaurant':10,'room-sales':5,
+    'stores':8,'kitchen':8,'rooms':5,'housekeeping':5,
+    'security':3,'maintenance':3,'booked-guests':5,'staff-comp':5,'training':3,'incidents':3
+  };
+  Object.entries(rowCounts).forEach(([t,count])=>{
+    const tb=document.getElementById('body-'+t);
+    if(tb){tb.innerHTML='';for(let i=0;i<count;i++) addRow(t);}
+  });
+  switchTab(document.querySelector('.tab[data-tab="bar-sales"]'));
+  setStatus('No existing draft for '+fmtDate(newVal)+' - starting a new entry for this week.','');
 }
 function parBadge(actual,par){
   const a=n(actual),p=n(par);
@@ -1719,6 +1785,44 @@ async function doSubmit(){
       btn.disabled=false;btn.textContent='Submit Weekly Report';
       return;
     }
+
+    const newBarS=extractTable('bar-sales');
+    const newRestS=extractTable('restaurant');
+    const newRoomS=extractTable('room-sales');
+
+    // Check existing draft for this lodge/week before deleting it.
+    // If the draft on file has MORE filled entries than what's currently in
+    // the form, warn before deleting it - prevents submitting an incomplete
+    // report and losing the rest of the week's data.
+    const {data:draftRows}=await sb.from('weekly_reports')
+      .select('id,bar_sales,restaurant_sales,room_sales')
+      .eq('lodge',currentLodge).eq('week_of',weekOf).eq('is_draft',true);
+    if(draftRows&&draftRows.length){
+      const countFilled=(arr,key)=>(arr||[]).filter(r=>r&&r[key]&&r[key]!=='').length;
+      let maxLoss=[];
+      draftRows.forEach(dr=>{
+        const oldBarN=countFilled(dr.bar_sales,'item');
+        const newBarN=countFilled(newBarS,'item');
+        const oldRestN=countFilled(dr.restaurant_sales,'item');
+        const newRestN=countFilled(newRestS,'item');
+        const oldRoomN=countFilled(dr.room_sales,'room_no');
+        const newRoomN=countFilled(newRoomS,'room_no');
+        const l=[];
+        if(newBarN<oldBarN) l.push('Bar Sales: '+oldBarN+' → '+newBarN);
+        if(newRestN<oldRestN) l.push('Restaurant Sales: '+oldRestN+' → '+newRestN);
+        if(newRoomN<oldRoomN) l.push('Room Sales: '+oldRoomN+' → '+newRoomN);
+        if(l.length>maxLoss.length) maxLoss=l;
+      });
+      if(maxLoss.length){
+        const proceed=confirm('⚠ WARNING - POSSIBLE DATA LOSS\n\nThe saved draft for this week has MORE entries than this form currently shows:\n\n'+maxLoss.join('\n')+'\n\nSubmitting now will permanently delete the draft and replace it with what is on screen - the extra saved entries will be LOST.\n\nClick Cancel, then reload the page to bring in the latest saved draft before submitting.\n\nSubmit anyway?');
+        if(!proceed){
+          setStatus('Submit cancelled - existing draft was NOT deleted.','error');
+          btn.disabled=false;btn.textContent='Submit Weekly Report';
+          return;
+        }
+      }
+    }
+
     // Delete any draft for this lodge and week before submitting
     await sb.from('weekly_reports').delete()
       .eq('lodge',currentLodge).eq('week_of',weekOf).eq('is_draft',true);
@@ -1726,10 +1830,10 @@ async function doSubmit(){
     const payload={
       week_of:weekOf,lodge:currentLodge,user_id:currentUser.id,
       user_email:currentUser.email,submitted_at:new Date().toISOString(),archived:false,
-      bar_sales:extractTable('bar-sales'),
+      bar_sales:newBarS,
       bar_stock:extractTable('bar-stock'),
-      restaurant_sales:extractTable('restaurant'),
-      room_sales:extractTable('room-sales'),
+      restaurant_sales:newRestS,
+      room_sales:newRoomS,
       stores_stock:extractTable('stores'),
       kitchen:extractTable('kitchen'),
       room_inspections:extractTable('rooms'),
@@ -2975,10 +3079,9 @@ async function openDraftById(id, lodge, weekOf){
   document.getElementById('app-screen').style.display='block';
   document.getElementById('user-email').textContent=currentUser.email;
   document.getElementById('lodge-name-header').textContent=lodge;
-  document.getElementById('week-of').value=weekOf;
-  updateWeekLabel();
+  setWeekOf(weekOf);
   // Reset all rows first
-  const rowCounts={'bar-sales':10,'bar-stock':10,'restaurant':10,'room-sales':5,'stores':8,'kitchen':8,'rooms':5,'housekeeping':5,'security':3,'maintenance':3,'staff-comp':5,'training':3,'incidents':3};
+  const rowCounts={'bar-sales':10,'bar-stock':10,'restaurant':10,'room-sales':5,'stores':8,'kitchen':8,'rooms':5,'housekeeping':5,'security':3,'maintenance':3,'booked-guests':5,'staff-comp':5,'training':3,'incidents':3};
   Object.entries(rowCounts).forEach(([t,count])=>{
     const tb=document.getElementById('body-'+t);
     if(tb) tb.innerHTML='';
@@ -3178,19 +3281,57 @@ async function saveDraft(forceNew){
 
   try{
     let existing=[];
+    let draftIdToCheck=currentDraftId||null;
     if(!createNew&&!currentDraftId){
       const res=await sb.from('weekly_reports')
         .select('id').eq('lodge',currentLodge).eq('week_of',weekOf).eq('is_draft',true)
         .order('last_saved_at',{ascending:false}).limit(1);
       existing=res.data||[];
+      if(existing.length) draftIdToCheck=existing[0].id;
+    }
+
+    const newBar=extractTable('bar-sales');
+    const newRest=extractTable('restaurant');
+    const newRoom=extractTable('room-sales');
+
+    // SAFEGUARD: if we are about to overwrite an existing draft, compare how many
+    // filled rows it currently has in Supabase vs what we're about to save.
+    // If this save would REDUCE the data, warn before proceeding - this prevents
+    // a blank/partial form from silently erasing previously saved entries.
+    if(draftIdToCheck){
+      try{
+        const {data:oldRow}=await sb.from('weekly_reports')
+          .select('bar_sales,restaurant_sales,room_sales').eq('id',draftIdToCheck).single();
+        if(oldRow){
+          const countFilled=(arr,key)=>(arr||[]).filter(r=>r&&r[key]&&r[key]!=='').length;
+          const oldBarN=countFilled(oldRow.bar_sales,'item');
+          const newBarN=countFilled(newBar,'item');
+          const oldRestN=countFilled(oldRow.restaurant_sales,'item');
+          const newRestN=countFilled(newRest,'item');
+          const oldRoomN=countFilled(oldRow.room_sales,'room_no');
+          const newRoomN=countFilled(newRoom,'room_no');
+          const losses=[];
+          if(newBarN<oldBarN) losses.push('Bar Sales: '+oldBarN+' saved entries → '+newBarN+' in this save');
+          if(newRestN<oldRestN) losses.push('Restaurant Sales: '+oldRestN+' saved entries → '+newRestN+' in this save');
+          if(newRoomN<oldRoomN) losses.push('Room Sales: '+oldRoomN+' saved entries → '+newRoomN+' in this save');
+          if(losses.length){
+            const proceed=confirm('⚠ WARNING - POSSIBLE DATA LOSS\n\nThe draft currently saved in the system has MORE entries than what you are about to save:\n\n'+losses.join('\n')+'\n\nIf you continue, the extra saved entries will be PERMANENTLY OVERWRITTEN and lost.\n\nClick Cancel, then reload the page (this loads the latest saved draft) before re-entering your new data.\n\nOnly click OK if you are SURE this form already contains everything that should be saved.\n\nOverwrite anyway?');
+            if(!proceed){
+              setStatus('Save cancelled - existing draft was NOT overwritten.','error');
+              btn.disabled=false;btn.textContent=createNew?'Save New Draft':'Save Draft';
+              return;
+            }
+          }
+        }
+      }catch(e){console.warn('Safeguard check failed (continuing):',e);}
     }
 
     const payload={
       week_of:weekOf,lodge:currentLodge,user_id:currentUser.id,
       user_email:currentUser.email,last_saved_at:new Date().toISOString(),
       archived:false,is_draft:true,
-      bar_sales:extractTable('bar-sales'),bar_stock:extractTable('bar-stock'),
-      restaurant_sales:extractTable('restaurant'),room_sales:extractTable('room-sales'),
+      bar_sales:newBar,bar_stock:extractTable('bar-stock'),
+      restaurant_sales:newRest,room_sales:newRoom,
       stores_stock:extractTable('stores'),kitchen:extractTable('kitchen'),
       room_inspections:extractTable('rooms'),housekeeping_log:extractTable('housekeeping'),
       security_log:extractTable('security'),maintenance_log:extractTable('maintenance'),
