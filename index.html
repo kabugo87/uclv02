@@ -325,10 +325,11 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
           <div class="dash-tab" onclick="showDashTab(this,'drafts')" id="drafts-tab" style="display:none">Drafts</div>
           <div class="dash-tab" onclick="showDashTab(this,'archived')">Archived</div>
         </div>
-        <div style="display:flex;align-items:center;gap:10px;">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
           <label style="font-size:12px;font-weight:600;color:var(--muted)">Week of:</label>
           <input type="date" id="consolidated-week" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;"/>
           <button onclick="generateConsolidated()" id="consolidated-btn" style="padding:8px 18px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Consolidated Report</button>
+          <button onclick="toggleCustomReport()" id="custom-report-toggle" style="padding:8px 18px;background:#4a6fa5;color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">📋 Custom Report</button>
           <span id="monthly-btn-wrap" style="display:none">
             <select id="monthly-lodge" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;margin-left:8px;">
               <option value="all">All Lodges</option>
@@ -345,6 +346,32 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
             </select>
             <button onclick="generateMonthly()" style="padding:8px 18px;background:var(--gold);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-left:6px;">Monthly Report</button>
           </span>
+        </div>
+        <!-- CUSTOM REPORT PANEL -->
+        <div id="custom-report-panel" style="display:none;margin-top:14px;background:var(--white);border:1.5px solid #4a6fa5;border-radius:var(--radius);padding:16px 20px;">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:#4a6fa5;margin-bottom:12px;">📋 Custom Date Range Report</div>
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <label style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;">From</label>
+              <input type="date" id="custom-from" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;"/>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <label style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;">To</label>
+              <input type="date" id="custom-to" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;"/>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <label style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;">Lodges</label>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <label style="font-size:12px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="cr-hoima" checked> Hoima</label>
+                <label style="font-size:12px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="cr-mulehe" checked> Lake Mulehe</label>
+                <label style="font-size:12px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="cr-kigarama" checked> Kigarama</label>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <label style="font-size:11px;color:transparent;">.</label>
+              <button onclick="generateCustomReport()" style="padding:8px 22px;background:#4a6fa5;color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Generate Report</button>
+            </div>
+          </div>
         </div>
       </div>
       <div style="border-bottom:2px solid var(--border);margin-bottom:20px;"></div>
@@ -2325,7 +2352,7 @@ function buildReportHTML(r,analyticsData){
     const thisLodgePct=combinedCross>0?(totalRev/combinedCross*100).toFixed(1):0;
 
     analyticsHTML=`
-    <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:20px;">
+    <div class="analytics-section" style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:20px;">
       <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--forest);margin-bottom:4px;">📊 Analytics — Admin View</div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">Trend and comparison data. Not visible to lodge supervisors.</div>
 
@@ -2778,6 +2805,258 @@ async function saveEdits(){
   loadDashboard();
 }
 
+
+// ── CUSTOM REPORT ─────────────────────────────────────────────────────────────
+function toggleCustomReport(){
+  const panel=document.getElementById('custom-report-panel');
+  if(!panel) return;
+  const open=panel.style.display==='block';
+  panel.style.display=open?'none':'block';
+  document.getElementById('custom-report-toggle').textContent=open?'📋 Custom Report':'✕ Close';
+}
+
+async function generateCustomReport(){
+  const fromVal=document.getElementById('custom-from').value;
+  const toVal=document.getElementById('custom-to').value;
+  if(!fromVal||!toVal){alert('Please select both a From and To date.');return;}
+  if(fromVal>toVal){alert('From date must be before To date.');return;}
+
+  const selectedLodges=[];
+  if(document.getElementById('cr-hoima').checked) selectedLodges.push('Hoima Cultural Lodge');
+  if(document.getElementById('cr-mulehe').checked) selectedLodges.push('Lake Mulehe Gorilla Lodge');
+  if(document.getElementById('cr-kigarama').checked) selectedLodges.push('Kigarama Wilderness Lodge');
+  if(!selectedLodges.length){alert('Please select at least one lodge.');return;}
+
+  const btn=document.querySelector('[onclick="generateCustomReport()"]');
+  if(btn){btn.disabled=true;btn.textContent='Generating...';}
+
+  try{
+    const {data,error}=await sb.from('weekly_reports')
+      .select('*')
+      .in('lodge',selectedLodges)
+      .gte('week_of',fromVal)
+      .lte('week_of',toVal)
+      .eq('is_draft',false)
+      .eq('archived',false)
+      .order('lodge').order('week_of');
+
+    if(error) throw error;
+    if(!data||!data.length){
+      alert('No submitted reports found for the selected lodges and date range.');
+      if(btn){btn.disabled=false;btn.textContent='Generate Report';}
+      return;
+    }
+
+    // Aggregate by lodge
+    const lodgeData={};
+    selectedLodges.forEach(l=>{
+      lodgeData[l]={bar:0,rest:0,room:0,total:0,reports:0,weeks:[],
+        barItems:{},restItems:{},incidents:[],maintenance:[],training:[],
+        foodCostUsed:0,foodCostRev:0,stockShort:0,compVal:0};
+    });
+
+    data.forEach(r=>{
+      const ld=lodgeData[r.lodge];
+      if(!ld) return;
+      ld.reports++;
+      ld.weeks.push(fmtDate(r.week_of));
+
+      const sum=(arr,key)=>(arr||[]).reduce((s,row)=>{
+        const v=parseFloat((row[key]||row.total_value||'0').toString().replace('UGX','').replace(/,/g,''))||0;
+        return s+v;
+      },0);
+
+      const barRev=sum(r.bar_sales,'total_value');
+      const restRev=sum(r.restaurant_sales,'total_value');
+      const roomRev=r.room_revenue||sum(r.room_sales,'total_value');
+      ld.bar+=barRev;ld.rest+=restRev;ld.room+=roomRev;ld.total+=barRev+restRev+roomRev;
+
+      // Top items
+      (r.bar_sales||[]).filter(s=>s.item&&s.item!=='').forEach(s=>{
+        const v=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;
+        ld.barItems[s.item]=(ld.barItems[s.item]||0)+v;
+      });
+      (r.restaurant_sales||[]).filter(s=>s.item&&s.item!=='').forEach(s=>{
+        const v=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;
+        ld.restItems[s.item]=(ld.restItems[s.item]||0)+v;
+      });
+
+      // Ops
+      ld.foodCostUsed+=(r.kitchen||[]).reduce((s,k)=>s+(parseFloat((k.cost_used||'0').replace('UGX','').replace(/,/g,''))||0),0);
+      ld.foodCostRev+=r.kitchen_sales_revenue||0;
+      ld.stockShort+=[...(r.bar_stock||[]),...(r.stores_stock||[])].filter(s=>(parseFloat((s.variance||'').replace('+',''))||0)<0).length;
+      let cv=0;(r.staff_complimentary||[]).forEach(s=>{cv+=parseFloat((s.standard_total||'0').replace('UGX','').replace(/,/g,''))||0;});
+      ld.compVal+=cv;
+      (r.incidents||[]).filter(i=>i.description).forEach(i=>ld.incidents.push({week:r.week_of,lodge:r.lodge,...i}));
+      (r.maintenance_log||[]).filter(m=>m.issue).forEach(m=>ld.maintenance.push({week:r.week_of,...m}));
+      (r.training_log||[]).filter(t=>t.topic).forEach(t=>ld.training.push({week:r.week_of,...t}));
+    });
+
+    // Build HTML
+    const fromFmt=new Date(fromVal+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+    const toFmt=new Date(toVal+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+    const rangeLabel=fromFmt+' — '+toFmt;
+    const totalReports=data.length;
+    const grandTotal=selectedLodges.reduce((s,l)=>s+(lodgeData[l]?lodgeData[l].total:0),0);
+    const grandBar=selectedLodges.reduce((s,l)=>s+(lodgeData[l]?lodgeData[l].bar:0),0);
+    const grandRest=selectedLodges.reduce((s,l)=>s+(lodgeData[l]?lodgeData[l].rest:0),0);
+    const grandRoom=selectedLodges.reduce((s,l)=>s+(lodgeData[l]?lodgeData[l].room:0),0);
+
+    let html=`<div style="font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#4a6fa5;margin-bottom:4px;">Custom Report</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">${totalReports} report(s) across ${selectedLodges.length} lodge(s)</div>`;
+
+    // Revenue summary cards
+    html+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:24px;">
+      <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:14px;border-left:4px solid #4a6fa5;">
+        <div style="font-size:10px;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Combined Revenue</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:#4a6fa5;">${fmtUGX(grandTotal)}</div>
+        <div style="font-size:11px;color:var(--muted);">${rangeLabel}</div>
+      </div>
+      <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:14px;">
+        <div style="font-size:10px;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Bar</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;">${fmtUGX(grandBar)}</div>
+        <div style="font-size:11px;color:var(--muted);">${grandTotal>0?(grandBar/grandTotal*100).toFixed(1):'0'}% of total</div>
+      </div>
+      <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:14px;">
+        <div style="font-size:10px;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Restaurant</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;">${fmtUGX(grandRest)}</div>
+        <div style="font-size:11px;color:var(--muted);">${grandTotal>0?(grandRest/grandTotal*100).toFixed(1):'0'}% of total</div>
+      </div>
+      <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:14px;">
+        <div style="font-size:10px;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Rooms</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;">${fmtUGX(grandRoom)}</div>
+        <div style="font-size:11px;color:var(--muted);">${grandTotal>0?(grandRoom/grandTotal*100).toFixed(1):'0'}% of total</div>
+      </div>
+    </div>`;
+
+    // Side-by-side revenue table
+    html+=`<div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--forest);margin-bottom:10px;padding-bottom:5px;border-bottom:2px solid var(--border);">Revenue by Lodge</div>
+    <div style="overflow-x:auto;margin-bottom:24px;">
+    <table style="width:100%;border-collapse:collapse;font-size:13px;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <thead><tr style="background:#f0ede6;">
+        <th style="padding:9px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Revenue Stream</th>
+        ${selectedLodges.map(l=>`<th style="padding:9px 14px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">${l.split(' ')[0]}</th>`).join('')}
+        ${selectedLodges.length>1?`<th style="padding:9px 14px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Combined</th>`:''}
+      </tr></thead>
+      <tbody>
+        <tr><td style="padding:9px 14px;border-bottom:1px solid #ede9e0;">Bar Sales</td>
+          ${selectedLodges.map(l=>`<td style="padding:9px 14px;text-align:right;border-bottom:1px solid #ede9e0;">${fmtUGX(lodgeData[l].bar)}</td>`).join('')}
+          ${selectedLodges.length>1?`<td style="padding:9px 14px;text-align:right;border-bottom:1px solid #ede9e0;font-weight:600;">${fmtUGX(grandBar)}</td>`:''}
+        </tr>
+        <tr><td style="padding:9px 14px;border-bottom:1px solid #ede9e0;">Restaurant Sales</td>
+          ${selectedLodges.map(l=>`<td style="padding:9px 14px;text-align:right;border-bottom:1px solid #ede9e0;">${fmtUGX(lodgeData[l].rest)}</td>`).join('')}
+          ${selectedLodges.length>1?`<td style="padding:9px 14px;text-align:right;border-bottom:1px solid #ede9e0;font-weight:600;">${fmtUGX(grandRest)}</td>`:''}
+        </tr>
+        <tr><td style="padding:9px 14px;border-bottom:1px solid #ede9e0;">Room Revenue</td>
+          ${selectedLodges.map(l=>`<td style="padding:9px 14px;text-align:right;border-bottom:1px solid #ede9e0;">${fmtUGX(lodgeData[l].room)}</td>`).join('')}
+          ${selectedLodges.length>1?`<td style="padding:9px 14px;text-align:right;border-bottom:1px solid #ede9e0;font-weight:600;">${fmtUGX(grandRoom)}</td>`:''}
+        </tr>
+        <tr style="background:#e8f4ee;">
+          <td style="padding:9px 14px;font-weight:700;border-bottom:1px solid #ede9e0;">TOTAL</td>
+          ${selectedLodges.map(l=>{
+            const pct=grandTotal>0?(lodgeData[l].total/grandTotal*100).toFixed(1):'0';
+            return`<td style="padding:9px 14px;text-align:right;font-weight:700;color:var(--forest);border-bottom:1px solid #ede9e0;">${fmtUGX(lodgeData[l].total)}<div style="font-size:10px;color:var(--muted);font-weight:400;">${pct}% of total</div></td>`;
+          }).join('')}
+          ${selectedLodges.length>1?`<td style="padding:9px 14px;text-align:right;font-weight:700;color:var(--forest);border-bottom:1px solid #ede9e0;">${fmtUGX(grandTotal)}</td>`:''}
+        </tr>
+        <tr><td style="padding:9px 14px;border-bottom:1px solid #ede9e0;color:var(--muted);font-size:12px;">Reports included</td>
+          ${selectedLodges.map(l=>`<td style="padding:9px 14px;text-align:right;border-bottom:1px solid #ede9e0;color:var(--muted);font-size:12px;">${lodgeData[l].reports} report(s)</td>`).join('')}
+          ${selectedLodges.length>1?`<td style="padding:9px 14px;text-align:right;border-bottom:1px solid #ede9e0;color:var(--muted);font-size:12px;">${totalReports}</td>`:''}
+        </tr>
+        <tr><td style="padding:9px 14px;color:var(--muted);font-size:11px;vertical-align:top;">Weeks covered</td>
+          ${selectedLodges.map(l=>`<td style="padding:9px 14px;text-align:right;color:var(--muted);font-size:11px;">${lodgeData[l].weeks.join('<br>')}</td>`).join('')}
+          ${selectedLodges.length>1?`<td></td>`:''}
+        </tr>
+      </tbody>
+    </table></div>`;
+
+    // Top selling items per lodge
+    html+=`<div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--forest);margin-bottom:10px;padding-bottom:5px;border-bottom:2px solid var(--border);">Top Selling Items</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:24px;">`;
+    selectedLodges.forEach(l=>{
+      const ld=lodgeData[l];
+      const topBar=Object.entries(ld.barItems).sort((a,b)=>b[1]-a[1]).slice(0,3);
+      const topRest=Object.entries(ld.restItems).sort((a,b)=>b[1]-a[1]).slice(0,3);
+      html+=`<div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:14px;">
+        <div style="font-size:13px;font-weight:700;color:var(--forest);margin-bottom:10px;">${l.split(' ')[0]}</div>
+        <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:4px;">🍺 Bar</div>
+        ${topBar.length?topBar.map(([item,val])=>`<div style="font-size:12px;display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid #f0ede6;"><span>${item}</span><span style="font-weight:600;">${fmtUGX(val)}</span></div>`).join(''):'<div style="font-size:12px;color:var(--muted);">No bar data</div>'}
+        <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin:8px 0 4px;">🍽 Restaurant</div>
+        ${topRest.length?topRest.map(([item,val])=>`<div style="font-size:12px;display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid #f0ede6;"><span>${item}</span><span style="font-weight:600;">${fmtUGX(val)}</span></div>`).join(''):'<div style="font-size:12px;color:var(--muted);">No restaurant data</div>'}
+      </div>`;
+    });
+    html+=`</div>`;
+
+    // Operational summary
+    html+=`<div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--forest);margin-bottom:10px;padding-bottom:5px;border-bottom:2px solid var(--border);">Operational Summary</div>
+    <div style="overflow-x:auto;margin-bottom:24px;">
+    <table style="width:100%;border-collapse:collapse;font-size:12px;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <thead><tr style="background:#f0ede6;">
+        <th style="padding:9px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Metric</th>
+        ${selectedLodges.map(l=>`<th style="padding:9px 12px;text-align:center;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">${l.split(' ')[0]}</th>`).join('')}
+      </tr></thead>
+      <tbody>
+        <tr><td style="padding:9px 12px;border-bottom:1px solid #ede9e0;">Food Cost %</td>
+          ${selectedLodges.map(l=>{
+            const ld=lodgeData[l];
+            const fc=ld.foodCostRev>0?(ld.foodCostUsed/ld.foodCostRev*100).toFixed(1)+'%':'No data';
+            return`<td style="padding:9px 12px;text-align:center;border-bottom:1px solid #ede9e0;">${fc}</td>`;
+          }).join('')}
+        </tr>
+        <tr><td style="padding:9px 12px;border-bottom:1px solid #ede9e0;">Stock Shortages (total)</td>
+          ${selectedLodges.map(l=>`<td style="padding:9px 12px;text-align:center;border-bottom:1px solid #ede9e0;color:${lodgeData[l].stockShort>0?'var(--error)':'var(--success)'};">${lodgeData[l].stockShort===0?'None':lodgeData[l].stockShort+' occurrence(s)'}</td>`).join('')}
+        </tr>
+        <tr><td style="padding:9px 12px;border-bottom:1px solid #ede9e0;">Complimentary Value</td>
+          ${selectedLodges.map(l=>{
+            const ld=lodgeData[l];
+            const pct=ld.total>0?(ld.compVal/ld.total*100).toFixed(1):'0';
+            return`<td style="padding:9px 12px;text-align:center;border-bottom:1px solid #ede9e0;">${fmtUGX(ld.compVal)} (${pct}%)</td>`;
+          }).join('')}
+        </tr>
+        <tr><td style="padding:9px 12px;border-bottom:1px solid #ede9e0;">Incidents Recorded</td>
+          ${selectedLodges.map(l=>`<td style="padding:9px 12px;text-align:center;border-bottom:1px solid #ede9e0;color:${lodgeData[l].incidents.length>0?'var(--error)':'var(--success)'};">${lodgeData[l].incidents.length===0?'None':lodgeData[l].incidents.length}</td>`).join('')}
+        </tr>
+        <tr><td style="padding:9px 12px;">Training Sessions</td>
+          ${selectedLodges.map(l=>`<td style="padding:9px 12px;text-align:center;">${lodgeData[l].training.length===0?'None':lodgeData[l].training.length+' session(s)'}</td>`).join('')}
+        </tr>
+      </tbody>
+    </table></div>`;
+
+    // Incidents detail if any
+    const allIncidents=selectedLodges.flatMap(l=>lodgeData[l].incidents);
+    if(allIncidents.length){
+      html+=`<div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--forest);margin-bottom:10px;padding-bottom:5px;border-bottom:2px solid var(--border);">Incidents Detail</div>
+      <div style="overflow-x:auto;margin-bottom:24px;">
+      <table style="width:100%;border-collapse:collapse;font-size:12px;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+        <thead><tr style="background:#f0ede6;">
+          <th style="padding:8px 12px;border-bottom:2px solid var(--border);">Lodge</th>
+          <th style="padding:8px 12px;border-bottom:2px solid var(--border);">Week</th>
+          <th style="padding:8px 12px;border-bottom:2px solid var(--border);">Date</th>
+          <th style="padding:8px 12px;border-bottom:2px solid var(--border);">Category</th>
+          <th style="padding:8px 12px;border-bottom:2px solid var(--border);">Description</th>
+          <th style="padding:8px 12px;border-bottom:2px solid var(--border);">Status</th>
+        </tr></thead>
+        <tbody>${allIncidents.map(i=>`<tr><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;">${(i.lodge||'').split(' ')[0]}</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;">${fmtDate(i.week)}</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;">${i.date||''}</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;">${i.category||''}</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;">${i.description||''}</td><td style="padding:8px 12px;border-bottom:1px solid #ede9e0;">${i.status||''}</td></tr>`).join('')}</tbody>
+      </table></div>`;
+    }
+
+    html+=`<div style="margin-top:8px;"><button onclick="printReport()" style="padding:9px 20px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">⬇ Print / Download</button></div>`;
+
+    document.getElementById('modal-title').textContent='Custom Report — '+rangeLabel;
+    document.getElementById('modal-meta').textContent=selectedLodges.map(l=>l.split(' ')[0]).join(', ')+' · '+totalReports+' report(s) · Generated '+fmtDT(new Date().toISOString());
+    document.getElementById('modal-actions').innerHTML='';
+    document.getElementById('confirm-delete').style.display='none';
+    document.getElementById('edit-section').style.display='none';
+    document.getElementById('modal-body').innerHTML=html;
+    document.getElementById('report-modal').classList.add('open');
+
+  }catch(err){
+    console.error('Custom report error:',err);
+    alert('Error generating report: '+(err.message||'Unknown error'));
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='Generate Report';}
+  }
+}
 
 // ── CONSOLIDATED REPORT ───────────────────────────────────────────────────────
 async function generateConsolidated(){
