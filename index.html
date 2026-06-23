@@ -331,6 +331,7 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
           <input type="date" id="consolidated-week" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;"/>
           <button onclick="generateConsolidated()" id="consolidated-btn" style="padding:8px 18px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Consolidated Report</button>
           <button onclick="toggleCustomReport()" id="custom-report-toggle" style="padding:8px 18px;background:#4a6fa5;color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">&#128203; Custom Report</button>
+          <button onclick="toggleAnalysisReport()" id="analysis-report-toggle" style="padding:8px 18px;background:#6b4f8a;color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">📊 Sales Analysis</button>
           <span id="monthly-btn-wrap" style="display:none">
             <select id="monthly-lodge" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;margin-left:8px;">
               <option value="all">All Lodges</option>
@@ -365,9 +366,40 @@ header{background:var(--forest);padding:0 32px;height:60px;display:flex;align-it
             <button onclick="generateCustomReport()" style="padding:9px 22px;background:#4a6fa5;color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Generate Report</button>
           </div>
         </div>
+        <div id="analysis-report-panel" style="display:none;margin-top:14px;background:var(--white);border:1.5px solid #6b4f8a;border-radius:var(--radius);padding:16px 20px;">
+          <div style="font-family:Cormorant Garamond,serif;font-size:16px;font-weight:700;color:#6b4f8a;margin-bottom:12px;">&#128202; Sales Analysis Report</div>
+          <div style="display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;">
+            <div><label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">From</label>
+            <input type="date" id="ar-from" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;"/></div>
+            <div><label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">To</label>
+            <input type="date" id="ar-to" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;"/></div>
+            <div><label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Lodges</label>
+            <div style="display:flex;gap:10px;align-items:center;padding:8px 0;">
+              <label style="font-size:12px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="ar-hoima" checked> Hoima</label>
+              <label style="font-size:12px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="ar-mulehe" checked> Lake Mulehe</label>
+              <label style="font-size:12px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="ar-kigarama" checked> Kigarama</label>
+            </div></div>
+            <button onclick="generateAnalysisReport()" style="padding:9px 22px;background:#6b4f8a;color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Generate Analysis</button>
+          </div>
+        </div>
       </div>
       <div style="border-bottom:2px solid var(--border);margin-bottom:20px;"></div>
-      <div id="dash-admin-wrap" style="display:none;padding:0 0 24px">
+      <div id="dash-admin-wrap" style="display:none;margin-top:14px;background:var(--white);border:1.5px solid #6b4f8a;border-radius:var(--radius);padding:16px 20px;">
+          <div style="font-family:Cormorant Garamond,serif;font-size:16px;font-weight:700;color:#6b4f8a;margin-bottom:12px;">📊 Sales Analysis Report</div>
+          <div style="display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;">
+            <div><label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">From</label>
+            <input type="date" id="ar-from" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;"/></div>
+            <div><label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">To</label>
+            <input type="date" id="ar-to" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;"/></div>
+            <div><label style="display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Lodges</label>
+            <div style="display:flex;gap:10px;align-items:center;padding:8px 0;">
+              <label style="font-size:12px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="ar-hoima" checked> Hoima</label>
+              <label style="font-size:12px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="ar-mulehe" checked> Lake Mulehe</label>
+              <label style="font-size:12px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="ar-kigarama" checked> Kigarama</label>
+            </div></div>
+            <button onclick="generateAnalysisReport()" style="padding:9px 22px;background:#6b4f8a;color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Generate Analysis</button>
+          </div>
+        </div> style="display:none;padding:0 0 24px">
         <div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:24px">
           <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--forest);margin-bottom:16px">User Access Management</div>
           <table style="width:100%;border-collapse:collapse;font-size:13px">
@@ -3024,7 +3056,7 @@ async function generateCustomReport(){
         (r.restaurant_sales||[]).filter(function(s){return s.item&&s.item!='';}).forEach(function(s){
           allRestRows.push(Object.assign({_week:r.week_of},s));
         });
-        (r.room_sales||[]).filter(function(s){return s.room_type||s.rate_per_night;}).forEach(function(s){
+        (r.room_sales||[]).filter(function(s){return s.date&&s.date!=''&&(s.rate_per_night&&s.rate_per_night!='0'&&s.rate_per_night!='');}).forEach(function(s){
           allRoomRows.push(Object.assign({_week:r.week_of},s));
         });
       });
@@ -3091,6 +3123,267 @@ async function generateCustomReport(){
     alert('Error: '+(err.message||'Unknown error'));
   }finally{
     if(btn){btn.disabled=false;btn.textContent='Generate Report';}
+  }
+}
+
+
+// ── SALES ANALYSIS REPORT ─────────────────────────────────────────────────────
+function toggleAnalysisReport(){
+  const panel=document.getElementById('analysis-report-panel');
+  if(!panel) return;
+  const open=panel.style.display==='block';
+  panel.style.display=open?'none':'block';
+  // Close custom report panel if open
+  const cp=document.getElementById('custom-report-panel');
+  if(cp) cp.style.display='none';
+  const ct=document.getElementById('custom-report-toggle');
+  if(ct) ct.textContent='\u{1F4CB} Custom Report';
+  const btn=document.getElementById('analysis-report-toggle');
+  if(btn) btn.textContent=open?'\u{1F4CA} Sales Analysis':'\u2715 Close Analysis';
+}
+
+async function generateAnalysisReport(){
+  const fromVal=document.getElementById('ar-from').value;
+  const toVal=document.getElementById('ar-to').value;
+  if(!fromVal||!toVal){alert('Please select both a From and To date.');return;}
+  if(fromVal>toVal){alert('From date must be before the To date.');return;}
+  const selectedLodges=[];
+  if(document.getElementById('ar-hoima').checked) selectedLodges.push('Hoima Cultural Lodge');
+  if(document.getElementById('ar-mulehe').checked) selectedLodges.push('Lake Mulehe Gorilla Lodge');
+  if(document.getElementById('ar-kigarama').checked) selectedLodges.push('Kigarama Wilderness Lodge');
+  if(!selectedLodges.length){alert('Please select at least one lodge.');return;}
+  const btn=document.querySelector('[onclick="generateAnalysisReport()"]');
+  if(btn){btn.disabled=true;btn.textContent='Generating...';}
+  try{
+    const {data,error}=await sb.from('weekly_reports')
+      .select('lodge,week_of,bar_sales,restaurant_sales,room_sales,room_revenue')
+      .in('lodge',selectedLodges)
+      .gte('week_of',fromVal).lte('week_of',toVal)
+      .eq('is_draft',false).eq('archived',false)
+      .order('lodge').order('week_of');
+    if(error) throw error;
+    if(!data||!data.length){
+      alert('No submitted reports found for the selected lodges and date range.');
+      if(btn){btn.disabled=false;btn.textContent='Generate Analysis';}
+      return;
+    }
+    const fromFmt=new Date(fromVal+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+    const toFmt=new Date(toVal+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+    const rangeLabel=fromFmt+' — '+toFmt;
+    let html='';
+    html+='<div style="font-size:12px;color:var(--muted);margin-bottom:20px;">'+data.length+' report(s) · '+selectedLodges.map(function(l){return l.split(' ')[0];}).join(', ')+'</div>';
+
+    // Process each lodge
+    selectedLodges.forEach(function(lodge){
+      const lodgeReports=data.filter(function(r){return r.lodge===lodge;});
+      if(!lodgeReports.length) return;
+
+      // Aggregate bar items
+      var barItems={};
+      var barGroups={};
+      var barTotal=0;
+      lodgeReports.forEach(function(r){
+        (r.bar_sales||[]).filter(function(s){return s.item&&s.item!='';}).forEach(function(s){
+          var v=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;
+          var q=parseInt(s.qty_sold)||0;
+          var grp=s.group||s.grp||'Other';
+          var key=s.item;
+          if(!barItems[key]) barItems[key]={qty:0,total:0,unit:s.unit||'',group:grp};
+          barItems[key].qty+=q;
+          barItems[key].total+=v;
+          if(!barGroups[grp]) barGroups[grp]=0;
+          barGroups[grp]+=v;
+          barTotal+=v;
+        });
+      });
+
+      // Aggregate restaurant items
+      var restItems={};
+      var restGroups={};
+      var restTotal=0;
+      lodgeReports.forEach(function(r){
+        (r.restaurant_sales||[]).filter(function(s){return s.item&&s.item!='';}).forEach(function(s){
+          var v=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;
+          var q=parseInt(s.qty_sold)||0;
+          var grp=s.group||s.grp||'Other';
+          var key=s.item;
+          if(!restItems[key]) restItems[key]={qty:0,total:0,group:grp};
+          restItems[key].qty+=q;
+          restItems[key].total+=v;
+          if(!restGroups[grp]) restGroups[grp]=0;
+          restGroups[grp]+=v;
+          restTotal+=v;
+        });
+      });
+
+      // Room summary
+      var roomNights=0;
+      var roomTotal=0;
+      lodgeReports.forEach(function(r){
+        (r.room_sales||[]).filter(function(s){return s.date&&s.date!=''&&s.rate_per_night&&s.rate_per_night!='0';}).forEach(function(s){
+          roomNights+=parseInt(s.nights)||1;
+          roomTotal+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;
+        });
+      });
+      var avgRate=roomNights>0?roomTotal/roomNights:0;
+
+      var lodgeTotal=barTotal+restTotal+roomTotal;
+
+      // Lodge header
+      html+='<div style="margin-bottom:28px;">';
+      html+='<div style="font-family:Cormorant Garamond,serif;font-size:20px;font-weight:700;color:var(--forest);margin:0 0 4px;padding:10px 16px;background:#f0ede6;border-left:4px solid #6b4f8a;">'+lodge+'</div>';
+      html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0 20px;">';
+      html+='<div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:12px;border-left:4px solid #6b4f8a;"><div style="font-size:10px;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:3px;">Total Revenue</div><div style="font-family:Cormorant Garamond,serif;font-size:18px;font-weight:700;color:#6b4f8a;">'+fmtUGX(lodgeTotal)+'</div></div>';
+      html+='<div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:12px;"><div style="font-size:10px;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:3px;">Bar</div><div style="font-family:Cormorant Garamond,serif;font-size:18px;font-weight:700;">'+fmtUGX(barTotal)+'</div><div style="font-size:10px;color:var(--muted);">'+(lodgeTotal>0?(barTotal/lodgeTotal*100).toFixed(1):0)+'% of total</div></div>';
+      html+='<div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:12px;"><div style="font-size:10px;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:3px;">Restaurant</div><div style="font-family:Cormorant Garamond,serif;font-size:18px;font-weight:700;">'+fmtUGX(restTotal)+'</div><div style="font-size:10px;color:var(--muted);">'+(lodgeTotal>0?(restTotal/lodgeTotal*100).toFixed(1):0)+'% of total</div></div>';
+      html+='<div style="background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:12px;"><div style="font-size:10px;font-weight:600;text-transform:uppercase;color:var(--muted);margin-bottom:3px;">Rooms</div><div style="font-family:Cormorant Garamond,serif;font-size:18px;font-weight:700;">'+fmtUGX(roomTotal)+'</div><div style="font-size:10px;color:var(--muted);">'+(roomNights>0?roomNights+' night(s)':'0 nights')+'</div></div>';
+      html+='</div>';
+
+      // BAR ANALYSIS
+      if(Object.keys(barItems).length){
+        html+='<div style="font-size:13px;font-weight:700;color:var(--forest);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;padding-bottom:4px;border-bottom:2px solid var(--border);">🍺 Bar Sales Analysis</div>';
+        // Group by group
+        var groupsSorted=Object.entries(barGroups).sort(function(a,b){return b[1]-a[1];});
+        groupsSorted.forEach(function(grpEntry){
+          var grpName=grpEntry[0];
+          var grpTotal=grpEntry[1];
+          var grpPct=barTotal>0?(grpTotal/barTotal*100).toFixed(1):0;
+          var grpItems=Object.entries(barItems).filter(function(e){return e[1].group===grpName;}).sort(function(a,b){return b[1].total-a[1].total;});
+          html+='<div style="margin-bottom:14px;">';
+          html+='<div style="display:flex;justify-content:space-between;align-items:center;background:#f7f4ef;padding:6px 10px;border-radius:4px;margin-bottom:4px;">';
+          html+='<span style="font-size:12px;font-weight:700;color:var(--forest);">'+grpName+'</span>';
+          html+='<span style="font-size:12px;font-weight:700;color:var(--forest);">'+fmtUGX(grpTotal)+' <span style="font-weight:400;color:var(--muted);">('+grpPct+'% of bar)</span></span>';
+          html+='</div>';
+          html+='<table style="width:100%;border-collapse:collapse;font-size:12px;">';
+          html+='<thead><tr style="background:#faf8f4;"><th style="padding:5px 10px;text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);">Item</th><th style="padding:5px 10px;text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);">Unit</th><th style="padding:5px 10px;text-align:right;font-size:10px;font-weight:600;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);">Qty Sold</th><th style="padding:5px 10px;text-align:right;font-size:10px;font-weight:600;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);">Revenue</th><th style="padding:5px 10px;text-align:right;font-size:10px;font-weight:600;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);">% of Bar</th></tr></thead>';
+          html+='<tbody>';
+          grpItems.forEach(function(itemEntry){
+            var itemName=itemEntry[0];
+            var itemData=itemEntry[1];
+            var itemPct=barTotal>0?(itemData.total/barTotal*100).toFixed(1):0;
+            html+='<tr><td style="padding:6px 10px;border-bottom:1px solid #f5f0e8;font-weight:500;">'+itemName+'</td>';
+            html+='<td style="padding:6px 10px;border-bottom:1px solid #f5f0e8;color:var(--muted);">'+itemData.unit+'</td>';
+            html+='<td style="padding:6px 10px;border-bottom:1px solid #f5f0e8;text-align:right;font-weight:600;">'+itemData.qty+'</td>';
+            html+='<td style="padding:6px 10px;border-bottom:1px solid #f5f0e8;text-align:right;font-weight:600;">'+fmtUGX(itemData.total)+'</td>';
+            html+='<td style="padding:6px 10px;border-bottom:1px solid #f5f0e8;text-align:right;color:var(--muted);">'+itemPct+'%</td></tr>';
+          });
+          html+='</tbody></table></div>';
+        });
+        html+='<div style="display:flex;justify-content:flex-end;font-size:13px;font-weight:700;color:var(--forest);padding:8px 10px;background:#e8f4ee;border-radius:4px;margin-bottom:20px;">BAR TOTAL: '+fmtUGX(barTotal)+'</div>';
+      }
+
+      // RESTAURANT ANALYSIS
+      if(Object.keys(restItems).length){
+        html+='<div style="font-size:13px;font-weight:700;color:var(--forest);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;padding-bottom:4px;border-bottom:2px solid var(--border);">🍽 Restaurant Sales Analysis</div>';
+        var rGroupsSorted=Object.entries(restGroups).sort(function(a,b){return b[1]-a[1];});
+        rGroupsSorted.forEach(function(grpEntry){
+          var grpName=grpEntry[0];
+          var grpTotal=grpEntry[1];
+          var grpPct=restTotal>0?(grpTotal/restTotal*100).toFixed(1):0;
+          var grpItems=Object.entries(restItems).filter(function(e){return e[1].group===grpName;}).sort(function(a,b){return b[1].total-a[1].total;});
+          html+='<div style="margin-bottom:14px;">';
+          html+='<div style="display:flex;justify-content:space-between;align-items:center;background:#f7f4ef;padding:6px 10px;border-radius:4px;margin-bottom:4px;">';
+          html+='<span style="font-size:12px;font-weight:700;color:var(--forest);">'+grpName+'</span>';
+          html+='<span style="font-size:12px;font-weight:700;color:var(--forest);">'+fmtUGX(grpTotal)+' <span style="font-weight:400;color:var(--muted);">('+grpPct+'% of restaurant)</span></span>';
+          html+='</div>';
+          html+='<table style="width:100%;border-collapse:collapse;font-size:12px;">';
+          html+='<thead><tr style="background:#faf8f4;"><th style="padding:5px 10px;text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);">Item</th><th style="padding:5px 10px;text-align:right;font-size:10px;font-weight:600;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);">Qty Sold</th><th style="padding:5px 10px;text-align:right;font-size:10px;font-weight:600;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);">Revenue</th><th style="padding:5px 10px;text-align:right;font-size:10px;font-weight:600;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);">% of Restaurant</th></tr></thead>';
+          html+='<tbody>';
+          grpItems.forEach(function(itemEntry){
+            var itemName=itemEntry[0];
+            var itemData=itemEntry[1];
+            var itemPct=restTotal>0?(itemData.total/restTotal*100).toFixed(1):0;
+            html+='<tr><td style="padding:6px 10px;border-bottom:1px solid #f5f0e8;font-weight:500;">'+itemName+'</td>';
+            html+='<td style="padding:6px 10px;border-bottom:1px solid #f5f0e8;text-align:right;font-weight:600;">'+itemData.qty+'</td>';
+            html+='<td style="padding:6px 10px;border-bottom:1px solid #f5f0e8;text-align:right;font-weight:600;">'+fmtUGX(itemData.total)+'</td>';
+            html+='<td style="padding:6px 10px;border-bottom:1px solid #f5f0e8;text-align:right;color:var(--muted);">'+itemPct+'%</td></tr>';
+          });
+          html+='</tbody></table></div>';
+        });
+        html+='<div style="display:flex;justify-content:flex-end;font-size:13px;font-weight:700;color:var(--forest);padding:8px 10px;background:#e8f4ee;border-radius:4px;margin-bottom:20px;">RESTAURANT TOTAL: '+fmtUGX(restTotal)+'</div>';
+      }
+
+      // ROOM SUMMARY
+      if(roomTotal>0){
+        html+='<div style="font-size:13px;font-weight:700;color:var(--forest);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;padding-bottom:4px;border-bottom:2px solid var(--border);">🛏 Room Occupancy Summary</div>';
+        html+='<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:20px;border:1px solid var(--border);">';
+        html+='<tbody>';
+        html+='<tr><td style="padding:8px 12px;border-bottom:1px solid #f5f0e8;font-weight:600;">Total Room-Nights Sold</td><td style="padding:8px 12px;border-bottom:1px solid #f5f0e8;text-align:right;font-weight:700;">'+roomNights+'</td></tr>';
+        html+='<tr><td style="padding:8px 12px;border-bottom:1px solid #f5f0e8;font-weight:600;">Total Room Revenue</td><td style="padding:8px 12px;border-bottom:1px solid #f5f0e8;text-align:right;font-weight:700;color:var(--forest);">'+fmtUGX(roomTotal)+'</td></tr>';
+        html+='<tr><td style="padding:8px 12px;font-weight:600;">Average Rate per Night</td><td style="padding:8px 12px;text-align:right;font-weight:700;">'+fmtUGX(avgRate)+'</td></tr>';
+        html+='</tbody></table>';
+      }
+
+      html+='</div>'; // end lodge block
+    });
+
+    // Cross-lodge comparison if multiple lodges
+    if(selectedLodges.length>1){
+      html+='<div style="font-family:Cormorant Garamond,serif;font-size:20px;font-weight:700;color:var(--forest);margin:8px 0 12px;padding-bottom:6px;border-bottom:3px solid var(--forest);">Cross-Lodge Comparison</div>';
+      // Build totals per lodge for comparison
+      var compData={};
+      selectedLodges.forEach(function(lodge){
+        var lodgeReports=data.filter(function(r){return r.lodge===lodge;});
+        var bar=0,rest=0,room=0,topBarItem='',topBarVal=0,topRestItem='',topRestVal=0;
+        var barAgg={};
+        var restAgg={};
+        lodgeReports.forEach(function(r){
+          (r.bar_sales||[]).filter(function(s){return s.item&&s.item!='';}).forEach(function(s){
+            var v=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;
+            bar+=v;
+            barAgg[s.item]=(barAgg[s.item]||0)+v;
+          });
+          (r.restaurant_sales||[]).filter(function(s){return s.item&&s.item!='';}).forEach(function(s){
+            var v=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;
+            rest+=v;
+            restAgg[s.item]=(restAgg[s.item]||0)+v;
+          });
+          (r.room_sales||[]).filter(function(s){return s.date&&s.date!=''&&s.rate_per_night&&s.rate_per_night!='0';}).forEach(function(s){
+            room+=parseFloat((s.total_value||'0').replace('UGX','').replace(/,/g,''))||0;
+          });
+        });
+        Object.entries(barAgg).forEach(function(e){if(e[1]>topBarVal){topBarVal=e[1];topBarItem=e[0];}});
+        Object.entries(restAgg).forEach(function(e){if(e[1]>topRestVal){topRestVal=e[1];topRestItem=e[0];}});
+        compData[lodge]={bar:bar,rest:rest,room:room,total:bar+rest+room,topBar:topBarItem,topBarVal:topBarVal,topRest:topRestItem,topRestVal:topRestVal};
+      });
+      var grandTot=selectedLodges.reduce(function(s,l){return s+compData[l].total;},0);
+      html+='<div style="overflow-x:auto;margin-bottom:20px;"><table style="width:100%;border-collapse:collapse;font-size:12px;border:1.5px solid var(--border);">';
+      html+='<thead><tr style="background:#f0ede6;"><th style="padding:9px 12px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">Metric</th>';
+      selectedLodges.forEach(function(l){html+='<th style="padding:9px 12px;text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--forest);border-bottom:2px solid var(--border);">'+l.split(' ')[0]+'</th>';});
+      html+='</tr></thead><tbody>';
+      [['Bar Revenue','bar'],['Restaurant Revenue','rest'],['Room Revenue','room']].forEach(function(p){
+        html+='<tr><td style="padding:8px 12px;border-bottom:1px solid #f0ede6;">'+p[0]+'</td>';
+        selectedLodges.forEach(function(l){html+='<td style="padding:8px 12px;border-bottom:1px solid #f0ede6;text-align:right;">'+fmtUGX(compData[l][p[1]])+'</td>';});
+        html+='</tr>';
+      });
+      html+='<tr style="background:#e8f4ee;font-weight:700;"><td style="padding:8px 12px;border-bottom:1px solid #f0ede6;">TOTAL</td>';
+      selectedLodges.forEach(function(l){
+        var pct=grandTot>0?(compData[l].total/grandTot*100).toFixed(1):0;
+        html+='<td style="padding:8px 12px;border-bottom:1px solid #f0ede6;text-align:right;color:var(--forest);">'+fmtUGX(compData[l].total)+'<div style="font-size:10px;color:var(--muted);font-weight:400;">'+pct+'% of combined</div></td>';
+      });
+      html+='</tr>';
+      html+='<tr><td style="padding:8px 12px;border-bottom:1px solid #f0ede6;">Top Bar Item</td>';
+      selectedLodges.forEach(function(l){html+='<td style="padding:8px 12px;border-bottom:1px solid #f0ede6;text-align:right;font-size:11px;">'+(compData[l].topBar||'—')+'<div style="color:var(--muted);">'+fmtUGX(compData[l].topBarVal)+'</div></td>';});
+      html+='</tr>';
+      html+='<tr><td style="padding:8px 12px;">Top Restaurant Item</td>';
+      selectedLodges.forEach(function(l){html+='<td style="padding:8px 12px;text-align:right;font-size:11px;">'+(compData[l].topRest||'—')+'<div style="color:var(--muted);">'+fmtUGX(compData[l].topRestVal)+'</div></td>';});
+      html+='</tr></tbody></table></div>';
+    }
+
+    html+='<div style="margin-top:8px;"><button onclick="printReport()" style="padding:9px 20px;background:#6b4f8a;color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">\u2B07 Print / Download</button></div>';
+
+    document.getElementById('modal-title').textContent='Sales Analysis — '+rangeLabel;
+    document.getElementById('modal-meta').textContent=selectedLodges.map(function(l){return l.split(' ')[0];}).join(', ')+' · '+data.length+' report(s) · Generated '+fmtDT(new Date().toISOString());
+    document.getElementById('modal-actions').innerHTML='';
+    document.getElementById('confirm-delete').style.display='none';
+    document.getElementById('edit-section').style.display='none';
+    document.getElementById('modal-body').innerHTML=html;
+    document.getElementById('report-modal').classList.add('open');
+  }catch(err){
+    console.error('Analysis report error:',err);
+    alert('Error: '+(err.message||'Unknown error'));
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='Generate Analysis';}
   }
 }
 
