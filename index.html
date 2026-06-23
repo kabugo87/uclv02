@@ -2151,6 +2151,18 @@ function toggleDetail(id){
   else{el.style.display='none';if(btn)btn.textContent='▼ Show Detail';}
 }
 
+function toggleAllDetails(btn){
+  const expanding=btn.dataset.expanded==='false';
+  document.querySelectorAll('[id^="d-"]').forEach(el=>{
+    el.style.display=expanding?'block':'none';
+  });
+  document.querySelectorAll('[id^="toggle-d-"]').forEach(el=>{
+    el.textContent=expanding?'▲ Hide Detail':'▼ Show Detail';
+  });
+  btn.dataset.expanded=expanding?'true':'false';
+  btn.textContent=expanding?'▲ Collapse All Sections':'▼ Expand All Sections';
+}
+
 // ── REPORT HTML ───────────────────────────────────────────────────────────────
 function buildReportHTML(r,analyticsData){
   analyticsData=analyticsData||{trend:[],cross:[]};
@@ -2460,6 +2472,14 @@ function buildReportHTML(r,analyticsData){
 
     ${varItems.length>0?`
     <div class="notice red">⚠ Stock shortages detected. ${varItems.length} item(s) missing. Total value: ${fmtUGX(totalVarVal)}. Investigate immediately.</div>`:''}
+
+    <!-- EXPAND / COLLAPSE ALL -->
+    <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+      <button onclick="toggleAllDetails(this)" data-expanded="false"
+        style="padding:7px 16px;background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:12px;font-weight:600;color:var(--forest);cursor:pointer;">
+        ▼ Expand All Sections
+      </button>
+    </div>
 
     <!-- DETAIL SECTIONS -->
     ${barSalesRows?`
