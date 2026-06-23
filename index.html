@@ -3002,7 +3002,83 @@ async function generateCustomReport(){
       });
       html+='</tbody></table></div>';
     }
-    html+='<div style="margin-top:8px;"><button onclick="printReport()" style="padding:9px 20px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">⬇ Print / Download</button></div>';
+
+    // ── PER-LODGE FULL DETAIL TABLES ──────────────────────────────────────────
+    html+='<div style="font-family:Cormorant Garamond,serif;font-size:20px;font-weight:700;color:var(--forest);margin:28px 0 10px;padding-bottom:6px;border-bottom:3px solid var(--forest);">Full Transaction Detail</div>';
+
+    selectedLodges.forEach(function(lodge){
+      const reports_for_lodge=data.filter(function(r){return r.lodge===lodge;});
+      if(!reports_for_lodge.length) return;
+
+      html+='<div style="margin-bottom:32px;">';
+      html+='<div style="font-family:Cormorant Garamond,serif;font-size:17px;font-weight:700;color:var(--forest);margin:20px 0 12px;padding:8px 14px;background:#f0ede6;border-left:4px solid var(--gold);">'+lodge+'</div>';
+
+      // Collect all rows across all weeks for this lodge
+      var allBarRows=[];
+      var allRestRows=[];
+      var allRoomRows=[];
+      reports_for_lodge.forEach(function(r){
+        (r.bar_sales||[]).filter(function(s){return s.item&&s.item!='';}).forEach(function(s){
+          allBarRows.push(Object.assign({_week:r.week_of},s));
+        });
+        (r.restaurant_sales||[]).filter(function(s){return s.item&&s.item!='';}).forEach(function(s){
+          allRestRows.push(Object.assign({_week:r.week_of},s));
+        });
+        (r.room_sales||[]).filter(function(s){return s.room_type||s.rate_per_night;}).forEach(function(s){
+          allRoomRows.push(Object.assign({_week:r.week_of},s));
+        });
+      });
+
+      // BAR SALES TABLE
+      if(allBarRows.length){
+        var barTotal=allBarRows.reduce(function(s,r){return s+(parseFloat((r.total_value||'0').replace('UGX','').replace(/,/g,''))||0);},0);
+        html+='<div style="font-size:13px;font-weight:700;color:var(--forest);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">🍺 Bar Sales</div>';
+        html+='<div style="overflow-x:auto;margin-bottom:16px;"><table style="width:100%;border-collapse:collapse;font-size:12px;border:1px solid var(--border);">';
+        html+='<thead><tr style="background:#f0ede6;"><th style="padding:7px 10px;text-align:left;border-bottom:2px solid var(--border);">Date</th><th style="padding:7px 10px;text-align:left;border-bottom:2px solid var(--border);">Group</th><th style="padding:7px 10px;text-align:left;border-bottom:2px solid var(--border);">Item</th><th style="padding:7px 10px;text-align:left;border-bottom:2px solid var(--border);">Unit</th><th style="padding:7px 10px;text-align:right;border-bottom:2px solid var(--border);">Qty</th><th style="padding:7px 10px;text-align:right;border-bottom:2px solid var(--border);">Price</th><th style="padding:7px 10px;text-align:right;border-bottom:2px solid var(--border);">Total</th><th style="padding:7px 10px;text-align:left;border-bottom:2px solid var(--border);">Payment</th></tr></thead>';
+        html+='<tbody>';
+        allBarRows.forEach(function(r){
+          html+='<tr><td style="padding:6px 10px;border-bottom:1px solid #f0ede6;">'+(r.date||'')+'</td><td style="padding:6px 10px;border-bottom:1px solid #f0ede6;">'+(r.group||r.grp||'')+'</td><td style="padding:6px 10px;border-bottom:1px solid #f0ede6;font-weight:500;">'+(r.item||'')+'</td><td style="padding:6px 10px;border-bottom:1px solid #f0ede6;">'+(r.unit||'')+'</td><td style="padding:6px 10px;border-bottom:1px solid #f0ede6;text-align:right;">'+(r.qty_sold||'')+'</td><td style="padding:6px 10px;border-bottom:1px solid #f0ede6;text-align:right;">'+(r.selling_price?fmtUGX(parseFloat(r.selling_price)||0):'')+'</td><td style="padding:6px 10px;border-bottom:1px solid #f0ede6;text-align:right;font-weight:600;">'+(r.total_value||'')+'</td><td style="padding:6px 10px;border-bottom:1px solid #f0ede6;">'+(r.payment||'')+'</td></tr>';
+        });
+        html+='<tr style="background:#e8f4ee;font-weight:700;"><td colspan="6" style="padding:7px 10px;">BAR TOTAL</td><td style="padding:7px 10px;text-align:right;color:var(--forest);">'+fmtUGX(barTotal)+'</td><td></td></tr>';
+        html+='</tbody></table></div>';
+      } else {
+        html+='<div style="font-size:12px;color:var(--muted);margin-bottom:16px;">No bar sales entries for this period.</div>';
+      }
+
+      // RESTAURANT TABLE
+      if(allRestRows.length){
+        var restTotal=allRestRows.reduce(function(s,r){return s+(parseFloat((r.total_value||'0').replace('UGX','').replace(/,/g,''))||0);},0);
+        html+='<div style="font-size:13px;font-weight:700;color:var(--forest);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">🍽 Restaurant Sales</div>';
+        html+='<div style="overflow-x:auto;margin-bottom:16px;"><table style="width:100%;border-collapse:collapse;font-size:12px;border:1px solid var(--border);">';
+        html+='<thead><tr style="background:#f0ede6;"><th style="padding:7px 10px;text-align:left;border-bottom:2px solid var(--border);">Date</th><th style="padding:7px 10px;text-align:left;border-bottom:2px solid var(--border);">Group</th><th style="padding:7px 10px;text-align:left;border-bottom:2px solid var(--border);">Item</th><th style="padding:7px 10px;text-align:right;border-bottom:2px solid var(--border);">Qty</th><th style="padding:7px 10px;text-align:right;border-bottom:2px solid var(--border);">Price</th><th style="padding:7px 10px;text-align:right;border-bottom:2px solid var(--border);">Total</th><th style="padding:7px 10px;text-align:left;border-bottom:2px solid var(--border);">Meal Period</th><th style="padding:7px 10px;text-align:left;border-bottom:2px solid var(--border);">Payment</th></tr></thead>';
+        html+='<tbody>';
+        allRestRows.forEach(function(r){
+          html+='<tr><td style="padding:6px 10px;border-bottom:1px solid #f0ede6;">'+(r.date||'')+'</td><td style="padding:6px 10px;border-bottom:1px solid #f0ede6;">'+(r.group||r.grp||'')+'</td><td style="padding:6px 10px;border-bottom:1px solid #f0ede6;font-weight:500;">'+(r.item||'')+'</td><td style="padding:6px 10px;border-bottom:1px solid #f0ede6;text-align:right;">'+(r.qty_sold||'')+'</td><td style="padding:6px 10px;border-bottom:1px solid #f0ede6;text-align:right;">'+(r.selling_price?fmtUGX(parseFloat(r.selling_price)||0):'')+'</td><td style="padding:6px 10px;border-bottom:1px solid #f0ede6;text-align:right;font-weight:600;">'+(r.total_value||'')+'</td><td style="padding:6px 10px;border-bottom:1px solid #f0ede6;">'+(r.meal_period||'')+'</td><td style="padding:6px 10px;border-bottom:1px solid #f0ede6;">'+(r.payment||'')+'</td></tr>';
+        });
+        html+='<tr style="background:#e8f4ee;font-weight:700;"><td colspan="5" style="padding:7px 10px;">RESTAURANT TOTAL</td><td style="padding:7px 10px;text-align:right;color:var(--forest);">'+fmtUGX(restTotal)+'</td><td colspan="2"></td></tr>';
+        html+='</tbody></table></div>';
+      } else {
+        html+='<div style="font-size:12px;color:var(--muted);margin-bottom:16px;">No restaurant entries for this period.</div>';
+      }
+
+      // ROOM SALES TABLE
+      if(allRoomRows.length){
+        var roomTotal=allRoomRows.reduce(function(s,r){return s+(parseFloat((r.total_value||'0').replace('UGX','').replace(/,/g,''))||0);},0);
+        html+='<div style="font-size:13px;font-weight:700;color:var(--forest);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">🛏 Room Sales</div>';
+        html+='<div style="overflow-x:auto;margin-bottom:16px;"><table style="width:100%;border-collapse:collapse;font-size:12px;border:1px solid var(--border);">';
+        html+='<thead><tr style="background:#f0ede6;"><th style="padding:7px 10px;text-align:left;border-bottom:2px solid var(--border);">Date</th><th style="padding:7px 10px;text-align:left;border-bottom:2px solid var(--border);">Room No.</th><th style="padding:7px 10px;text-align:left;border-bottom:2px solid var(--border);">Guest</th><th style="padding:7px 10px;text-align:left;border-bottom:2px solid var(--border);">Room Type</th><th style="padding:7px 10px;text-align:right;border-bottom:2px solid var(--border);">Nights</th><th style="padding:7px 10px;text-align:right;border-bottom:2px solid var(--border);">Rate/Night</th><th style="padding:7px 10px;text-align:right;border-bottom:2px solid var(--border);">Total</th><th style="padding:7px 10px;text-align:left;border-bottom:2px solid var(--border);">Payment</th></tr></thead>';
+        html+='<tbody>';
+        allRoomRows.forEach(function(r){
+          html+='<tr><td style="padding:6px 10px;border-bottom:1px solid #f0ede6;">'+(r.date||'')+'</td><td style="padding:6px 10px;border-bottom:1px solid #f0ede6;">'+(r.room_no||'')+'</td><td style="padding:6px 10px;border-bottom:1px solid #f0ede6;">'+(r.guest_name||'')+'</td><td style="padding:6px 10px;border-bottom:1px solid #f0ede6;">'+(r.room_type||'')+'</td><td style="padding:6px 10px;border-bottom:1px solid #f0ede6;text-align:right;">'+(r.nights||'')+'</td><td style="padding:6px 10px;border-bottom:1px solid #f0ede6;text-align:right;">'+(r.rate_per_night?fmtUGX(parseFloat(r.rate_per_night)||0):'')+'</td><td style="padding:6px 10px;border-bottom:1px solid #f0ede6;text-align:right;font-weight:600;">'+(r.total_value||'')+'</td><td style="padding:6px 10px;border-bottom:1px solid #f0ede6;">'+(r.payment||'')+'</td></tr>';
+        });
+        html+='<tr style="background:#e8f4ee;font-weight:700;"><td colspan="6" style="padding:7px 10px;">ROOM TOTAL</td><td style="padding:7px 10px;text-align:right;color:var(--forest);">'+fmtUGX(roomTotal)+'</td><td></td></tr>';
+        html+='</tbody></table></div>';
+      }
+
+      html+='</div>'; // end lodge block
+    }); // end selectedLodges.forEach
+
+        html+='<div style="margin-top:8px;"><button onclick="printReport()" style="padding:9px 20px;background:var(--forest);color:var(--white);border:none;border-radius:var(--radius);font-family:Jost,sans-serif;font-size:13px;font-weight:600;cursor:pointer;">⬇ Print / Download</button></div>';
     document.getElementById('modal-title').textContent='Custom Report — '+rangeLabel;
     document.getElementById('modal-meta').textContent=selectedLodges.map(l=>l.split(' ')[0]).join(', ')+' · '+totalReports+' report(s) · Generated '+fmtDT(new Date().toISOString());
     document.getElementById('modal-actions').innerHTML='';
