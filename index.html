@@ -2148,7 +2148,7 @@ function toggleDetail(id){
   const el=document.getElementById(id);
   const btn=document.getElementById('toggle-'+id);
   if(el.style.display==='none'){el.style.display='block';if(btn)btn.textContent='▲ Hide Detail';}
-  else{el.style.display='none';if(btn)btn.textContent='▼ Show Detail';}
+  else{el.style.display='none';if(btn)btn.textContent='▲ Hide Detail';}
 }
 
 function toggleAllDetails(btn){
@@ -2157,10 +2157,10 @@ function toggleAllDetails(btn){
     el.style.display=expanding?'block':'none';
   });
   document.querySelectorAll('[id^="toggle-d-"]').forEach(el=>{
-    el.textContent=expanding?'▲ Hide Detail':'▼ Show Detail';
+    el.textContent=expanding?'▲ Hide Detail':'▲ Hide Detail';
   });
   btn.dataset.expanded=expanding?'true':'false';
-  btn.textContent=expanding?'▲ Collapse All Sections':'▼ Expand All Sections';
+  btn.textContent=expanding?'▲ Collapse All Sections':'▲ Collapse All Sections';
 }
 
 // ── REPORT HTML ───────────────────────────────────────────────────────────────
@@ -2475,9 +2475,9 @@ function buildReportHTML(r,analyticsData){
 
     <!-- EXPAND / COLLAPSE ALL -->
     <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
-      <button onclick="toggleAllDetails(this)" data-expanded="false"
+      <button onclick="toggleAllDetails(this)" data-expanded="true"
         style="padding:7px 16px;background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);font-family:'Jost',sans-serif;font-size:12px;font-weight:600;color:var(--forest);cursor:pointer;">
-        ▼ Expand All Sections
+        ▲ Collapse All Sections
       </button>
     </div>
 
@@ -2485,9 +2485,9 @@ function buildReportHTML(r,analyticsData){
     ${barSalesRows?`
     <div class="detail-section">
       <div class="section-title" onclick="toggleDetail('d-bar-sales')">
-        Bar Sales <span class="toggle" id="toggle-d-bar-sales">▼ Show Detail</span>
+        Bar Sales <span class="toggle" id="toggle-d-bar-sales">▲ Hide Detail</span>
       </div>
-      <div id="d-bar-sales" style="display:none">
+      <div id="d-bar-sales" style="display:block">
         <table class="recon-table">
           <thead><tr><th>Date</th><th>Group</th><th>Item</th><th style="text-align:right">Qty</th><th style="text-align:right">Price</th><th style="text-align:right">Total</th><th>Payment</th></tr></thead>
           <tbody>${barSalesRows}</tbody>
@@ -2499,9 +2499,9 @@ function buildReportHTML(r,analyticsData){
     ${restRows?`
     <div class="detail-section">
       <div class="section-title" onclick="toggleDetail('d-restaurant')">
-        Restaurant Sales <span class="toggle" id="toggle-d-restaurant">▼ Show Detail</span>
+        Restaurant Sales <span class="toggle" id="toggle-d-restaurant">▲ Hide Detail</span>
       </div>
-      <div id="d-restaurant" style="display:none">
+      <div id="d-restaurant" style="display:block">
         <table class="recon-table">
           <thead><tr><th>Date</th><th>Group</th><th>Item</th><th style="text-align:right">Qty</th><th style="text-align:right">Price</th><th style="text-align:right">Total</th><th>Meal Period</th></tr></thead>
           <tbody>${restRows}</tbody>
@@ -2513,7 +2513,7 @@ function buildReportHTML(r,analyticsData){
     ${roomRows?`
     <div class="detail-section">
       <div class="section-title" onclick="toggleDetail('d-rooms-sales')">
-        Room Sales — Walk-ins Only <span class="toggle" id="toggle-d-rooms-sales">▼ Show Detail</span>
+        Room Sales — Walk-ins Only <span class="toggle" id="toggle-d-rooms-sales">▲ Hide Detail</span>
       </div>
       <div id="d-rooms-sales" style="display:none">
         <table class="recon-table">
@@ -2527,9 +2527,9 @@ function buildReportHTML(r,analyticsData){
     ${barStockRows?`
     <div class="detail-section">
       <div class="section-title" onclick="toggleDetail('d-bar-stock')">
-        Bar Stock Reconciliation <span class="toggle" id="toggle-d-bar-stock">▼ Show Detail</span>
+        Bar Stock Reconciliation <span class="toggle" id="toggle-d-bar-stock">▲ Hide Detail</span>
       </div>
-      <div id="d-bar-stock" style="display:none">
+      <div id="d-bar-stock" style="display:block">
         <table class="recon-table">
           <thead><tr><th>Group</th><th>Item</th><th style="text-align:right">Opening</th><th style="text-align:right">Received</th><th style="text-align:right">Issued/Used</th><th style="text-align:right">Actual Closing</th><th style="text-align:right">Variance</th></tr></thead>
           <tbody>${barStockRows}</tbody>
@@ -2545,9 +2545,9 @@ function buildReportHTML(r,analyticsData){
     ${kitchenRows?`
     <div class="detail-section">
       <div class="section-title" onclick="toggleDetail('d-kitchen')">
-        Kitchen / Food Cost <span class="toggle" id="toggle-d-kitchen">▼ Show Detail</span>
+        Kitchen / Food Cost <span class="toggle" id="toggle-d-kitchen">▲ Hide Detail</span>
       </div>
-      <div id="d-kitchen" style="display:none">
+      <div id="d-kitchen" style="display:block">
         <table class="recon-table">
           <thead><tr><th>Group</th><th>Item</th><th style="text-align:right">Purchased</th><th style="text-align:right">Used</th><th style="text-align:right">Wasted</th><th style="text-align:right">Cost of Used</th></tr></thead>
           <tbody>${kitchenRows}</tbody>
@@ -2558,7 +2558,7 @@ function buildReportHTML(r,analyticsData){
     ${roomInspRows?`
     <div class="detail-section">
       <div class="section-title" onclick="toggleDetail('d-room-insp')">
-        Room Inspections <span class="toggle" id="toggle-d-room-insp">▼ Show Detail</span>
+        Room Inspections <span class="toggle" id="toggle-d-room-insp">▲ Hide Detail</span>
       </div>
       <div id="d-room-insp" style="display:none">
         <table class="recon-table">
@@ -2571,9 +2571,9 @@ function buildReportHTML(r,analyticsData){
     ${housekeeping.length>0?`
     <div class="detail-section">
       <div class="section-title" onclick="toggleDetail('d-housekeeping')">
-        Housekeeping Log <span class="toggle" id="toggle-d-housekeeping">▼ Show Detail</span>
+        Housekeeping Log <span class="toggle" id="toggle-d-housekeeping">▲ Hide Detail</span>
       </div>
-      <div id="d-housekeeping" style="display:none">
+      <div id="d-housekeeping" style="display:block">
         <table class="recon-table">
           <thead><tr><th>Date</th><th>Area</th><th>Standard Met?</th><th>Issue Found</th><th>Action Taken</th><th>Resolved?</th><th>Inspector</th></tr></thead>
           <tbody>${housekeeping.filter(h=>h.area).map(h=>'<tr><td>'+h.date+'</td><td>'+h.area+'</td><td><span class="badge '+(h.standard_met==='Yes - Met'?'badge-green':h.standard_met==='Partial'?'badge-amber':'badge-red')+'">'+h.standard_met+'</span></td><td>'+(h.issue||'—')+'</td><td>'+(h.action||'—')+'</td><td>'+h.resolved+'</td><td>'+h.inspector+'</td></tr>').join('')}</tbody>
@@ -2584,9 +2584,9 @@ function buildReportHTML(r,analyticsData){
     ${maintenance.filter(m=>m.item).length>0?`
     <div class="detail-section">
       <div class="section-title" onclick="toggleDetail('d-maintenance')">
-        Maintenance Log <span class="toggle" id="toggle-d-maintenance">▼ Show Detail</span>
+        Maintenance Log <span class="toggle" id="toggle-d-maintenance">▲ Hide Detail</span>
       </div>
-      <div id="d-maintenance" style="display:none">
+      <div id="d-maintenance" style="display:block">
         <table class="recon-table">
           <thead><tr><th>Date</th><th>Category</th><th>Item/Area</th><th>Issue</th><th>Action Taken</th><th>Status</th></tr></thead>
           <tbody>${maintenance.filter(m=>m.item).map(m=>'<tr><td>'+m.date+'</td><td>'+m.category+'</td><td>'+m.item+'</td><td>'+m.issue+'</td><td>'+(m.action||'—')+'</td><td><span class="badge '+(m.status==='Closed'?'badge-green':m.status==='In Progress'?'badge-amber':'badge-red')+'">'+m.status+'</span></td></tr>').join('')}</tbody>
@@ -2597,9 +2597,9 @@ function buildReportHTML(r,analyticsData){
     ${secRows?`
     <div class="detail-section">
       <div class="section-title" onclick="toggleDetail('d-security')">
-        Security Log <span class="toggle" id="toggle-d-security">▼ Show Detail</span>
+        Security Log <span class="toggle" id="toggle-d-security">▲ Hide Detail</span>
       </div>
-      <div id="d-security" style="display:none">
+      <div id="d-security" style="display:block">
         <table class="recon-table">
           <thead><tr><th>Date</th><th>Type</th><th>By</th><th>Findings</th><th>Sign-Off</th></tr></thead>
           <tbody>${secRows}</tbody>
@@ -2610,9 +2610,9 @@ function buildReportHTML(r,analyticsData){
     ${staffComp.filter(s=>s.person_name||s.item).length>0?`
     <div class="detail-section">
       <div class="section-title" onclick="toggleDetail('d-staff-comp')">
-        Staff &amp; Complimentary <span class="toggle" id="toggle-d-staff-comp">▼ Show Detail</span>
+        Staff &amp; Complimentary <span class="toggle" id="toggle-d-staff-comp">▲ Hide Detail</span>
       </div>
-      <div id="d-staff-comp" style="display:none">
+      <div id="d-staff-comp" style="display:block">
         <table class="recon-table">
           <thead><tr><th>Date</th><th>Name</th><th>Category</th><th>Item</th><th style="text-align:right">Qty</th><th style="text-align:right">Std Value</th><th style="text-align:right">Paid</th><th style="text-align:right">Variance</th><th>Authorised By</th></tr></thead>
           <tbody>${(staffComp||[]).filter(s=>s.person_name||s.item).map(s=>{const paid=n(s.amount_paid||0);const stdVal=parseFloat((s.standard_total||'0').replace('UGX','').replace(/,/g,''))||0;return'<tr><td>'+(s.date||'')+'</td><td>'+(s.person_name||'')+'</td><td>'+(s.category||'')+'</td><td>'+(s.item||'')+'</td><td style="text-align:right">'+(s.quantity||'')+'</td><td style="text-align:right">'+(s.standard_total||'—')+'</td><td style="text-align:right">'+fmtUGX(paid)+'</td><td style="text-align:right;color:'+(paid<stdVal?'var(--error)':'var(--success)')+'">'+fmtUGX(paid-stdVal)+'</td><td>'+(s.authorised_by||'')+'</td></tr>';}).join('')}</tbody>
@@ -2624,9 +2624,9 @@ function buildReportHTML(r,analyticsData){
     ${trainingRows.filter(t=>t.topic).length>0?`
     <div class="detail-section">
       <div class="section-title" onclick="toggleDetail('d-training')">
-        Training Log <span class="toggle" id="toggle-d-training">▼ Show Detail</span>
+        Training Log <span class="toggle" id="toggle-d-training">▲ Hide Detail</span>
       </div>
-      <div id="d-training" style="display:none">
+      <div id="d-training" style="display:block">
         <table class="recon-table">
           <thead><tr><th>Date</th><th>Topic</th><th>Trainer</th><th>Duration</th><th>Attendees</th><th>No.</th><th>Follow-up?</th></tr></thead>
           <tbody>${(trainingRows||[]).filter(t=>t&&t.topic).map(t=>'<tr><td>'+(t.date||'')+'</td><td>'+(t.topic||'')+'</td><td>'+(t.trainer||'')+'</td><td>'+(t.duration_hours||'0')+' hrs</td><td>'+(t.attendees||'')+'</td><td>'+(t.attendee_count||'0')+'</td><td>'+(t.followup_required||'')+'</td></tr>').join('')}</tbody>
@@ -2637,9 +2637,9 @@ function buildReportHTML(r,analyticsData){
     ${incRows?`
     <div class="detail-section">
       <div class="section-title" onclick="toggleDetail('d-incidents')">
-        Incidents <span class="toggle" id="toggle-d-incidents">▼ Show Detail</span>
+        Incidents <span class="toggle" id="toggle-d-incidents">▲ Hide Detail</span>
       </div>
-      <div id="d-incidents" style="display:none">
+      <div id="d-incidents" style="display:block">
         <table class="recon-table">
           <thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Status</th><th>Escalated?</th></tr></thead>
           <tbody>${incRows}</tbody>
@@ -2650,7 +2650,7 @@ function buildReportHTML(r,analyticsData){
     ${(r.booked_guests||[]).filter(s=>s.guest_name||s.booking_ref).length>0?`
     <div class="detail-section">
       <div class="section-title" onclick="toggleDetail('d-booked-guests')">
-        Booked Guests (HQ Bookings) <span class="toggle" id="toggle-d-booked-guests">▼ Show Detail</span>
+        Booked Guests (HQ Bookings) <span class="toggle" id="toggle-d-booked-guests">▲ Hide Detail</span>
       </div>
       <div id="d-booked-guests" style="display:none">
         <table class="recon-table">
