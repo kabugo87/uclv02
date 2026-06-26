@@ -732,12 +732,30 @@ async function checkSession(){
     document.getElementById('app-screen').style.display='block';
     document.getElementById('user-email').textContent=email;
     document.getElementById('lodge-name-header').textContent=supervisorLodge;
+    // Lock week-of for supervisors — they always work on the current week
+    const weekInput=document.getElementById('week-of');
     const today=new Date();
     const day=today.getDay();
     const diff=today.getDate()-day+(day===0?-6:1);
     const mon=new Date(today);mon.setDate(diff);
-    document.getElementById('week-of').value=mon.toISOString().split('T')[0];
+    const weekOf=mon.toISOString().split('T')[0];
+    weekInput.value=weekOf;
+    weekInput.dataset.prev=weekOf;
+    weekInput.setAttribute('readonly','true');
+    weekInput.style.cssText+='background:#f5f0e8;cursor:default;';
     updateWeekLabel();
+    // Auto-load existing draft for this week if one exists
+    try{
+      const {data:draftData}=await sb.from('weekly_reports')
+        .select('id').eq('lodge',supervisorLodge).eq('week_of',weekOf)
+        .eq('is_draft',true).eq('archived',false)
+        .order('last_saved_at',{ascending:false}).limit(1);
+      if(draftData&&draftData.length){
+        await openDraftById(draftData[0].id, supervisorLodge, weekOf);
+        return;
+      }
+    }catch(e){console.warn('Draft auto-load failed:',e);}
+    // No draft found — build blank form
     const rowCounts={'bar-sales':10,'bar-stock':10,'restaurant':10,'room-sales':5,'stores':8,'kitchen':8,'rooms':5,'housekeeping':5,'security':3,'maintenance':3,'booked-guests':5,'staff-comp':5,'training':3,'incidents':3};
     Object.entries(rowCounts).forEach(([t,count])=>{
       document.getElementById('body-'+t).innerHTML='';
@@ -1143,6 +1161,8 @@ async function onWeekOfChange(){
   const input=document.getElementById('week-of');
   const newVal=input.value;
   const prevVal=input.dataset.prev||newVal;
+  // Supervisors have a locked week — silently revert any change
+  if(isSupervisor()){input.value=prevVal;updateWeekLabel();return;}
   if(!currentLodge){input.dataset.prev=newVal;updateWeekLabel();return;}
   if(newVal===prevVal){updateWeekLabel();return;}
   if(!newVal){input.value=prevVal;updateWeekLabel();return;}
@@ -3681,7 +3701,10 @@ async function openDraftById(id, lodge, weekOf){
   // Switch to reporting view
   currentDraftId=r.id;
   currentLodge=lodge;
-  await loadItemMaster();
+  // Only reload item master if lodge changed
+  if(!itemMaster.length||!itemMaster.find(function(i){return i.lodge===lodge||i.lodge==='All Lodges';})){
+    await loadItemMaster();
+  }
   document.getElementById('lodge-screen').style.display='none';
   document.getElementById('dashboard-screen')?document.getElementById('dashboard-screen').style.display='none':'';
   document.getElementById('app-screen').style.display='block';
